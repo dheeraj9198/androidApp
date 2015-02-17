@@ -190,59 +190,65 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="#FFFFFF"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:src="@drawable/syllabus_icon" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="#FFFFFF"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center|left"
-                android:paddingLeft="10dp"
-                android:text="COURSE SYLLABUS"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:src="@drawable/syllabus_icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center|left"
+                    android:paddingLeft="10dp"
+                    android:text="COURSE SYLLABUS"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="@color/gray" />
+
         </LinearLayout>
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="@color/gray" />
-
-        <TextView
-            android:id="@+id/tv_course_syllabus_title"
+        <!-- Section Header + data-->
+        <LinearLayout
+            android:id="@+id/course_sections"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="#FFFFFF"
-            android:gravity="center|left"
-            android:paddingLeft="20dp"
-            android:text="INCOME TAX OVERVIEW"
-            android:textColor="@color/gray"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+        <!-- Section Head End + data -->
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!-- Section data -->
+        <!-- <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
 
-            <com.example.dheeraj.superprofs.ExpandedListView
-                android:id="@+id/syllabus_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0px"
-                android:scrollbars="none"></com.example.dheeraj.superprofs.ExpandedListView>
-        </FrameLayout>
+             <com.example.dheeraj.superprofs.ExpandedListView
+                 android:id="@+id/syllabus_list_view"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:padding="0px"
+                 android:scrollbars="none"></com.example.dheeraj.superprofs.ExpandedListView>
+         </FrameLayout>-->
 
+
+        <!-- attachments -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -280,23 +286,32 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.example.dheeraj.superprofs.ExpandedListView
-                android:id="@+id/attachment_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0px"
-                android:scrollbars="none"></com.example.dheeraj.superprofs.ExpandedListView>
-        </FrameLayout>
-
-
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/attachment_items"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- attachments end -->
+
+        <!--   <FrameLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <com.example.dheeraj.superprofs.ExpandedListView
+                   android:id="@+id/attachment_list_view"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:padding="0px"
+                   android:scrollbars="none"></com.example.dheeraj.superprofs.ExpandedListView>
+           </FrameLayout>-->
+
+        <!-- about the course -->
+        <LinearLayout
+            android:id="@+id/about_the_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/course_detail"
@@ -316,6 +331,7 @@
                 android:background="@color/gray" />
 
             <TextView
+                android:id="@+id/description_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
@@ -326,33 +342,12 @@
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:text="@string/data"
-                android:textColor="@color/gray"
-                android:textSize="15sp" />
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:text="Now that the elections are over, Sanjay Singh, member of AAP National Executive, has made a statement that AAP never promised 15 Lakh CCTV cameras. On a TV channel, Sanjay Singh made the following statement:"
-                android:textColor="@color/gray"
-                android:textSize="15sp" />
-
+            <!-- add parts dynamically -->
         </LinearLayout>
 
-
+        <!-- course students -->
         <LinearLayout
+            android:id="@+id/students"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/black"
@@ -391,9 +386,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="billu"
-                        android:textColor="@color/white"
-                        android:gravity="center"/>
+                        android:textColor="@color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -413,33 +408,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="billu"
-                        android:textColor="@color/white"
-                        android:gravity="center"/>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:padding="5dp"
-                        android:src="@drawable/iv_prof"
-                        app:border_color="#FF000000"
-                        app:border_width="2dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="billu"
-                        android:textColor="@color/white"
-                        android:gravity="center"/>
-
+                        android:textColor="@color/white" />
                 </LinearLayout>
 
 
@@ -460,18 +431,37 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="billu"
-                        android:textColor="@color/white"
-                        android:gravity="center"/>
+                        android:textColor="@color/white" />
 
                 </LinearLayout>
 
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
+                    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:padding="5dp"
+                        android:src="@drawable/iv_prof"
+                        app:border_color="#FF000000"
+                        app:border_width="2dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="billu"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
             </LinearLayout>
-
-
         </LinearLayout>
-
+        <!-- course student end -->
     </LinearLayout>
 </ScrollView>

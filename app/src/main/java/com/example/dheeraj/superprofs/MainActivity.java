@@ -1,7 +1,6 @@
 package com.example.dheeraj.superprofs;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,17 +9,21 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final String test = "Now that the elections are over, Sanjay Singh, member of AAP National Executive, has made a statement that AAP never promised 15 Lakh CCTV cameras. On a TV channel, Sanjay Singh made the following statement:";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,76 +71,55 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            String[] array = new String[]{"a","b","c"};
-            String[] array1 = new String[]{"Chutiyapa_101.pdf","Chutiyapa_101.pdf","Chutiyapa_101.pdf"};
-            ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_syllabus_lecture,R.id.test);
-            stringArrayAdapter.addAll(Arrays.asList(array));
+            String[] sectionArray = new String[]{"section 1", "section 2", "section 3"};
+            String[] lectureArray = new String[]{"lecture 1", "lecture 2", "lecture 2"};
+            String[] attachmentArray = new String[]{"Chutiyapa_101.pdf", "Chutiyapa_102.pdf", "Chutiyapa_103.pdf"};
 
-
-            ArrayAdapter<String> stringArrayAdapter1 = new ArrayAdapter<String>(getActivity(),R.layout.list_item_attachment,R.id.list_item_id_attachment);
-            stringArrayAdapter1.addAll(Arrays.asList(array1));
             View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
 
 
-            /*LinearLayout linearLayout =(LinearLayout) rootView.findViewById(R.id.syllabus_list_view);
+            //add view dynamically here
 
-            linearLayout.addView((LinearLayout)rootView.findViewById(R.id.test_add_dynamic));
-            linearLayout.addView((LinearLayout)rootView.findViewById(R.id.test_add_dynamic));
-            linearLayout.addView((LinearLayout)rootView.findViewById(R.id.test_add_dynamic));
-            linearLayout.addView((LinearLayout)rootView.findViewById(R.id.test_add_dynamic));*/
+            //course sections
+            LinearLayout courseSectionLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_sections);
+            for (String section : sectionArray) {
+                View sectionHead = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_section_head, null);
+                TextView textViewSectionTopic = (TextView) sectionHead.findViewById(R.id.section_title);
+                textViewSectionTopic.setText(section);
+                courseSectionLinearLayout.addView(sectionHead);
 
-            ExpandedListView listView = (ExpandedListView)rootView.findViewById(R.id.syllabus_list_view);
-            listView.setAdapter(stringArrayAdapter);
+                for (String lecture : lectureArray) {
+                    View lectureView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_syllabus_lecture, null);
+                    TextView textView = (TextView) lectureView.findViewById(R.id.lecture_name);
+                    ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
 
-            ExpandedListView listView1 = (ExpandedListView)rootView.findViewById(R.id.attachment_list_view);
-            listView1.setAdapter(stringArrayAdapter1);
-
-            listView.setOnTouchListener(new ListView.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int action = event.getAction();
-                    switch (action) {
-                        case MotionEvent.ACTION_DOWN:
-                            // Disallow ScrollView to intercept touch events.
-                            v.getParent().requestDisallowInterceptTouchEvent(true);
-                            break;
-
-                        case MotionEvent.ACTION_UP:
-                            // Allow ScrollView to intercept touch events.
-                            v.getParent().requestDisallowInterceptTouchEvent(false);
-                            break;
+                    Random random = new Random();
+                    if (random.nextInt() % 2 == 0) {
+                        imageView.setImageResource(R.drawable.iv_lock_button);
                     }
-
-                    // Handle ListView touch events.
-                    v.onTouchEvent(event);
-                    return true;
+                    textView.setText(lecture);
+                    courseSectionLinearLayout.addView(lectureView);
                 }
-            });
+            }
 
+            //attachments
+            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
+            for (String attachment : attachmentArray) {
+                View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
+                TextView textViewAttachment = (TextView) attachmentView.findViewById(R.id.list_item_id_attachment);
+                textViewAttachment.setText(attachment);
+                linearLayout.addView(attachmentView);
 
-            listView1.setOnTouchListener(new ListView.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    int action = event.getAction();
-                    switch (action) {
-                        case MotionEvent.ACTION_DOWN:
-                            // Disallow ScrollView to intercept touch events.
-                            v.getParent().requestDisallowInterceptTouchEvent(true);
-                            break;
+            }
 
-                        case MotionEvent.ACTION_UP:
-                            // Allow ScrollView to intercept touch events.
-                            v.getParent().requestDisallowInterceptTouchEvent(false);
-                            break;
-                    }
+            LinearLayout courseDescription = (LinearLayout) rootView.findViewById(R.id.about_the_course);
 
-                    // Handle ListView touch events.
-                    v.onTouchEvent(event);
-                    return true;
-                }
-            });
-
-
+            for (int i = 0; i < 3; i++) {
+                View descriptionView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_description_parts, null);
+                TextView textDescription = (TextView) descriptionView.findViewById(R.id.description_detail);
+                textDescription.setText(test);
+                courseDescription.addView(descriptionView);
+            }
             return rootView;
         }
     }
