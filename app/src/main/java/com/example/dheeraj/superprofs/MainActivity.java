@@ -1,6 +1,12 @@
 package com.example.dheeraj.superprofs;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -78,11 +84,11 @@ public class MainActivity extends ActionBarActivity {
 
             View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
 
-            View.OnClickListener onClickListener= new View.OnClickListener() {
+            View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   TextView textView = (TextView)v.findViewById(R.id.lecture_name);
-                    Toast.makeText(getActivity(),textView.getText(),Toast.LENGTH_LONG).show();
+                    TextView textView = (TextView) v.findViewById(R.id.lecture_name);
+                    Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
                 }
             };
 
@@ -130,7 +136,158 @@ public class MainActivity extends ActionBarActivity {
                 textDescription.setText(test);
                 courseDescription.addView(descriptionView);
             }
+
+            /**
+             * view pager for horizontal scrolling
+             */
+
+            ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.review_view_pager);
+            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity());
+            viewPager.setAdapter(myPagerAdapter);
+
             return rootView;
         }
     }
+
+    private static class MyPagerAdapter1 extends PagerAdapter {
+
+        private Activity activity;
+        private int numberOfPages = 3;
+
+        public MyPagerAdapter1(Activity a) {
+            super();
+            activity = a;
+        }
+
+        @Override
+        public int getCount() {
+            return numberOfPages;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+
+
+            LinearLayout linearLayout = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.list_item_review, null);
+            TextView studentNameTextView = (TextView) linearLayout.findViewById(R.id.student_name);
+            studentNameTextView.setText("BY DHEERAJ SACHAN " + position);
+
+            View view0 = (View) linearLayout.findViewById(R.id.bar1);
+            View view1 = (View) linearLayout.findViewById(R.id.bar2);
+            View view2 = (View) linearLayout.findViewById(R.id.bar3);
+
+            view0.setBackgroundColor(activity.getResources().getColor(R.color.gray));
+            view1.setBackgroundColor(activity.getResources().getColor(R.color.gray));
+            view2.setBackgroundColor(activity.getResources().getColor(R.color.gray));
+
+            switch (position) {
+                case 0:
+                    view0.setBackgroundColor(activity.getResources().getColor(R.color.orange));
+                    break;
+                case 1:
+                    view1.setBackgroundColor(activity.getResources().getColor(R.color.orange));
+                    break;
+                case 2:
+                    view2.setBackgroundColor(activity.getResources().getColor(R.color.orange));
+                    break;
+            }
+
+            container.addView(linearLayout);
+            return linearLayout;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((LinearLayout) object);
+        }
+
+    }
+
+   /* private static class MyPagerAdapter extends PagerAdapter {
+
+        int NumberOfPages = 5;
+        private Activity activity;
+
+        public MyPagerAdapter(Activity a) {
+            super();
+            activity = a;
+        }
+
+
+        int[] res = {
+                android.R.drawable.ic_dialog_alert,
+                android.R.drawable.ic_menu_camera,
+                android.R.drawable.ic_menu_compass,
+                android.R.drawable.ic_menu_directions,
+                android.R.drawable.ic_menu_gallery};
+        int[] backgroundcolor = {
+                0xFF101010,
+                0xFF202020,
+                0xFF303030,
+                0xFF404040,
+                0xFF505050};
+
+        @Override
+        public int getCount() {
+            return NumberOfPages;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+
+
+            TextView textView = new TextView(activity);
+            textView.setTextColor(Color.WHITE);
+            textView.setTextSize(30);
+            textView.setTypeface(Typeface.DEFAULT_BOLD);
+            textView.setText(String.valueOf(position));
+
+            ImageView imageView = new ImageView(activity);
+            imageView.setImageResource(res[position]);
+            ViewGroup.LayoutParams imageParams = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            imageView.setLayoutParams(imageParams);
+
+            LinearLayout layout = new LinearLayout(activity);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layout.setBackgroundColor(backgroundcolor[position]);
+            layout.setLayoutParams(layoutParams);
+            layout.addView(textView);
+            layout.addView(imageView);
+
+            final int page = position;
+            layout.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(activity,
+                            "Page " + page + " clicked",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
+            container.addView(layout);
+            return layout;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((LinearLayout) object);
+        }
+
+    }*/
+
+
 }

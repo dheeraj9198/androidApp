@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/review_layout"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:orientation="horizontal">
+    android:layout_height="220dp"
+    android:orientation="horizontal"
+    android:background="@color/white">
 
 
     <LinearLayout
@@ -29,9 +30,11 @@
         android:layout_weight="3"
         android:orientation="vertical">
 
+
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="@string/review_text"
             android:layout_margin="5dp"
             android:padding="5dp"
@@ -40,6 +43,7 @@
             />
 
         <TextView
+            android:id="@+id/student_name"
             android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,10 +52,11 @@
             android:text="BY DHEERAJ SACHAN"
             android:textColor="@color/black"/>
 
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_marginTop="10dp">
 
             <View
@@ -98,12 +103,8 @@
                 android:layout_width="0dp"
                 android:layout_height="5dp"
                 android:background="@color/white" />
+        </LinearLayout>
 
-
-
-            </LinearLayout>
 
     </LinearLayout>
-
-
 </LinearLayout>

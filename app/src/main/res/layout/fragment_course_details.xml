@@ -468,25 +468,23 @@
         <LinearLayout
             android:id="@+id/review_linear_layout"
             android:layout_width="match_parent"
-            android:layout_height="255dp"
+            android:layout_height="300dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:text="STUDENTS REVIEWS"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_marginLeft="20dp"
                 android:gravity="center_vertical"
-                />
+                android:text="STUDENTS REVIEWS"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <android.support.v4.view.ViewPager
-                android:id="@+id/myviewpager"
+                android:id="@+id/review_view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_height="270dp" />
 
 
         </LinearLayout>
