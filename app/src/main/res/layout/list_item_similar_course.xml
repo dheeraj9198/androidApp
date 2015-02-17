@@ -5,29 +5,32 @@
 
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="-6dp">
 
-        <ImageView
-            android:id="@+id/play_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/play_button" />
+
 
         <ImageView
             android:id="@+id/iv_subject"
             android:layout_width="wrap_content"
             android:layout_height="225dp"
             android:background="@drawable/iv_subject_background"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"/>
+
+        <ImageView
+            android:id="@+id/play_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/play_button" />
 
 
+        <!-- for displaying details like prof duration etc-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="115dp">
+            android:layout_marginTop="85dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,6 +69,29 @@
                         android:textSize="16dp" />
                 </LinearLayout>
 
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp"
+                        android:src="@drawable/iv_clock" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="60H"
+                        android:textColor="#ffffff"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -92,11 +118,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/iv_notification"
                     android:scaleType="fitXY" />
 
@@ -110,5 +138,4 @@
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
-
 </LinearLayout>
