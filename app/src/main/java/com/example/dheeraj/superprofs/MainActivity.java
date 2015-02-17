@@ -151,7 +151,8 @@ public class MainActivity extends ActionBarActivity {
              */
 
             LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
-            View view = getLayoutInflater(savedInstanceState)
+            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course,null);
+            linearLayout1.addView(view);
 
 
 
