@@ -490,6 +490,27 @@
         </LinearLayout>
         <!-- review section ends -->
 
+        <!-- extra courses -->
+        <LinearLayout
+            android:id="@+id/similar_courses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/apricot"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:gravity="center|left"
+                android:text="OTHER SIMILAR COURSES"
+                android:textColor="@color/orange"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+        <!-- extra courses end -->
+
 
     </LinearLayout>
 </ScrollView>

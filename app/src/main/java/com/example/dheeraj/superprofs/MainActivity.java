@@ -145,6 +145,16 @@ public class MainActivity extends ActionBarActivity {
             MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity());
             viewPager.setAdapter(myPagerAdapter);
 
+
+            /**
+             * similar courses
+             */
+
+            LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
+            View view = getLayoutInflater(savedInstanceState)
+
+
+
             return rootView;
         }
     }
