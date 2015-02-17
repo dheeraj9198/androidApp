@@ -1,5 +1,6 @@
 package com.example.dheeraj.superprofs;
 
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -77,6 +78,13 @@ public class MainActivity extends ActionBarActivity {
 
             View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
 
+            View.OnClickListener onClickListener= new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   TextView textView = (TextView)v.findViewById(R.id.lecture_name);
+                    Toast.makeText(getActivity(),textView.getText(),Toast.LENGTH_LONG).show();
+                }
+            };
 
             //add view dynamically here
 
@@ -98,6 +106,8 @@ public class MainActivity extends ActionBarActivity {
                         imageView.setImageResource(R.drawable.iv_lock_button);
                     }
                     textView.setText(lecture);
+
+                    lectureView.setOnClickListener(onClickListener);
                     courseSectionLinearLayout.addView(lectureView);
                 }
             }

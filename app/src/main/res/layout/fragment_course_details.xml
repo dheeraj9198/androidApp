@@ -463,5 +463,35 @@
             </LinearLayout>
         </LinearLayout>
         <!-- course student end -->
+
+        <!-- review secction -->
+        <LinearLayout
+            android:id="@+id/review_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="255dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="STUDENTS REVIEWS"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginLeft="20dp"
+                android:gravity="center_vertical"
+                />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/myviewpager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+
+        </LinearLayout>
+        <!-- review section ends -->
+
+
     </LinearLayout>
 </ScrollView>
