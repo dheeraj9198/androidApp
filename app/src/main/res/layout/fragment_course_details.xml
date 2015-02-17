@@ -464,7 +464,7 @@
         </LinearLayout>
         <!-- course student end -->
 
-        <!-- review secction -->
+        <!-- review section -->
         <LinearLayout
             android:id="@+id/review_linear_layout"
             android:layout_width="match_parent"
