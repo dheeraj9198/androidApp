@@ -17,6 +17,10 @@ public final class Lecture {
     private int quality_verified_by;
     private String comment;
 
+    public boolean isPublic(){
+        return is_public == 1;
+    }
+
     @Override
     public String toString() {
         return "Lecture{" +

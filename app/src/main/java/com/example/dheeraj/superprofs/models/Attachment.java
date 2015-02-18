@@ -10,7 +10,7 @@ public final class Attachment {
     private String url;
     private String file_name;
     private String file_extension;
-    private String dexcription;
+    private String description;
     private String mimetype;
 
     @Override
@@ -21,9 +21,13 @@ public final class Attachment {
                 ", url='" + url + '\'' +
                 ", file_name='" + file_name + '\'' +
                 ", file_extension='" + file_extension + '\'' +
-                ", dexcription='" + dexcription + '\'' +
+                ", description='" + description + '\'' +
                 ", mimetype='" + mimetype + '\'' +
                 '}';
+    }
+
+    public String getCompleteFileName(){
+        return file_name+"."+file_extension;
     }
 
     public String getName() {
@@ -58,12 +62,12 @@ public final class Attachment {
         this.file_extension = file_extension;
     }
 
-    public String getDexcription() {
-        return dexcription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDexcription(String dexcription) {
-        this.dexcription = dexcription;
+    public void setDexcription(String description) {
+        this.description = description;
     }
 
     public String getMimetype() {

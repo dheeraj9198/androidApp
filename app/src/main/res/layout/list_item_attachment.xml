@@ -21,17 +21,18 @@
         android:layout_margin="5dp">
 
         <TextView
+            android:id="@+id/head"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chutiyapa 101 by Billi"
+            android:text=""
             android:textColor="@color/gray"
             android:textSize="25sp" />
 
         <TextView
-            android:id="@+id/list_item_id_attachment"
+            android:id="@+id/file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chutiyapa_101.pdf"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="15sp" />
 

@@ -1,10 +1,7 @@
 package com.example.dheeraj.superprofs;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,17 +11,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
+import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
+import com.example.dheeraj.superprofs.models.Attachment;
+import com.example.dheeraj.superprofs.models.Course;
+import com.example.dheeraj.superprofs.models.Lecture;
+import com.example.dheeraj.superprofs.models.Section;
+import com.example.dheeraj.superprofs.utils.JsonHandler;
+
 import java.util.Random;
 
 
@@ -73,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         @Override
-        public void onStart(){
+        public void onStart() {
             super.onStart();
             DataFetcher dataFetcher = new DataFetcher();
             dataFetcher.execute();
@@ -85,7 +87,7 @@ public class MainActivity extends ActionBarActivity {
             return rootView;
         }
 
-        private class DataFetcher extends AsyncTask<Void, Void, String> {
+        private class DataFetcher extends AsyncTask<Void, Void, Course> {
 
             @Override
             protected void onPreExecute() {
@@ -93,19 +95,21 @@ public class MainActivity extends ActionBarActivity {
             }
 
             @Override
-            protected String doInBackground(Void... params) {
+            protected Course doInBackground(Void... params) {
                 try {
                     Thread.sleep(3000);
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), "caught execption", Toast.LENGTH_LONG).show();
                 }
-                return "";
+                return JsonHandler.parse(FakeDataJsonStrings.courseData, Course.class);
             }
 
             @Override
-            protected void onPostExecute(String data) {
+            protected void onPostExecute(Course course) {
+                PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+                placeholderFragment.setCourse(course);
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new PlaceholderFragment())
+                        .replace(R.id.container, placeholderFragment)
                         .commit();
             }
         }
@@ -117,7 +121,114 @@ public class MainActivity extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        private Course course;
+
+        private void setCourse(Course c) {
+            this.course = c;
+        }
+
         public PlaceholderFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+
+            View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
+
+            View.OnClickListener onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TextView textView = (TextView) v.findViewById(R.id.lecture_name);
+                    Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
+                }
+            };
+
+            //add view dynamically here
+
+            /**
+             *set progress bar %completed scaled out of 10;
+             */
+            ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.courseProgressBar);
+            progressBar.getProgressDrawable().setColorFilter(R.color.orange, PorterDuff.Mode.SRC_IN);
+            progressBar.setMax(course.getCourseMetas().get(0).getTotal_duration());
+            progressBar.setProgress(course.getCourseMetas().get(0).getAvailable_content_duration());
+
+            /**
+             * set course ddetails
+             */
+
+            ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
+
+
+
+            //course sections
+            LinearLayout courseSectionLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_sections);
+            for (Section section : course.getSections()) {
+                View sectionHead = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_section_head, null);
+                TextView textViewSectionTopic = (TextView) sectionHead.findViewById(R.id.section_title);
+                textViewSectionTopic.setText(section.getName());
+                courseSectionLinearLayout.addView(sectionHead);
+
+                for (Lecture lecture : section.getLectures()) {
+                    View lectureView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_syllabus_lecture, null);
+                    TextView textView = (TextView) lectureView.findViewById(R.id.lecture_name);
+                    ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
+                    if(!lecture.isPublic()){
+                        imageView.setImageResource(R.drawable.iv_lock_button);
+                    }
+                    textView.setText(lecture.getName());
+                    lectureView.setOnClickListener(onClickListener);
+                    courseSectionLinearLayout.addView(lectureView);
+                }
+            }
+
+            //attachments
+            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
+            for (Attachment attachment : course.getAttachments()) {
+                View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
+                TextView textViewAttachmentName = (TextView) attachmentView.findViewById(R.id.head);
+                textViewAttachmentName.setText(attachment.getName());
+                TextView textViewAttachmentFile = (TextView) attachmentView.findViewById(R.id.file);
+                textViewAttachmentFile.setText(attachment.getCompleteFileName());
+                linearLayout.addView(attachmentView);
+            }
+
+            LinearLayout courseDescription = (LinearLayout) rootView.findViewById(R.id.about_the_course);
+
+            for (int i = 0; i < 3; i++) {
+                View descriptionView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_description_parts, null);
+                TextView textDescription = (TextView) descriptionView.findViewById(R.id.description_detail);
+                textDescription.setText(test);
+                courseDescription.addView(descriptionView);
+            }
+
+            /**
+             * view pager for horizontal scrolling
+             */
+
+            ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.review_view_pager);
+            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity());
+            viewPager.setAdapter(myPagerAdapter);
+
+
+            /**
+             * similar courses
+             */
+
+            LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
+            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course, null);
+            linearLayout1.addView(view);
+
+
+            return rootView;
+        }
+    }
+
+    public static class PlaceholderFragmentFake extends Fragment {
+
+        public PlaceholderFragmentFake() {
         }
 
         @Override
@@ -168,7 +279,7 @@ public class MainActivity extends ActionBarActivity {
             LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
             for (String attachment : attachmentArray) {
                 View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
-                TextView textViewAttachment = (TextView) attachmentView.findViewById(R.id.list_item_id_attachment);
+                TextView textViewAttachment = (TextView) attachmentView.findViewById(R.id.head);
                 textViewAttachment.setText(attachment);
                 linearLayout.addView(attachmentView);
 
@@ -204,6 +315,7 @@ public class MainActivity extends ActionBarActivity {
             return rootView;
         }
     }
+
 
     private static class MyPagerAdapter1 extends PagerAdapter {
 
