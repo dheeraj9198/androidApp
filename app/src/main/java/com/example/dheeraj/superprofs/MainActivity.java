@@ -195,7 +195,7 @@ public class MainActivity extends ActionBarActivity {
 
             try {
                 TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
-                courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulative_rating() + "");
+                courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
             }catch (Exception e){
 
             }

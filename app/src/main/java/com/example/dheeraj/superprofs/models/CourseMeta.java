@@ -83,7 +83,12 @@ public final class CourseMeta {
     }
 
     public float getCumulative_rating() {
+
         return cumulative_rating;
+    }
+
+    public String getCumulativeRatingString(){
+        return String.format("%.1f", cumulative_rating);
     }
 
     public void setCumulative_rating(float cumulative_rating) {

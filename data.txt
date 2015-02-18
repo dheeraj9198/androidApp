@@ -2,7 +2,7 @@
     "id": 2,
     "name": "course 1",
     "description": "course 1",
-    "image_url": "course 1",
+    "image_url": "http://compass-point.ca/wp-content/uploads/2013/12/Christmas-Banner-660x380.jpg",
     "status": 1,
     "priority": 1,
     "subject_id": 1,
@@ -31,8 +31,8 @@
         "user": {
             "id": 1,
             "email": "admin@superprofs.com",
-            "first_name": null,
-            "last_name": null,
+            "first_name": "Chaman",
+            "last_name": "Chutiya",
             "auth_key": "HCGJ6fPkds2YV6TqBxgKZ7l1qjCGq3oI",
             "password_hash": "$2y$13$iQskHUwGAgjPWtzm/ZJNQ.vBO3UHlLVLFb7NJ5gaf32eQgzCTic2.",
             "password_reset_token": null,
@@ -56,6 +56,10 @@
         {
             "id": 1,
             "name": "English"
+        },
+        {
+            "id": 2,
+            "name": "Hindi"
         }
     ],
     "sections": [
