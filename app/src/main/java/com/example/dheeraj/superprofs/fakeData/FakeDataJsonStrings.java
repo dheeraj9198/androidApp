@@ -1,14 +1,14 @@
-package com.example.dheeraj.superprofs;
+package com.example.dheeraj.superprofs.fakeData;
 
 /**
  * Created by dheeraj on 18/2/15.
  */
-public class FakeDataJsonStrings {
+public final class FakeDataJsonStrings {
     private FakeDataJsonStrings(){
 
     }
 
-    public static final String oneCourse = "{\n" +
+    public static final String courseData = "{\n" +
             "    \"id\": 2,\n" +
             "    \"name\": \"course 1\",\n" +
             "    \"description\": \"course 1\",\n" +

@@ -6,6 +6,8 @@ repositories {
 
 dependencies {
     compile 'de.hdodenhof:circleimageview:1.2.1'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 }
 
 android {
