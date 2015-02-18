@@ -41,8 +41,8 @@ public final class FakeDataJsonStrings {
             "        \"user\": {\n" +
             "            \"id\": 1,\n" +
             "            \"email\": \"admin@superprofs.com\",\n" +
-            "            \"first_name\": Chaman,\n" +
-            "            \"last_name\": Chutiya,\n" +
+            "            \"first_name\": \"Chaman\",\n" +
+            "            \"last_name\": \"Chutiya\",\n" +
             "            \"auth_key\": \"HCGJ6fPkds2YV6TqBxgKZ7l1qjCGq3oI\",\n" +
             "            \"password_hash\": \"$2y$13$iQskHUwGAgjPWtzm/ZJNQ.vBO3UHlLVLFb7NJ5gaf32eQgzCTic2.\",\n" +
             "            \"password_reset_token\": null,\n" +
@@ -192,7 +192,7 @@ public final class FakeDataJsonStrings {
             "            \"new_till\": null,\n" +
             "            \"total_duration\": 2323,\n" +
             "            \"available_content_duration\": 2323,\n" +
-            "            \"cumulative_rating\": \"4.00\",\n" +
+            "            \"cumulative_rating\": \"4.12\",\n" +
             "            \"lecture_count\": 3,\n" +
             "            \"review_count\": 34,\n" +
             "            \"likes_count\": 23,\n" +

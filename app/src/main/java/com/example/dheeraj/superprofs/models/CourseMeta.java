@@ -5,6 +5,9 @@ package com.example.dheeraj.superprofs.models;
  */
 public final class CourseMeta {
 
+    private static final String minuteTag = " Minutes";
+    private static final String hoursTag = " Hours";
+
     private int id;
     private int course_id;
     private String new_till;
@@ -19,6 +22,17 @@ public final class CourseMeta {
     public int getId() {
         return id;
     }
+
+    public String getDurationString() {
+        int x = total_duration;
+        x = x / 60;
+        if (x < 60) {
+            return x + minuteTag;
+        }
+        x = x / 60;
+        return x + hoursTag;
+    }
+
 
     @Override
     public String toString() {

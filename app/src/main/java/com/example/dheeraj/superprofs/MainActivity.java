@@ -28,6 +28,8 @@ import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
+import junit.framework.Test;
+
 import java.util.Random;
 
 
@@ -167,8 +169,12 @@ public class MainActivity extends ActionBarActivity {
              * set course details
              */
 
-            ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
-            imageViewSubject.setImageBitmap(course.getImageBitmap());
+            try {
+                ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
+                imageViewSubject.setImageBitmap(course.getImageBitmap());
+            }catch (Exception e){
+                Log.e(TAG,"caught exception while loading image",e);
+            }
 
             TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
             courseNameTextView.setText(course.getName());
@@ -186,6 +192,13 @@ public class MainActivity extends ActionBarActivity {
 
             TextView languageTextView = (TextView)rootView.findViewById(R.id.language);
             languageTextView.setText(course.getAllLanguages());
+
+            try {
+                TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
+                courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulative_rating() + "");
+            }catch (Exception e){
+
+            }
 
             //course sections
             LinearLayout courseSectionLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_sections);
