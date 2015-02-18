@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +34,7 @@ import java.util.Random;
 public class MainActivity extends ActionBarActivity {
 
     private static final String test = "Now that the elections are over, Sanjay Singh, member of AAP National Executive, has made a statement that AAP never promised 15 Lakh CCTV cameras. On a TV channel, Sanjay Singh made the following statement:";
-
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +102,8 @@ public class MainActivity extends ActionBarActivity {
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), "caught execption", Toast.LENGTH_LONG).show();
                 }
-                return JsonHandler.parse(FakeDataJsonStrings.courseData, Course.class);
+                Course course = JsonHandler.parse(FakeDataJsonStrings.courseData, Course.class);
+                return  course;
             }
 
             @Override
@@ -151,17 +153,39 @@ public class MainActivity extends ActionBarActivity {
              *set progress bar %completed scaled out of 10;
              */
             ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.courseProgressBar);
-            progressBar.getProgressDrawable().setColorFilter(R.color.orange, PorterDuff.Mode.SRC_IN);
-            progressBar.setMax(course.getCourseMetas().get(0).getTotal_duration());
-            progressBar.setProgress(course.getCourseMetas().get(0).getAvailable_content_duration());
+            progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+            progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+
+            try {
+                progressBar.setMax(course.getCourseMetas().get(0).getTotal_duration());
+                progressBar.setProgress(course.getCourseMetas().get(0).getAvailable_content_duration());
+            }catch (Exception e){
+                Log.e(TAG,"caught exception while setting up progress bar ",e);
+            }
 
             /**
-             * set course ddetails
+             * set course details
              */
 
             ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
+            imageViewSubject.setImageBitmap(course.getImageBitmap());
 
+            TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
+            courseNameTextView.setText(course.getName());
 
+            TextView profNameTextView = (TextView)rootView.findViewById(R.id.prof_name);
+            profNameTextView.setText(course.getProfessor().getUser().getFullName());
+
+            TextView durationTextView = (TextView)rootView.findViewById(R.id.duration);
+
+            try {
+                durationTextView.setText(course.getCourseMetas().get(0).getDurationString());
+            }catch (Exception e){
+                Log.e(TAG,"caught exception while getting course duration from course meta",e);
+            }
+
+            TextView languageTextView = (TextView)rootView.findViewById(R.id.language);
+            languageTextView.setText(course.getAllLanguages());
 
             //course sections
             LinearLayout courseSectionLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_sections);

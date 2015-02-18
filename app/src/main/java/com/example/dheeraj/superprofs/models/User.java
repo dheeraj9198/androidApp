@@ -24,6 +24,11 @@ public final class User {
      */
     private ArrayList<Language> languages;
 
+    public  String getFullName(){
+        return first_name+" "+last_name;
+    }
+
+
     public int getId() {
         return id;
     }

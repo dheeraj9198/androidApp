@@ -12,7 +12,7 @@ public final class FakeDataJsonStrings {
             "    \"id\": 2,\n" +
             "    \"name\": \"course 1\",\n" +
             "    \"description\": \"course 1\",\n" +
-            "    \"image_url\": \"course 1\",\n" +
+            "    \"image_url\": \"http://compass-point.ca/wp-content/uploads/2013/12/Christmas-Banner-660x380.jpg\",\n" +
             "    \"status\": 1,\n" +
             "    \"priority\": 1,\n" +
             "    \"subject_id\": 1,\n" +
@@ -41,8 +41,8 @@ public final class FakeDataJsonStrings {
             "        \"user\": {\n" +
             "            \"id\": 1,\n" +
             "            \"email\": \"admin@superprofs.com\",\n" +
-            "            \"first_name\": null,\n" +
-            "            \"last_name\": null,\n" +
+            "            \"first_name\": Chaman,\n" +
+            "            \"last_name\": Chutiya,\n" +
             "            \"auth_key\": \"HCGJ6fPkds2YV6TqBxgKZ7l1qjCGq3oI\",\n" +
             "            \"password_hash\": \"$2y$13$iQskHUwGAgjPWtzm/ZJNQ.vBO3UHlLVLFb7NJ5gaf32eQgzCTic2.\",\n" +
             "            \"password_reset_token\": null,\n" +
@@ -66,6 +66,10 @@ public final class FakeDataJsonStrings {
             "        {\n" +
             "            \"id\": 1,\n" +
             "            \"name\": \"English\"\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"id\": 2,\n" +
+            "            \"name\": \"Hindi\"\n" +
             "        }\n" +
             "    ],\n" +
             "    \"sections\": [\n" +

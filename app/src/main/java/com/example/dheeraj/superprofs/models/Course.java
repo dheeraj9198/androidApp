@@ -1,11 +1,22 @@
 package com.example.dheeraj.superprofs.models;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.example.dheeraj.superprofs.utils.ImageUtils;
+
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by dheeraj on 18/2/15.
  */
 public final class Course {
+    private static final String TAG = Course.class.getSimpleName();
+
     private int id;
     private String name;
     private String description;
@@ -31,6 +42,16 @@ public final class Course {
     private ArrayList<Section> sections;
     private ArrayList<Attachment> attachments;
     private ArrayList<CourseMeta> courseMetas;
+
+    /**
+     * image bitmap
+     */
+    private Bitmap bitmap;
+
+    public Bitmap getImageBitmap()
+    {
+        return bitmap;
+    }
 
     @Override
     public String toString() {
@@ -109,6 +130,7 @@ public final class Course {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
     }
 
     public int getStatus() {
@@ -217,6 +239,18 @@ public final class Course {
 
     public ArrayList<Language> getLanguages() {
         return languages;
+    }
+
+    public String getAllLanguages(){
+        StringBuilder stringBuilder = new StringBuilder();
+        Iterator<Language> languageIterator = getLanguages().iterator();
+        while(languageIterator.hasNext()){
+            stringBuilder.append(languageIterator.next().getName());
+            if(languageIterator.hasNext()) {
+                stringBuilder.append(", ");
+            }
+        }
+        return stringBuilder.toString();
     }
 
     public void setLanguages(ArrayList<Language> languages) {
