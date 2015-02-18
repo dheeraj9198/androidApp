@@ -1,0 +1,238 @@
+{
+    "id": 2,
+    "name": "course 1",
+    "description": "course 1",
+    "image_url": "course 1",
+    "status": 1,
+    "priority": 1,
+    "subject_id": 1,
+    "broadcast_type": 1,
+    "owned_by_professor": 1,
+    "published_at": null,
+    "approval_status": 1,
+    "is_discussion_enabled": 1,
+    "created_at": 0,
+    "updated_at": 0,
+    "created_by": null,
+    "updated_by": null,
+    "professor": {
+        "id": 1,
+        "user_id": 1,
+        "tagline": "professor 1",
+        "summary": "professor 1",
+        "revenue_share_percentage": "22.00",
+        "total_experience": 12,
+        "status": 1,
+        "profile_status": 1,
+        "created_by": null,
+        "updated_by": null,
+        "created_at": 0,
+        "updated_at": 0,
+        "user": {
+            "id": 1,
+            "email": "admin@superprofs.com",
+            "first_name": null,
+            "last_name": null,
+            "auth_key": "HCGJ6fPkds2YV6TqBxgKZ7l1qjCGq3oI",
+            "password_hash": "$2y$13$iQskHUwGAgjPWtzm/ZJNQ.vBO3UHlLVLFb7NJ5gaf32eQgzCTic2.",
+            "password_reset_token": null,
+            "is_email_verified": 0,
+            "status": 1,
+            "created_by": null,
+            "updated_by": null,
+            "created_at": 0,
+            "updated_at": 0,
+            "last_login_at": null,
+            "last_login_ip": null,
+            "languages": [
+                {
+                    "id": 1,
+                    "name": "English"
+                }
+            ]
+        }
+    },
+    "languages": [
+        {
+            "id": 1,
+            "name": "English"
+        }
+    ],
+    "sections": [
+        {
+            "id": 1,
+            "name": "section 1",
+            "course_id": 2,
+            "description": "section 1",
+            "section_number": 1,
+            "lecture_count": 24,
+            "duration": 23,
+            "lectures": [
+                {
+                    "id": 1,
+                    "name": "lecture 1",
+                    "description": "lecture 1",
+                    "is_public": 1,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                },
+                {
+                    "id": 2,
+                    "name": "lecture 2",
+                    "description": "lecture 2",
+                    "is_public": 0,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                },
+                {
+                    "id": 3,
+                    "name": "lecture 3",
+                    "description": "lecture 3",
+                    "is_public": 1,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "section 2",
+            "course_id": 2,
+            "description": "section 1",
+            "section_number": 1,
+            "lecture_count": 24,
+            "duration": 23,
+            "lectures": [
+                {
+                    "id": 1,
+                    "name": "lecture 1",
+                    "description": "lecture 1",
+                    "is_public": 1,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                },
+                {
+                    "id": 2,
+                    "name": "lecture 2",
+                    "description": "lecture 2",
+                    "is_public": 0,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                },
+                {
+                    "id": 3,
+                    "name": "lecture 3",
+                    "description": "lecture 3",
+                    "is_public": 1,
+                    "duration": 23,
+                    "image_url": "lecture 1",
+                    "broadcast_state": 1,
+                    "status": 1,
+                    "is_quality_verified": 0,
+                    "quality_verified_by": 1,
+                    "comment": "lecture 1"
+                }
+            ]
+        }
+    ],
+    "attachments": [
+        {
+            "id": 1,
+            "name": "attachment 1",
+            "url": "attachment 1",
+            "file_name": "attachment 1",
+            "file_extension": "attachment",
+            "description": "attachment 1",
+            "mimetype": "attachment 1"
+        }
+    ],
+    "courseMetas": [
+        {
+            "id": 1,
+            "course_id": 2,
+            "new_till": null,
+            "total_duration": 2323,
+            "available_content_duration": 2323,
+            "cumulative_rating": "4.00",
+            "lecture_count": 3,
+            "review_count": 34,
+            "likes_count": 23,
+            "dislikes_count": 34
+        }
+    ],
+    "courseReviews": [
+        {
+            "id": 1,
+            "user_id": 5,
+            "course_id": 2,
+            "title": "review 1",
+            "review": "review 1",
+            "rating": "3.00",
+            "is_approved": 0,
+            "approved_by": null,
+            "created_at": 0,
+            "updated_at": 0
+        },
+        {
+            "id": 2,
+            "user_id": 4,
+            "course_id": 2,
+            "title": "review 2",
+            "review": "review 2",
+            "rating": "4.00",
+            "is_approved": 0,
+            "approved_by": null,
+            "created_at": 0,
+            "updated_at": 0
+        },
+        {
+            "id": 3,
+            "user_id": 5,
+            "course_id": 2,
+            "title": "review 3",
+            "review": "review 3",
+            "rating": "3.00",
+            "is_approved": 0,
+            "approved_by": null,
+            "created_at": 0,
+            "updated_at": 0
+        },
+        {
+            "id": 4,
+            "user_id": 5,
+            "course_id": 2,
+            "title": "review 4",
+            "review": "review 4",
+            "rating": "3.00",
+            "is_approved": 0,
+            "approved_by": null,
+            "created_at": 0,
+            "updated_at": 0
+        }
+    ]
+}

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -38,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new SpinnerFragment())
                     .commit();
         }
     }
@@ -64,6 +65,51 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public static class SpinnerFragment extends Fragment {
+        public SpinnerFragment() {
+        }
+
+        @Override
+        public void onStart(){
+            super.onStart();
+            DataFetcher dataFetcher = new DataFetcher();
+            dataFetcher.execute();
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstance) {
+            View rootView = layoutInflater.inflate(R.layout.loading, container, false);
+            return rootView;
+        }
+
+        private class DataFetcher extends AsyncTask<Void, Void, String> {
+
+            @Override
+            protected void onPreExecute() {
+
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "caught execption", Toast.LENGTH_LONG).show();
+                }
+                return "";
+            }
+
+            @Override
+            protected void onPostExecute(String data) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new PlaceholderFragment())
+                        .commit();
+            }
+        }
+
     }
 
     /**
@@ -151,9 +197,8 @@ public class MainActivity extends ActionBarActivity {
              */
 
             LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
-            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course,null);
+            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course, null);
             linearLayout1.addView(view);
-
 
 
             return rootView;
