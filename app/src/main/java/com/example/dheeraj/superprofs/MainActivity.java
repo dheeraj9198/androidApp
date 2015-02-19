@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,10 +33,11 @@ import junit.framework.Test;
 
 import java.util.Random;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class MainActivity extends ActionBarActivity {
 
-    private static final String test = "Now that the elections are over, Sanjay Singh, member of AAP National Executive, has made a statement that AAP never promised 15 Lakh CCTV cameras. On a TV channel, Sanjay Singh made the following statement:";
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -100,12 +102,12 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected Course doInBackground(Void... params) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(0);
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), "caught execption", Toast.LENGTH_LONG).show();
                 }
                 Course course = JsonHandler.parse(FakeDataJsonStrings.courseData, Course.class);
-                return  course;
+                return course;
             }
 
             @Override
@@ -152,17 +154,17 @@ public class MainActivity extends ActionBarActivity {
             //add view dynamically here
 
             /**
-             *set progress bar %completed scaled out of 10;
+             *set progress bar %completed scaled out of max course duration;
              */
-            ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.courseProgressBar);
+            ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.course_progress_bar);
             progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
             progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
 
             try {
                 progressBar.setMax(course.getCourseMetas().get(0).getTotal_duration());
                 progressBar.setProgress(course.getCourseMetas().get(0).getAvailable_content_duration());
-            }catch (Exception e){
-                Log.e(TAG,"caught exception while setting up progress bar ",e);
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while setting up progress bar ", e);
             }
 
             /**
@@ -172,32 +174,51 @@ public class MainActivity extends ActionBarActivity {
             try {
                 ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
                 imageViewSubject.setImageBitmap(course.getImageBitmap());
-            }catch (Exception e){
-                Log.e(TAG,"caught exception while loading image",e);
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while loading image", e);
             }
 
             TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
             courseNameTextView.setText(course.getName());
 
-            TextView profNameTextView = (TextView)rootView.findViewById(R.id.prof_name);
+            TextView profNameTextView = (TextView) rootView.findViewById(R.id.prof_name);
             profNameTextView.setText(course.getProfessor().getUser().getFullName());
 
-            TextView durationTextView = (TextView)rootView.findViewById(R.id.duration);
+            TextView durationTextView = (TextView) rootView.findViewById(R.id.duration);
 
             try {
                 durationTextView.setText(course.getCourseMetas().get(0).getDurationString());
-            }catch (Exception e){
-                Log.e(TAG,"caught exception while getting course duration from course meta",e);
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while getting course duration from course meta", e);
             }
 
-            TextView languageTextView = (TextView)rootView.findViewById(R.id.language);
+            TextView languageTextView = (TextView) rootView.findViewById(R.id.language);
             languageTextView.setText(course.getAllLanguages());
 
             try {
                 TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
                 courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
-            }catch (Exception e){
+            } catch (Exception e) {
 
+            }
+            //professor info
+
+
+            try {
+                CircleImageView profCircleImageView = (CircleImageView) rootView.findViewById(R.id.professor_profile_image);
+                profCircleImageView.setImageBitmap(course.getProfessor().getUser().getProfiles().get(0).getBitmap());
+            } catch (Exception e) {
+                Log.e(TAG, "unable to set professor image", e);
+            }
+
+            TextView profNameTextView1 = (TextView)rootView.findViewById(R.id.prof_name_1);
+            profNameTextView1.setText(course.getProfessor().getUser().getFullName());
+
+            try{
+            TextView collegeTextView = (TextView)rootView.findViewById(R.id.college);
+            collegeTextView.setText(course.getProfessor().getProfessorEducations().get(0).getCollege());
+            }catch (Exception e){
+                Log.e(TAG,"unable to find college",e);
             }
 
             //course sections
@@ -212,7 +233,7 @@ public class MainActivity extends ActionBarActivity {
                     View lectureView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_syllabus_lecture, null);
                     TextView textView = (TextView) lectureView.findViewById(R.id.lecture_name);
                     ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
-                    if(!lecture.isPublic()){
+                    if (!lecture.isPublic()) {
                         imageView.setImageResource(R.drawable.iv_lock_button);
                     }
                     textView.setText(lecture.getName());
@@ -232,14 +253,8 @@ public class MainActivity extends ActionBarActivity {
                 linearLayout.addView(attachmentView);
             }
 
-            LinearLayout courseDescription = (LinearLayout) rootView.findViewById(R.id.about_the_course);
-
-            for (int i = 0; i < 3; i++) {
-                View descriptionView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_description_parts, null);
-                TextView textDescription = (TextView) descriptionView.findViewById(R.id.description_detail);
-                textDescription.setText(test);
-                courseDescription.addView(descriptionView);
-            }
+            TextView courseDescription = (TextView) rootView.findViewById(R.id.description);
+            courseDescription.setText(Html.fromHtml(course.getDescription()));
 
             /**
              * view pager for horizontal scrolling
@@ -324,12 +339,6 @@ public class MainActivity extends ActionBarActivity {
 
             LinearLayout courseDescription = (LinearLayout) rootView.findViewById(R.id.about_the_course);
 
-            for (int i = 0; i < 3; i++) {
-                View descriptionView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_description_parts, null);
-                TextView textDescription = (TextView) descriptionView.findViewById(R.id.description_detail);
-                textDescription.setText(test);
-                courseDescription.addView(descriptionView);
-            }
 
             /**
              * view pager for horizontal scrolling

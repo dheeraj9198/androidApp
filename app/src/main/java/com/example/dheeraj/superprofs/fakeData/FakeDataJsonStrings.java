@@ -8,10 +8,11 @@ public final class FakeDataJsonStrings {
 
     }
 
+
     public static final String courseData = "{\n" +
             "    \"id\": 2,\n" +
             "    \"name\": \"course 1\",\n" +
-            "    \"description\": \"course 1\",\n" +
+            "    \"description\": \"<p><strong>Course Description:</strong></p>\\n<p>SuperProf Sudhir Sachdeva covers the entire syllabus of Mercantile Laws (at the CA CPT level) in this video course. SuperProf Sudhir Sachdeva has served as a teacher and a trainer in the education industry for several years. He is currently the sole proprietor of Sudhir Sachdeva Law Classes. He has taught about 10,000 to 12,000 CA / CS / CMA students over the past decade.</p>\\n<p>&nbsp;</p>\\n<p>Mercantile law is a body of law that deals with trade, transportation, contracts and all kinds of business transactions. Mercantile law relates to those rules that are applicable on commercial transactions (both local and international). It deals with the needs of a businessman and includes laws relating to partnerships, contracts etc. In India, Mercantile Law is taken from the English Law. Mercantile Laws are are derived from the practices of merchants and traders. The Sale of Goods Act and the Partnership Act are few of the topics covered under Mercantile law.</p>\\n<p>&nbsp;</p>\\n<p>This online course is aimed at providing CA aspirants an insight into the different aspects of Mercantile Law. Students will receive complete set of video lectures and study material compiled by SuperProf Sudhir Sachdeva. This video will guide students towards the preparation for the examination of the Institute of Chartered Accountants of India (ICAI).</p>\\n<p>&nbsp;</p>\\n<p><strong>Course Eligibility:</strong></p>\\n<p>Any student who is preparing for CA CPT level of exams will be able to cope with the contents of this course. CPT is the first level exam of Chartered Accountancy Course. Students who have passed their 10+2 level examination conducted by a recognized Indian body can apply for CPT.</p>\",\n" +
             "    \"image_url\": \"http://compass-point.ca/wp-content/uploads/2013/12/Christmas-Banner-660x380.jpg\",\n" +
             "    \"status\": 1,\n" +
             "    \"priority\": 1,\n" +
@@ -41,11 +42,8 @@ public final class FakeDataJsonStrings {
             "        \"user\": {\n" +
             "            \"id\": 1,\n" +
             "            \"email\": \"admin@superprofs.com\",\n" +
-            "            \"first_name\": \"Chaman\",\n" +
-            "            \"last_name\": \"Chutiya\",\n" +
-            "            \"auth_key\": \"HCGJ6fPkds2YV6TqBxgKZ7l1qjCGq3oI\",\n" +
-            "            \"password_hash\": \"$2y$13$iQskHUwGAgjPWtzm/ZJNQ.vBO3UHlLVLFb7NJ5gaf32eQgzCTic2.\",\n" +
-            "            \"password_reset_token\": null,\n" +
+            "            \"first_name\": \"admin\",\n" +
+            "            \"last_name\": \"admin\",\n" +
             "            \"is_email_verified\": 0,\n" +
             "            \"status\": 1,\n" +
             "            \"created_by\": null,\n" +
@@ -59,8 +57,33 @@ public final class FakeDataJsonStrings {
             "                    \"id\": 1,\n" +
             "                    \"name\": \"English\"\n" +
             "                }\n" +
+            "            ],\n" +
+            "            \"profiles\": [\n" +
+            "                {\n" +
+            "                    \"id\": 1,\n" +
+            "                    \"user_id\": 1,\n" +
+            "                    \"image_url\": \"http://farm1.static.flickr.com/213/504369245_77bc988400_m.jpg\",\n" +
+            "                    \"image_caption\": \"www.professor.com\",\n" +
+            "                    \"gender\": 0,\n" +
+            "                    \"date_of_birth\": null,\n" +
+            "                    \"facebook_url\": null,\n" +
+            "                    \"linked_url\": null,\n" +
+            "                    \"twitter_url\": null,\n" +
+            "                    \"created_at\": null,\n" +
+            "                    \"updated_at\": null\n" +
+            "                }\n" +
             "            ]\n" +
-            "        }\n" +
+            "        },\n" +
+            "        \"professorEducations\": [\n" +
+            "            {\n" +
+            "                \"id\": 1,\n" +
+            "                \"professor_id\": 1,\n" +
+            "                \"college\": \"Kalicharan Nigam Institute of Technology\",\n" +
+            "                \"graduation_year\": \"1990\",\n" +
+            "                \"degree\": \"B. Com\",\n" +
+            "                \"field\": \"Dhakkan\"\n" +
+            "            }\n" +
+            "        ]\n" +
             "    },\n" +
             "    \"languages\": [\n" +
             "        {\n" +
@@ -192,7 +215,7 @@ public final class FakeDataJsonStrings {
             "            \"new_till\": null,\n" +
             "            \"total_duration\": 2323,\n" +
             "            \"available_content_duration\": 2323,\n" +
-            "            \"cumulative_rating\": \"4.12\",\n" +
+            "            \"cumulative_rating\": \"4.00\",\n" +
             "            \"lecture_count\": 3,\n" +
             "            \"review_count\": 34,\n" +
             "            \"likes_count\": 23,\n" +

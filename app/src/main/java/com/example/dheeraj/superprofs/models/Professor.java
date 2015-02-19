@@ -1,5 +1,7 @@
 package com.example.dheeraj.superprofs.models;
 
+import java.util.ArrayList;
+
 /**
  * Created by dheeraj on 18/2/15.
  */
@@ -21,6 +23,15 @@ public final class Professor {
      * relational data
      */
     private User user;
+    private ArrayList<ProfessorEducation> professorEducations;
+
+    public ArrayList<ProfessorEducation> getProfessorEducations() {
+        return professorEducations;
+    }
+
+    public void setProfessorEducations(ArrayList<ProfessorEducation> professorEducations) {
+        this.professorEducations = professorEducations;
+    }
 
     public int getId() {
         return id;

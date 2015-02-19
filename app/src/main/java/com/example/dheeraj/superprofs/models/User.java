@@ -23,6 +23,35 @@ public final class User {
      * relational data
      */
     private ArrayList<Language> languages;
+    private ArrayList<Profile> profiles;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", is_email_verified=" + is_email_verified +
+                ", status=" + status +
+                ", created_by=" + created_by +
+                ", updated_by=" + updated_by +
+                ", created_at='" + created_at + '\'' +
+                ", updated_at='" + updated_at + '\'' +
+                ", last_login_at='" + last_login_at + '\'' +
+                ", last_login_ip='" + last_login_ip + '\'' +
+                ", languages=" + languages +
+                ", profiles=" + profiles +
+                '}';
+    }
+
+    public ArrayList<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(ArrayList<Profile> profiles) {
+        this.profiles = profiles;
+    }
 
     public  String getFullName(){
         return first_name+" "+last_name;
@@ -133,22 +162,4 @@ public final class User {
         this.languages = languages;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                ", is_email_verified=" + is_email_verified +
-                ", status=" + status +
-                ", created_by=" + created_by +
-                ", updated_by=" + updated_by +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", last_login_at='" + last_login_at + '\'' +
-                ", last_login_ip='" + last_login_ip + '\'' +
-                ", languages=" + languages +
-                '}';
-    }
 }

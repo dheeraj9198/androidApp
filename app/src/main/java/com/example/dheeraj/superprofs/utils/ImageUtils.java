@@ -22,7 +22,7 @@ public class ImageUtils {
             InputStream in = new URL(url).openStream();
             return BitmapFactory.decodeStream(in);
         } catch (Exception e) {
-            Log.e(TAG, "unable to generate bitmap from url");
+            Log.e(TAG, "unable to generate bitmap from url",e);
             return null;
         }
     }
