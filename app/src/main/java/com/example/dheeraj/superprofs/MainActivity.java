@@ -115,7 +115,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected Course doInBackground(Void... params) {
                 publishProgress("started");
-                Course course = BoonJsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
+                Course course = JsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
                 publishProgress("ended");
                 return course;
             }

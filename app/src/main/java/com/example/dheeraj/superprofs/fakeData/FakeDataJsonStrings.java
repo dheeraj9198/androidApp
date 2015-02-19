@@ -1,15 +1,5 @@
 package com.example.dheeraj.superprofs.fakeData;
 
-import android.app.Activity;
-import android.util.Log;
-
-import com.example.dheeraj.superprofs.R;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 /**
  * Created by dheeraj on 18/2/15.
  */
