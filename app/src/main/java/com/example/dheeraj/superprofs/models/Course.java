@@ -44,6 +44,11 @@ public final class Course {
     private ArrayList<CourseMeta> courseMetas;
 
     /**
+     * from access-log/mongo-db
+     */
+    private ArrayList<User> students;
+
+    /**
      * image bitmap
      */
     private Bitmap bitmap;
@@ -77,8 +82,18 @@ public final class Course {
                 ", sections=" + sections +
                 ", attachments=" + attachments +
                 ", courseMetas=" + courseMetas +
+                ", students=" + students +
+                ", bitmap=" + bitmap +
                 ", courseReviews=" + courseReviews +
                 '}';
+    }
+
+    public ArrayList<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(ArrayList<User> students) {
+        this.students = students;
     }
 
     public ArrayList<Attachment> getAttachments() {

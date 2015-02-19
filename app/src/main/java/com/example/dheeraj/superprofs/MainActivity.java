@@ -9,12 +9,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,12 +27,23 @@ import android.widget.Toast;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
+import com.example.dheeraj.superprofs.models.CourseMeta;
+import com.example.dheeraj.superprofs.models.CourseReview;
+import com.example.dheeraj.superprofs.models.Language;
 import com.example.dheeraj.superprofs.models.Lecture;
+import com.example.dheeraj.superprofs.models.Professor;
+import com.example.dheeraj.superprofs.models.ProfessorEducation;
+import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
+import com.example.dheeraj.superprofs.models.User;
+import com.example.dheeraj.superprofs.utils.BoonJsonHandler;
+import com.example.dheeraj.superprofs.utils.Device;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
 import junit.framework.Test;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -92,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
             return rootView;
         }
 
-        private class DataFetcher extends AsyncTask<Void, Void, Course> {
+        private class DataFetcher extends AsyncTask<Void, String, Course> {
 
             @Override
             protected void onPreExecute() {
@@ -101,13 +114,15 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected Course doInBackground(Void... params) {
-                try {
-                    Thread.sleep(0);
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), "caught execption", Toast.LENGTH_LONG).show();
-                }
-                Course course = JsonHandler.parse(FakeDataJsonStrings.courseData, Course.class);
+                publishProgress("started");
+                Course course = BoonJsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
+                publishProgress("ended");
                 return course;
+            }
+
+            protected void onProgressUpdate(String... s) {
+                String mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+                Toast.makeText(getActivity(),s[0]+" at "+mydate,Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -202,8 +217,6 @@ public class MainActivity extends ActionBarActivity {
 
             }
             //professor info
-
-
             try {
                 CircleImageView profCircleImageView = (CircleImageView) rootView.findViewById(R.id.professor_profile_image);
                 profCircleImageView.setImageBitmap(course.getProfessor().getUser().getProfiles().get(0).getBitmap());
@@ -211,14 +224,14 @@ public class MainActivity extends ActionBarActivity {
                 Log.e(TAG, "unable to set professor image", e);
             }
 
-            TextView profNameTextView1 = (TextView)rootView.findViewById(R.id.prof_name_1);
+            TextView profNameTextView1 = (TextView) rootView.findViewById(R.id.prof_name_1);
             profNameTextView1.setText(course.getProfessor().getUser().getFullName());
 
-            try{
-            TextView collegeTextView = (TextView)rootView.findViewById(R.id.college);
-            collegeTextView.setText(course.getProfessor().getProfessorEducations().get(0).getCollege());
-            }catch (Exception e){
-                Log.e(TAG,"unable to find college",e);
+            try {
+                TextView collegeTextView = (TextView) rootView.findViewById(R.id.college);
+                collegeTextView.setText(course.getProfessor().getProfessorEducations().get(0).getCollege());
+            } catch (Exception e) {
+                Log.e(TAG, "unable to find college", e);
             }
 
             //course sections
@@ -226,7 +239,9 @@ public class MainActivity extends ActionBarActivity {
             for (Section section : course.getSections()) {
                 View sectionHead = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_section_head, null);
                 TextView textViewSectionTopic = (TextView) sectionHead.findViewById(R.id.section_title);
-                textViewSectionTopic.setText(section.getName());
+                textViewSectionTopic.setText(section.getName().toUpperCase());
+                textViewSectionTopic.setTextColor(getResources().getColor(R.color.black));
+                textViewSectionTopic.setBackgroundColor(getResources().getColor(R.color.light_gray));
                 courseSectionLinearLayout.addView(sectionHead);
 
                 for (Lecture lecture : section.getLectures()) {
@@ -253,17 +268,40 @@ public class MainActivity extends ActionBarActivity {
                 linearLayout.addView(attachmentView);
             }
 
+
+            //about the course
             TextView courseDescription = (TextView) rootView.findViewById(R.id.description);
             courseDescription.setText(Html.fromHtml(course.getDescription()));
+
+            //course students
+            LinearLayout courseStudentLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_student_layout);
+            int numComponents = 4;
+            for (int x = 0; x < Math.min(numComponents, course.getStudents().size()); x++) {
+                LinearLayout courseStudent1 = (LinearLayout) getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_course_student, null);
+                try {
+                    CircleImageView circleImageView = (CircleImageView) courseStudent1.findViewById(R.id.course_student_image);
+                    circleImageView.setImageBitmap(course.getStudents().get(x).getProfiles().get(0).getBitmap());
+                } catch (Exception e) {
+                    Log.e(TAG, "caught exception while setting student image ", e);
+                }
+                try {
+                    TextView textView = (TextView) courseStudent1.findViewById(R.id.course_student_name);
+                    textView.setText(course.getStudents().get(x).getFullName());
+                } catch (Exception e) {
+                    Log.e(TAG, "caught exception while setting student name ", e);
+                }
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+                courseStudent1.setLayoutParams(layoutParams);
+                courseStudentLinearLayout.addView(courseStudent1);
+            }
 
             /**
              * view pager for horizontal scrolling
              */
 
             ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.review_view_pager);
-            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity());
+            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity(), course.getCourseReviews());
             viewPager.setAdapter(myPagerAdapter);
-
 
             /**
              * similar courses
@@ -345,7 +383,7 @@ public class MainActivity extends ActionBarActivity {
              */
 
             ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.review_view_pager);
-            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity());
+            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity(), null);
             viewPager.setAdapter(myPagerAdapter);
 
 
@@ -367,10 +405,13 @@ public class MainActivity extends ActionBarActivity {
 
         private Activity activity;
         private int numberOfPages = 3;
+        private ArrayList<CourseReview> courseReviews;
 
-        public MyPagerAdapter1(Activity a) {
+        public MyPagerAdapter1(Activity a, ArrayList<CourseReview> c) {
             super();
             activity = a;
+            courseReviews = c;
+            numberOfPages = Math.min(numberOfPages, courseReviews.size());
         }
 
         @Override
@@ -386,31 +427,47 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-
             LinearLayout linearLayout = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.list_item_review, null);
-            TextView studentNameTextView = (TextView) linearLayout.findViewById(R.id.student_name);
-            studentNameTextView.setText("BY DHEERAJ SACHAN " + position);
 
-            View view0 = (View) linearLayout.findViewById(R.id.bar1);
-            View view1 = (View) linearLayout.findViewById(R.id.bar2);
-            View view2 = (View) linearLayout.findViewById(R.id.bar3);
+            View[] views = new View[3];
+            views[0] = linearLayout.findViewById(R.id.bar1);
+            views[1] = linearLayout.findViewById(R.id.bar2);
+            views[2] = linearLayout.findViewById(R.id.bar3);
 
-            view0.setBackgroundColor(activity.getResources().getColor(R.color.gray));
-            view1.setBackgroundColor(activity.getResources().getColor(R.color.gray));
-            view2.setBackgroundColor(activity.getResources().getColor(R.color.gray));
-
-            switch (position) {
-                case 0:
-                    view0.setBackgroundColor(activity.getResources().getColor(R.color.orange));
-                    break;
-                case 1:
-                    view1.setBackgroundColor(activity.getResources().getColor(R.color.orange));
-                    break;
-                case 2:
-                    view2.setBackgroundColor(activity.getResources().getColor(R.color.orange));
-                    break;
+            for (int x = 0; x < views.length; x++) {
+                if (x < numberOfPages) {
+                    views[x].setBackgroundColor(activity.getResources().getColor(R.color.gray));
+                } else {
+                    views[x].setBackgroundColor(activity.getResources().getColor(R.color.white));
+                }
             }
 
+            try {
+                CircleImageView circleImageView = (CircleImageView) linearLayout.findViewById(R.id.student_image);
+                circleImageView.setImageBitmap(courseReviews.get(position).getUser().getProfiles().get(0).getBitmap());
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
+            }
+
+            try {
+                TextView reviewTextView = (TextView) linearLayout.findViewById(R.id.review_text);
+                reviewTextView.setText(courseReviews.get(position).getReview());
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
+            }
+
+            try {
+                TextView studentNameTextView = (TextView) linearLayout.findViewById(R.id.student_name);
+                studentNameTextView.setText(courseReviews.get(position).getUser().getFullName());
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
+            }
+
+            try {
+                views[position].setBackgroundColor(activity.getResources().getColor(R.color.orange));
+            }catch (Exception e){
+                Log.e(TAG,"",e);
+            }
             container.addView(linearLayout);
             return linearLayout;
         }
