@@ -208,7 +208,11 @@ public class MainActivity extends ActionBarActivity {
             }
 
             TextView languageTextView = (TextView) rootView.findViewById(R.id.language);
-            languageTextView.setText(course.getAllLanguages());
+            try {
+                languageTextView.setText(course.getAllLanguages());
+            }catch (Exception e){
+                Log.e(TAG,"",e);
+            }
 
             try {
                 TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
@@ -314,6 +318,12 @@ public class MainActivity extends ActionBarActivity {
 
             return rootView;
         }
+
+
+        private void parseAndInflateCourse(View view,Course course){
+
+        }
+
     }
 
     public static class PlaceholderFragmentFake extends Fragment {
