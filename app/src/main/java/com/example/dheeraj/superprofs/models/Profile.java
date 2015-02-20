@@ -52,7 +52,7 @@ public final class Profile {
         this.image_url = image_url;
     }
 
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap() {
         this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
     }
 

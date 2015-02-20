@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Layout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import junit.framework.Test;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -114,9 +116,37 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected Course doInBackground(Void... params) {
-                publishProgress("started");
+                // publishProgress("started");
                 Course course = JsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
-                publishProgress("ended");
+                // publishProgress("ended");
+                //download images
+
+                //TODO download images in multi threads to reduce loading time, use latch/barrier
+
+                try {
+                    if (course != null) {
+                        course.setBitmap();
+                        for (Profile profile : course.getProfessor().getUser().getProfiles()) {
+                            profile.setBitmap();
+                        }
+                        for (User user : course.getStudents()) {
+                            for (Profile profile : user.getProfiles()) {
+                                profile.setBitmap();
+                            }
+                        }
+                        for (Course course1 : course.getSimilarCourses()) {
+                            course1.setBitmap();
+                        }
+
+                        for (CourseReview courseReview : course.getCourseReviews()) {
+                            for (Profile profile : courseReview.getUser().getProfiles()) {
+                                profile.setBitmap();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "exception in downloading images", e);
+                }
                 return course;
             }
 
@@ -279,137 +309,58 @@ public class MainActivity extends ActionBarActivity {
              */
 
             LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
-            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course, null);
-            linearLayout1.addView(view);
 
-
+            Iterator<Course> courseIterator = course.getSimilarCourses().iterator();
+            while (courseIterator.hasNext()) {
+                Course course1 = courseIterator.next();
+                View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course, null);
+                parseAndInflateCourse(view, course1);
+                linearLayout1.addView(view);
+                if (courseIterator.hasNext()) {
+                    View view1 = new View(getActivity());
+                    view1.setLayoutParams(new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics())));
+                    view1.setBackgroundColor(getResources().getColor(R.color.light_gray));
+                    linearLayout1.addView(view1);
+                }
+            }
             return rootView;
         }
 
 
         private void parseAndInflateCourse(View rootView, Course course) {
+            //Toast.makeText(getActivity(), course.toString(), Toast.LENGTH_LONG).show();
             try {
                 ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
                 imageViewSubject.setImageBitmap(course.getImageBitmap());
             } catch (Exception e) {
                 Log.e(TAG, "caught exception while loading image", e);
             }
-
             TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
             courseNameTextView.setText(course.getName());
-
             TextView profNameTextView = (TextView) rootView.findViewById(R.id.prof_name);
             profNameTextView.setText(course.getProfessor().getUser().getFullName());
-
             TextView durationTextView = (TextView) rootView.findViewById(R.id.duration);
-
             try {
                 durationTextView.setText(course.getCourseMetas().get(0).getDurationString());
             } catch (Exception e) {
                 Log.e(TAG, "caught exception while getting course duration from course meta", e);
             }
-
             TextView languageTextView = (TextView) rootView.findViewById(R.id.language);
             try {
                 languageTextView.setText(course.getAllLanguages());
             } catch (Exception e) {
                 Log.e(TAG, "", e);
             }
-
             try {
                 TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
                 courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
             } catch (Exception e) {
-
+                Log.e(TAG,"caught exception while filling course rating ",e);
             }
-        }
-
-    }
-
-    public static class PlaceholderFragmentFake extends Fragment {
-
-        public PlaceholderFragmentFake() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            String[] sectionArray = new String[]{"section 1", "section 2", "section 3"};
-            String[] lectureArray = new String[]{"lecture 1", "lecture 2", "lecture 2"};
-            String[] attachmentArray = new String[]{"Chutiyapa_101.pdf", "Chutiyapa_102.pdf", "Chutiyapa_103.pdf"};
-
-            View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
-
-            View.OnClickListener onClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TextView textView = (TextView) v.findViewById(R.id.lecture_name);
-                    Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
-                }
-            };
-
-            //add view dynamically here
-
-            //course sections
-            LinearLayout courseSectionLinearLayout = (LinearLayout) rootView.findViewById(R.id.course_sections);
-            for (String section : sectionArray) {
-                View sectionHead = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_section_head, null);
-                TextView textViewSectionTopic = (TextView) sectionHead.findViewById(R.id.section_title);
-                textViewSectionTopic.setText(section);
-                courseSectionLinearLayout.addView(sectionHead);
-
-                for (String lecture : lectureArray) {
-                    View lectureView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_syllabus_lecture, null);
-                    TextView textView = (TextView) lectureView.findViewById(R.id.lecture_name);
-                    ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
-
-                    Random random = new Random();
-                    if (random.nextInt() % 2 == 0) {
-                        imageView.setImageResource(R.drawable.iv_lock_button);
-                    }
-                    textView.setText(lecture);
-
-                    lectureView.setOnClickListener(onClickListener);
-                    courseSectionLinearLayout.addView(lectureView);
-                }
-            }
-
-            //attachments
-            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
-            for (String attachment : attachmentArray) {
-                View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
-                TextView textViewAttachment = (TextView) attachmentView.findViewById(R.id.head);
-                textViewAttachment.setText(attachment);
-                linearLayout.addView(attachmentView);
-
-            }
-
-            LinearLayout courseDescription = (LinearLayout) rootView.findViewById(R.id.about_the_course);
-
-
-            /**
-             * view pager for horizontal scrolling
-             */
-
-            ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.review_view_pager);
-            MyPagerAdapter1 myPagerAdapter = new MyPagerAdapter1(getActivity(), null);
-            viewPager.setAdapter(myPagerAdapter);
-
-
-            /**
-             * similar courses
-             */
-
-            LinearLayout linearLayout1 = (LinearLayout) rootView.findViewById(R.id.similar_courses);
-            View view = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_similar_course, null);
-            linearLayout1.addView(view);
-
-
-            return rootView;
         }
     }
-
 
     private static class MyPagerAdapter1 extends PagerAdapter {
 

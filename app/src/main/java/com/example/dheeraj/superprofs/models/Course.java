@@ -42,7 +42,7 @@ public final class Course {
     private ArrayList<Section> sections;
     private ArrayList<Attachment> attachments;
     private ArrayList<CourseMeta> courseMetas;
-
+    private ArrayList<Course> similarCourses;
     /**
      * from access-log/mongo-db
      */
@@ -82,10 +82,19 @@ public final class Course {
                 ", sections=" + sections +
                 ", attachments=" + attachments +
                 ", courseMetas=" + courseMetas +
+                ", similarCourses=" + similarCourses +
                 ", students=" + students +
                 ", bitmap=" + bitmap +
                 ", courseReviews=" + courseReviews +
                 '}';
+    }
+
+    public ArrayList<Course> getSimilarCourses() {
+        return similarCourses;
+    }
+
+    public void setSimilarCourses(ArrayList<Course> similarCourses) {
+        this.similarCourses = similarCourses;
     }
 
     public ArrayList<User> getStudents() {
@@ -143,7 +152,7 @@ public final class Course {
         return image_url;
     }
 
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap() {
         this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
     }
 
