@@ -1,6 +1,7 @@
 package com.example.dheeraj.superprofs;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
@@ -45,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CourseActivity extends ActionBarActivity {
 
     private static final String TAG = CourseActivity.class.getSimpleName();
-
+    public static final String PROFESSOR_JSON_DATA = "professor_json_data";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -237,7 +238,24 @@ public class CourseActivity extends ActionBarActivity {
              */
             parseAndInflateCourse(rootView, course);
 
-            //professor info
+            /**
+             * professor info
+             */
+
+            LinearLayout profInfoLinearLayout = (LinearLayout) rootView.findViewById(R.id.prof_info);
+            profInfoLinearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ProfessorActivity.class);
+                    // bitmap makes data too large for passing it to activity
+                    for( Profile profile : course.getProfessor().getUser().getProfiles()){
+                        profile.setBitmapNull();
+                    }
+                    intent.putExtra(PROFESSOR_JSON_DATA,JsonHandler.stringify(course.getProfessor()));
+                    startActivity(intent);
+                }
+            });
+
             try {
                 CircleImageView profCircleImageView = (CircleImageView) rootView.findViewById(R.id.professor_profile_image);
                 profCircleImageView.setImageBitmap(course.getProfessor().getUser().getProfiles().get(0).getBitmap());

@@ -1,5 +1,7 @@
 package com.example.dheeraj.superprofs.models;
 
+import org.boon.Str;
+
 /**
  * Created by dheeraj on 20/2/15.
  */
@@ -12,6 +14,10 @@ public final class ProfessorExperience {
     private String start_year;
     private String end_year;
     private int is_current_position;
+
+    public String getDetail(){
+        return position+ " ("+start_year+" to "+end_year+") ";
+    }
 
     public int getId() {
         return id;

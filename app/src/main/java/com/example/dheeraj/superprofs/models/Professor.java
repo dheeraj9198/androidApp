@@ -25,6 +25,7 @@ public final class Professor {
      */
     private User user;
     private ArrayList<ProfessorEducation> professorEducations;
+    private ArrayList<ProfessorExperience> professorExperiences;
 
     public ArrayList<ProfessorExperience> getProfessorExperiences() {
         return professorExperiences;
@@ -42,7 +43,6 @@ public final class Professor {
         this.numCourses = numCourses;
     }
 
-    private ArrayList<ProfessorExperience> professorExperiences;
 
 
     public ArrayList<ProfessorEducation> getProfessorEducations() {

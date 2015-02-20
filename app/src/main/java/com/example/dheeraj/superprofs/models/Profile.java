@@ -24,6 +24,10 @@ public final class Profile {
 
     private Bitmap bitmap;
 
+    public void setBitmapNull(){
+        bitmap = null;
+    }
+
     public Bitmap getBitmap() {
         return bitmap;
     }
