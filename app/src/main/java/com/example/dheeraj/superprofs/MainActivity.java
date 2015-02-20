@@ -129,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
                 // publishProgress("ended");
                 // download images
                 // download images in multi threads to reduce loading time
-                publishProgress("started");
+                // publishProgress("started");
                 ExecutorService executorService = Executors.newFixedThreadPool(4);
                 try {
                     if (course != null) {
@@ -182,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
                 } catch (Exception e) {
                     Log.e(TAG, "executor.awaitTermination interrupted", e);
                 } finally {
-                    publishProgress("ended");
+                  //  publishProgress("ended");
                     return course;
                 }
             }
