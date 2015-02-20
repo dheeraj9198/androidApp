@@ -47,6 +47,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -119,35 +127,64 @@ public class MainActivity extends ActionBarActivity {
                 // publishProgress("started");
                 Course course = JsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
                 // publishProgress("ended");
-                //download images
-
-                //TODO download images in multi threads to reduce loading time, use latch/barrier
-
+                // download images
+                // download images in multi threads to reduce loading time
+                publishProgress("started");
+                ExecutorService executorService = Executors.newFixedThreadPool(4);
                 try {
                     if (course != null) {
                         course.setBitmap();
-                        for (Profile profile : course.getProfessor().getUser().getProfiles()) {
-                            profile.setBitmap();
+                        for (final Profile profile : course.getProfessor().getUser().getProfiles()) {
+                            executorService.submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    profile.setBitmap();
+                                }
+                            });
                         }
                         for (User user : course.getStudents()) {
-                            for (Profile profile : user.getProfiles()) {
-                                profile.setBitmap();
+                            for (final Profile profile : user.getProfiles()) {
+                                executorService.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        profile.setBitmap();
+                                    }
+                                });
                             }
                         }
-                        for (Course course1 : course.getSimilarCourses()) {
-                            course1.setBitmap();
+                        for (final Course course1 : course.getSimilarCourses()) {
+                            executorService.submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    course1.setBitmap();
+                                }
+                            });
                         }
 
                         for (CourseReview courseReview : course.getCourseReviews()) {
-                            for (Profile profile : courseReview.getUser().getProfiles()) {
-                                profile.setBitmap();
+                            for (final Profile profile : courseReview.getUser().getProfiles()) {
+                                executorService.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        profile.setBitmap();
+                                    }
+                                });
                             }
                         }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "exception in downloading images", e);
                 }
-                return course;
+
+                executorService.shutdown();
+                try {
+                    executorService.awaitTermination(100, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    Log.e(TAG, "executor.awaitTermination interrupted", e);
+                } finally {
+                    publishProgress("ended");
+                    return course;
+                }
             }
 
             protected void onProgressUpdate(String... s) {
@@ -321,7 +358,7 @@ public class MainActivity extends ActionBarActivity {
                     view1.setLayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics())));
-                    view1.setBackgroundColor(getResources().getColor(R.color.light_gray));
+                    view1.setBackgroundColor(getResources().getColor(R.color.apricot));
                     linearLayout1.addView(view1);
                 }
             }
@@ -357,7 +394,7 @@ public class MainActivity extends ActionBarActivity {
                 TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
                 courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
             } catch (Exception e) {
-                Log.e(TAG,"caught exception while filling course rating ",e);
+                Log.e(TAG, "caught exception while filling course rating ", e);
             }
         }
     }
