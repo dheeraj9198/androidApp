@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Layout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -17,51 +16,35 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
-import com.example.dheeraj.superprofs.models.CourseMeta;
 import com.example.dheeraj.superprofs.models.CourseReview;
-import com.example.dheeraj.superprofs.models.Language;
 import com.example.dheeraj.superprofs.models.Lecture;
-import com.example.dheeraj.superprofs.models.Professor;
-import com.example.dheeraj.superprofs.models.ProfessorEducation;
 import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.models.User;
-import com.example.dheeraj.superprofs.utils.BoonJsonHandler;
-import com.example.dheeraj.superprofs.utils.Device;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
-
-import junit.framework.Test;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.Random;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class CourseActivity extends ActionBarActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = CourseActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
