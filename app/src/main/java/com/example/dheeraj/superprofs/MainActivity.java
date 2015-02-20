@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity {
 
             protected void onProgressUpdate(String... s) {
                 String mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-                Toast.makeText(getActivity(),s[0]+" at "+mydate,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), s[0] + " at " + mydate, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -185,41 +185,8 @@ public class MainActivity extends ActionBarActivity {
             /**
              * set course details
              */
+            parseAndInflateCourse(rootView, course);
 
-            try {
-                ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
-                imageViewSubject.setImageBitmap(course.getImageBitmap());
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception while loading image", e);
-            }
-
-            TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
-            courseNameTextView.setText(course.getName());
-
-            TextView profNameTextView = (TextView) rootView.findViewById(R.id.prof_name);
-            profNameTextView.setText(course.getProfessor().getUser().getFullName());
-
-            TextView durationTextView = (TextView) rootView.findViewById(R.id.duration);
-
-            try {
-                durationTextView.setText(course.getCourseMetas().get(0).getDurationString());
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception while getting course duration from course meta", e);
-            }
-
-            TextView languageTextView = (TextView) rootView.findViewById(R.id.language);
-            try {
-                languageTextView.setText(course.getAllLanguages());
-            }catch (Exception e){
-                Log.e(TAG,"",e);
-            }
-
-            try {
-                TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
-                courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
-            } catch (Exception e) {
-
-            }
             //professor info
             try {
                 CircleImageView profCircleImageView = (CircleImageView) rootView.findViewById(R.id.professor_profile_image);
@@ -320,8 +287,41 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
-        private void parseAndInflateCourse(View view,Course course){
+        private void parseAndInflateCourse(View rootView, Course course) {
+            try {
+                ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
+                imageViewSubject.setImageBitmap(course.getImageBitmap());
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while loading image", e);
+            }
 
+            TextView courseNameTextView = (TextView) rootView.findViewById(R.id.course_name);
+            courseNameTextView.setText(course.getName());
+
+            TextView profNameTextView = (TextView) rootView.findViewById(R.id.prof_name);
+            profNameTextView.setText(course.getProfessor().getUser().getFullName());
+
+            TextView durationTextView = (TextView) rootView.findViewById(R.id.duration);
+
+            try {
+                durationTextView.setText(course.getCourseMetas().get(0).getDurationString());
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while getting course duration from course meta", e);
+            }
+
+            TextView languageTextView = (TextView) rootView.findViewById(R.id.language);
+            try {
+                languageTextView.setText(course.getAllLanguages());
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
+            }
+
+            try {
+                TextView courseRatingTextView = (TextView) rootView.findViewById(R.id.course_rating);
+                courseRatingTextView.setText(course.getCourseMetas().get(0).getCumulativeRatingString());
+            } catch (Exception e) {
+
+            }
         }
 
     }
@@ -475,8 +475,8 @@ public class MainActivity extends ActionBarActivity {
 
             try {
                 views[position].setBackgroundColor(activity.getResources().getColor(R.color.orange));
-            }catch (Exception e){
-                Log.e(TAG,"",e);
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
             }
             container.addView(linearLayout);
             return linearLayout;
