@@ -9,6 +9,9 @@ import org.boon.Str;
  * Created by dheeraj on 20/2/15.
  */
 public final class Cache {
+    private Cache(){
+
+    }
     private static final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
     // Use 1/8th of the available memory for this memory cache.
     private static final int cacheSize = maxMemory / 8;

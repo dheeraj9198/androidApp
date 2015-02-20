@@ -20,15 +20,15 @@ public class ImageUtils {
     }
 
     public static Bitmap getBitmapFromUrl(String url) {
-
-        if(Cache.getStringBitmapFromCache(url) != null){
-            return Cache.getStringBitmapFromCache(url);
-        }
-
         try {
+            if(Cache.getStringBitmapFromCache(url) != null){
+                return Cache.getStringBitmapFromCache(url);
+            }
             InputStream in = new URL(url).openStream();
             Bitmap bitmap = BitmapFactory.decodeStream(in);
-            Cache.putStringBitmapInCache(url,bitmap);
+            if(bitmap != null) {
+                Cache.putStringBitmapInCache(url, bitmap);
+            }
             return bitmap;
         } catch (Exception e) {
             Log.e(TAG, "unable to generate bitmap from url",e);
