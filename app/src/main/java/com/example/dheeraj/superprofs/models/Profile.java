@@ -50,7 +50,10 @@ public final class Profile {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
-        this.bitmap = ImageUtils.getBitmapFromUrl(this.image_url);
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
     }
 
     public String getImage_caption() {
