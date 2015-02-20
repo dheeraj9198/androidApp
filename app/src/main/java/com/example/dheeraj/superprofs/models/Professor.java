@@ -18,12 +18,32 @@ public final class Professor {
     private int updated_by;
     private String created_at;
     private String updated_at;
+    private int numCourses;
 
     /**
      * relational data
      */
     private User user;
     private ArrayList<ProfessorEducation> professorEducations;
+
+    public ArrayList<ProfessorExperience> getProfessorExperiences() {
+        return professorExperiences;
+    }
+
+    public void setProfessorExperiences(ArrayList<ProfessorExperience> professorExperiences) {
+        this.professorExperiences = professorExperiences;
+    }
+
+    public int getNumCourses() {
+        return numCourses;
+    }
+
+    public void setNumCourses(int numCourses) {
+        this.numCourses = numCourses;
+    }
+
+    private ArrayList<ProfessorExperience> professorExperiences;
+
 
     public ArrayList<ProfessorEducation> getProfessorEducations() {
         return professorEducations;
@@ -136,7 +156,6 @@ public final class Professor {
     public void setUser(User user) {
         this.user = user;
     }
-
     @Override
     public String toString() {
         return "Professor{" +
@@ -152,7 +171,12 @@ public final class Professor {
                 ", updated_by=" + updated_by +
                 ", created_at='" + created_at + '\'' +
                 ", updated_at='" + updated_at + '\'' +
+                ", numCourses=" + numCourses +
                 ", user=" + user +
+                ", professorEducations=" + professorEducations +
+                ", professorExperiences=" + professorExperiences +
                 '}';
     }
+
+
 }
