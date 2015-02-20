@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.example.dheeraj.superprofs.lruCache.Cache;
+
 import java.io.InputStream;
 import java.net.URL;
 
@@ -18,9 +20,16 @@ public class ImageUtils {
     }
 
     public static Bitmap getBitmapFromUrl(String url) {
+
+        if(Cache.getStringBitmapFromCache(url) != null){
+            return Cache.getStringBitmapFromCache(url);
+        }
+
         try {
             InputStream in = new URL(url).openStream();
-            return BitmapFactory.decodeStream(in);
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            Cache.putStringBitmapInCache(url,bitmap);
+            return bitmap;
         } catch (Exception e) {
             Log.e(TAG, "unable to generate bitmap from url",e);
             return null;
