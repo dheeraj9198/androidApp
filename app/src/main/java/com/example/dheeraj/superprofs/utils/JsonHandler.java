@@ -52,11 +52,11 @@ public final class JsonHandler {
             return mapper.readValue(json, parametricType);
 
         } catch (JsonParseException e) {
-            Log.e(TAG, "JsonParseException Failed to parse json correctly. " + e);
+            Log.e(TAG, "JsonParseException Failed to parse json correctly. " , e);
         } catch (JsonMappingException e) {
-            Log.e(TAG,"JsonMappingException Failed to parse json correctly. " + e);
+            Log.e(TAG,"JsonMappingException Failed to parse json correctly. " , e);
         } catch (IOException e) {
-            Log.e(TAG,"IOException Failed to parse json correctly. " + e);
+            Log.e(TAG,"IOException Failed to parse json correctly. " , e);
         }
         return null;
     }
@@ -77,11 +77,11 @@ public final class JsonHandler {
             return mapper.readValue(json, classOfT);
 
         } catch (JsonParseException e) {
-            Log.e(TAG,"JsonParseException Failed to parse json correctly. " + e);
+            Log.e(TAG,"JsonParseException Failed to parse json correctly. ", e);
         } catch (JsonMappingException e) {
-            Log.e(TAG,"JsonMappingException Failed to parse json correctly. " + e);
+            Log.e(TAG,"JsonMappingException Failed to parse json correctly. ", e);
         } catch (IOException e) {
-            Log.e(TAG,"IOException Failed to parse json correctly. " + e);
+            Log.e(TAG,"IOException Failed to parse json correctly. " , e);
         }
         return null;
     }
@@ -92,7 +92,7 @@ public final class JsonHandler {
             return value;
 
         } catch (JsonProcessingException e) {
-            Log.e(TAG,"JsonProcessingException Failed to stringify json correctly. " + e);
+            Log.e(TAG,"JsonProcessingException Failed to stringify json correctly. " , e);
             return null;
         }
     }
