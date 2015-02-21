@@ -3,10 +3,13 @@ package com.example.dheeraj.superprofs.models;
 import android.graphics.Bitmap;
 
 import com.example.dheeraj.superprofs.utils.ImageUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by dheeraj on 19/2/15.
  */
+@JsonIgnoreProperties({"bitMap"})
 public final class Profile {
     private  int id;
     private int user_id;
@@ -22,14 +25,19 @@ public final class Profile {
     private String created_at;
     private String updated_at;
 
+    @JsonIgnore
     private Bitmap bitmap;
 
-    public void setBitmapNull(){
+    public void eraseBitmap(){
         bitmap = null;
     }
 
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public void downloadBitmap() {
+        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
     }
 
     public int getId() {
@@ -53,12 +61,10 @@ public final class Profile {
     }
 
     public void setImage_url(String image_url) {
+
         this.image_url = image_url;
     }
 
-    public void setBitmap() {
-        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
-    }
 
     public String getImage_caption() {
         return image_caption;

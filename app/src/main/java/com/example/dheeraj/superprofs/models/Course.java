@@ -1,19 +1,17 @@
 package com.example.dheeraj.superprofs.models;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-
 import com.example.dheeraj.superprofs.utils.ImageUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
  * Created by dheeraj on 18/2/15.
  */
+@JsonIgnoreProperties({"bitMap"})
 public final class Course {
     private static final String TAG = Course.class.getSimpleName();
 
@@ -51,12 +49,8 @@ public final class Course {
     /**
      * image bitmap
      */
+    @JsonIgnore
     private Bitmap bitmap;
-
-    public Bitmap getImageBitmap()
-    {
-        return bitmap;
-    }
 
     @Override
     public String toString() {
@@ -84,7 +78,6 @@ public final class Course {
                 ", courseMetas=" + courseMetas +
                 ", similarCourses=" + similarCourses +
                 ", students=" + students +
-                ", bitmap=" + bitmap +
                 ", courseReviews=" + courseReviews +
                 '}';
     }
@@ -148,13 +141,19 @@ public final class Course {
         this.description = description;
     }
 
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void downloadBitmap() {
+        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
+    }
+
     public String getImage_url() {
         return image_url;
     }
 
-    public void setBitmap() {
-        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
-    }
+
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;

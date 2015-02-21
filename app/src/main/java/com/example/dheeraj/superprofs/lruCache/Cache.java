@@ -3,8 +3,6 @@ package com.example.dheeraj.superprofs.lruCache;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-import org.boon.Str;
-
 /**
  * Created by dheeraj on 20/2/15.
  */

@@ -109,7 +109,7 @@ public class CourseActivity extends ActionBarActivity {
             @Override
             protected Course doInBackground(Void... params) {
                 // publishProgress("started");
-                Course course = JsonHandler.parseToBaseResponse(FakeDataJsonStrings.getCourse(), Course.class);
+                final Course course = JsonHandler.parse(FakeDataJsonStrings.getCourse(), Course.class);
                 // publishProgress("ended");
                 // download images
                 // download images in multi threads to reduce loading time
@@ -117,12 +117,17 @@ public class CourseActivity extends ActionBarActivity {
                 ExecutorService executorService = Executors.newFixedThreadPool(4);
                 try {
                     if (course != null) {
-                        course.setBitmap();
+                        executorService.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                course.downloadBitmap();
+                            }
+                        });
                         for (final Profile profile : course.getProfessor().getUser().getProfiles()) {
                             executorService.submit(new Runnable() {
                                 @Override
                                 public void run() {
-                                    profile.setBitmap();
+                                    profile.downloadBitmap();
                                 }
                             });
                         }
@@ -131,7 +136,7 @@ public class CourseActivity extends ActionBarActivity {
                                 executorService.submit(new Runnable() {
                                     @Override
                                     public void run() {
-                                        profile.setBitmap();
+                                        profile.downloadBitmap();
                                     }
                                 });
                             }
@@ -140,7 +145,7 @@ public class CourseActivity extends ActionBarActivity {
                             executorService.submit(new Runnable() {
                                 @Override
                                 public void run() {
-                                    course1.setBitmap();
+                                    course1.downloadBitmap();
                                 }
                             });
                         }
@@ -150,7 +155,7 @@ public class CourseActivity extends ActionBarActivity {
                                 executorService.submit(new Runnable() {
                                     @Override
                                     public void run() {
-                                        profile.setBitmap();
+                                        profile.downloadBitmap();
                                     }
                                 });
                             }
@@ -249,7 +254,7 @@ public class CourseActivity extends ActionBarActivity {
                     Intent intent = new Intent(getActivity(), ProfessorActivity.class);
                     // bitmap makes data too large for passing it to activity
                     for( Profile profile : course.getProfessor().getUser().getProfiles()){
-                        profile.setBitmapNull();
+                        profile.eraseBitmap();
                     }
                     intent.putExtra(PROFESSOR_JSON_DATA,JsonHandler.stringify(course.getProfessor()));
                     startActivity(intent);
@@ -371,7 +376,7 @@ public class CourseActivity extends ActionBarActivity {
             //Toast.makeText(getActivity(), course.toString(), Toast.LENGTH_LONG).show();
             try {
                 ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
-                imageViewSubject.setImageBitmap(course.getImageBitmap());
+                imageViewSubject.setImageBitmap(course.getBitmap());
             } catch (Exception e) {
                 Log.e(TAG, "caught exception while loading image", e);
             }

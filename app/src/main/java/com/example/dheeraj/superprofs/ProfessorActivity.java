@@ -183,7 +183,7 @@ public class ProfessorActivity extends ActionBarActivity {
             protected Professor doInBackground(String... professorStrings) {
                 Professor professor = JsonHandler.parse(professorStrings[0], Professor.class);
                 for(Profile profile : professor.getUser().getProfiles()){
-                    profile.setBitmap();
+                    profile.downloadBitmap();
                 }
                 return professor;
             }
