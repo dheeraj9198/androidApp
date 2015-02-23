@@ -47,6 +47,7 @@ public class CourseActivity extends ActionBarActivity {
 
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +80,24 @@ public class CourseActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        // Check which request we're responding to
+        Toast.makeText(this,"request code = "+requestCode,Toast.LENGTH_LONG).show();
+        if (requestCode == 1) {
+            // Make sure the request was successful
+            //     if (resultCode == RESULT_OK) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new SpinnerFragment())
+                    .commit();
+            //    }
+        }else{
+            //
+            Toast.makeText(this,requestCode+"",Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -171,7 +190,7 @@ public class CourseActivity extends ActionBarActivity {
                 } catch (Exception e) {
                     Log.e(TAG, "executor.awaitTermination interrupted", e);
                 } finally {
-                  //  publishProgress("ended");
+                    //  publishProgress("ended");
                     return course;
                 }
             }
@@ -221,8 +240,7 @@ public class CourseActivity extends ActionBarActivity {
                     Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
 
                     Intent intent = new Intent(getActivity(), PaymentActivity.class);
-                    startActivity(intent);
-
+                    getActivity().startActivityForResult(intent, 1);
                 }
             };
 
@@ -257,11 +275,11 @@ public class CourseActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), ProfessorActivity.class);
                     // bitmap makes data too large for passing it to activity
-                    for( Profile profile : course.getProfessor().getUser().getProfiles()){
+                    for (Profile profile : course.getProfessor().getUser().getProfiles()) {
                         profile.eraseBitmap();
                     }
-                    intent.putExtra(PROFESSOR_JSON_DATA,JsonHandler.stringify(course.getProfessor()));
-                    startActivity(intent);
+                    intent.putExtra(PROFESSOR_JSON_DATA, JsonHandler.stringify(course.getProfessor()));
+                    getActivity().startActivity(intent);
                 }
             });
 

@@ -1,5 +1,8 @@
 package com.example.dheeraj.superprofs;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -11,10 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import org.apache.http.util.EncodingUtils;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -70,40 +76,69 @@ public class PaymentActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+            class MyJavaScriptInterface {
+                @JavascriptInterface
+                @SuppressWarnings("unused")
+                public void processHTML(String html) {
+                    if (html.contains("{\"message\":\"post\"}")) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("result", "reload");
+                        getActivity().setResult(RESULT_OK, returnIntent);
+                        getActivity().finish();
+                    }
+                }
+
+            }
+
             View rootView = inflater.inflate(R.layout.fragment_payment, container, false);
-            WebView webView = (WebView) rootView.findViewById(R.id.payment_web_view);
-            webView.setWebViewClient(new WebViewClient());
+            final WebView webView = (WebView) rootView.findViewById(R.id.payment_web_view);
+
             webView.getSettings().setJavaScriptEnabled(true);
+            webView.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
+
+            webView.setWebViewClient(new WebViewClient() {
+                /*@Override
+                public boolean shouldOverrideUrlLoading (WebView view, String url){
+                    Toast.makeText(getActivity(),url,Toast.LENGTH_LONG).show();
+                    return false;
+                }*/
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    webView.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+                }
+            });
 
             String orderId = UUID.randomUUID().toString();
 
-            String password = "gtKFFx|"+orderId+"|10.00|dheeraj|dheeraj|dheeraj.sachan@aurusnet.com|||||||||||eCwWELxi";
+            String password = "gtKFFx|" + orderId + "|10.00|dheeraj|dheeraj|dheeraj.sachan@aurusnet.com|||||||||||eCwWELxi";
             String hash = "";
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-512");
                 md.update(password.getBytes());
                 byte byteData[] = md.digest();
                 //convert the byte to hex format method 1
-                StringBuffer hashCodeStringBuffer = new StringBuffer();
+                StringBuilder hashCodeStringBuilder = new StringBuilder();
                 for (int i = 0; i < byteData.length; i++) {
-                    hashCodeStringBuffer.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+                    hashCodeStringBuilder.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
                 }
-                hash = hashCodeStringBuffer.toString();
-            }catch (NoSuchAlgorithmException e){
-                Log.e(TAG,"algo exception",e);
+                hash = hashCodeStringBuilder.toString();
+            } catch (NoSuchAlgorithmException e) {
+                Log.e(TAG, "algo exception", e);
             }
 
             String postData = "firstname=dheeraj&" +
-                    "lastname=&"+
-                    "surl=http://52.0.182.111/api/logs&"+
-                    "phone=7406628160&"+
-                    "key=gtKFFx&"+
-                    "hash="+hash+"&"+
-                    "curl=http://52.0.182.111/api/logs&"+
-                    "furl=http://52.0.182.111/api/logs&"+
-                    "txnid="+orderId+"&"+
-                    "productinfo=dheeraj&"+
-                    "amount=10.00&"+
+                    "lastname=&" +
+                    "surl=http://52.0.182.111/api/logs&" +
+                    "phone=7406628160&" +
+                    "key=gtKFFx&" +
+                    "hash=" + hash + "&" +
+                    "curl=http://52.0.182.111/api/logs&" +
+                    "furl=http://52.0.182.111/api/logs&" +
+                    "txnid=" + orderId + "&" +
+                    "productinfo=dheeraj&" +
+                    "amount=10.00&" +
                     "email=dheeraj.sachan@aurusnet.com&";
 
             webView.postUrl("https://test.payu.in/_payment", EncodingUtils.getBytes(postData, "BASE64"));
