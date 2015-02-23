@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -289,7 +288,7 @@ public class CourseActivity extends ActionBarActivity {
                         profile.eraseBitmap();
                     }
                     intent.putExtra(PROFESSOR_JSON_DATA, JsonHandler.stringify(course.getProfessor()));
-                    getActivity().startActivity(intent);
+                    startActivity(intent);
                 }
             });
 
