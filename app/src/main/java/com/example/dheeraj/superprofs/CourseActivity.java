@@ -219,6 +219,10 @@ public class CourseActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     TextView textView = (TextView) v.findViewById(R.id.lecture_name);
                     Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(getActivity(), PaymentActivity.class);
+                    startActivity(intent);
+
                 }
             };
 
