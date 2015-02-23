@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -33,6 +35,7 @@ import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.models.User;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -48,9 +51,12 @@ public class CourseActivity extends ActionBarActivity {
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
+    private static WeakReference<CourseActivity> wrActivity = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wrActivity = new WeakReference<CourseActivity>(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -84,9 +90,9 @@ public class CourseActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
         // Check which request we're responding to
-        Toast.makeText(this,"request code = "+requestCode,Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "request code = " + requestCode, Toast.LENGTH_LONG).show();
         if (requestCode == 1) {
             // Make sure the request was successful
             //     if (resultCode == RESULT_OK) {
@@ -94,9 +100,9 @@ public class CourseActivity extends ActionBarActivity {
                     .replace(R.id.container, new SpinnerFragment())
                     .commit();
             //    }
-        }else{
+        } else {
             //
-            Toast.makeText(this,requestCode+"",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, requestCode + "", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -108,13 +114,13 @@ public class CourseActivity extends ActionBarActivity {
         @Override
         public void onStart() {
             super.onStart();
-            DataFetcher dataFetcher = new DataFetcher();
-            dataFetcher.execute();
         }
 
         @Override
         public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstance) {
             View rootView = layoutInflater.inflate(R.layout.loading, container, false);
+            DataFetcher dataFetcher = new DataFetcher();
+            dataFetcher.execute();
             return rootView;
         }
 
@@ -202,11 +208,15 @@ public class CourseActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(Course course) {
-                PlaceholderFragment placeholderFragment = new PlaceholderFragment();
-                placeholderFragment.setCourse(course);
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, placeholderFragment)
-                        .commit();
+
+                if ((wrActivity.get() != null) && (!wrActivity.get().isFinishing())) {
+                    FragmentManager fm = wrActivity.get().getSupportFragmentManager();
+                    PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+                    placeholderFragment.setCourse(course);
+                    fm.beginTransaction()
+                            .replace(R.id.container, placeholderFragment)
+                            .commit();
+                }
             }
         }
 
