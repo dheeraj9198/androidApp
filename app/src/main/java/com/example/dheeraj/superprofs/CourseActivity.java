@@ -57,6 +57,7 @@ public class CourseActivity extends ActionBarActivity {
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
     private static Course course;
+    private static boolean isAttachmentExpanededList = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,8 +222,8 @@ public class CourseActivity extends ActionBarActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
+                                 final Bundle savedInstanceState) {
+            final View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -336,16 +337,25 @@ public class CourseActivity extends ActionBarActivity {
             }
 
             //attachments
-            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
-            for (Attachment attachment : course.getAttachments()) {
-                View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
-                TextView textViewAttachmentName = (TextView) attachmentView.findViewById(R.id.head);
-                textViewAttachmentName.setText(attachment.getName());
-                TextView textViewAttachmentFile = (TextView) attachmentView.findViewById(R.id.file);
-                textViewAttachmentFile.setText(attachment.getCompleteFileName());
-                linearLayout.addView(attachmentView);
-            }
-
+            final LinearLayout attachmentMasterRow = (LinearLayout) rootView.findViewById(R.id.attachment_master_row);
+            attachmentMasterRow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isAttachmentExpanededList){
+                        isAttachmentExpanededList = false;
+                        ImageView imageView = (ImageView) attachmentMasterRow.findViewById(R.id.attachment_drop_down);
+                        imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.drop_down));
+                        //remove attachments
+                        LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
+                        linearLayout.removeAllViews();
+                    }else{
+                        addAttachments(rootView,savedInstanceState);
+                        isAttachmentExpanededList = true;
+                        ImageView imageView = (ImageView) attachmentMasterRow.findViewById(R.id.attachment_drop_down);
+                        imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.drop_up));
+                    }
+                }
+            });
 
             //about the course
             TextView courseDescription = (TextView) rootView.findViewById(R.id.description);
@@ -405,6 +415,18 @@ public class CourseActivity extends ActionBarActivity {
             return rootView;
         }
 
+        private void addAttachments(View rootView,Bundle savedInstanceState){
+            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
+            for (Attachment attachment : course.getAttachments()) {
+                View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
+                TextView textViewAttachmentName = (TextView) attachmentView.findViewById(R.id.head);
+                textViewAttachmentName.setText(attachment.getName());
+                TextView textViewAttachmentFile = (TextView) attachmentView.findViewById(R.id.file);
+                textViewAttachmentFile.setText(attachment.getCompleteFileName());
+                linearLayout.addView(attachmentView);
+            }
+        }
+
 
         private void parseAndInflateCourse(View rootView, Course course) {
             //Toast.makeText(getActivity(), course.toString(), Toast.LENGTH_LONG).show();
@@ -417,7 +439,7 @@ public class CourseActivity extends ActionBarActivity {
                             .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
                             .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
                             .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
-                    startActivity(mpdIntent);
+                    getActivity().startActivity(mpdIntent);
                 }
             });
 

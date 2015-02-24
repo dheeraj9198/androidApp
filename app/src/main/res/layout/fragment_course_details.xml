@@ -273,6 +273,7 @@
 
         <!-- attachments -->
         <LinearLayout
+            android:id="@+id/attachment_master_row"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@color/black"
@@ -301,10 +302,11 @@
                 android:layout_height="match_parent">
 
                 <ImageView
+                    android:id="@+id/attachment_drop_down"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ib_next_in_cirle" />
+                    android:src="@drawable/drop_down" />
             </LinearLayout>
 
         </LinearLayout>
@@ -432,6 +434,13 @@
         </LinearLayout>
         <!-- extra courses end -->
 
+
+      <!--  <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/country_arrays"
+            android:spinnerMode="dropdown" />-->
 
     </LinearLayout>
 </ScrollView>
