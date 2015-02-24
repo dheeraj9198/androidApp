@@ -120,8 +120,8 @@ public class PaymentActivity extends ActionBarActivity {
                 byte byteData[] = md.digest();
                 //convert the byte to hex format method 1
                 StringBuilder hashCodeStringBuilder = new StringBuilder();
-                for (int i = 0; i < byteData.length; i++) {
-                    hashCodeStringBuilder.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+                for (byte aByteData : byteData) {
+                    hashCodeStringBuilder.append(Integer.toString((aByteData & 0xff) + 0x100, 16).substring(1));
                 }
                 hash = hashCodeStringBuilder.toString();
             } catch (NoSuchAlgorithmException e) {

@@ -193,10 +193,9 @@ public class CourseActivity extends ActionBarActivity {
                     executorService.awaitTermination(100, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     Log.e(TAG, "executor.awaitTermination interrupted", e);
-                } finally {
+                }
                     //  publishProgress("ended");
                     return course;
-                }
             }
 
             protected void onProgressUpdate(String... s) {

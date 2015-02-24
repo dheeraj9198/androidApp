@@ -1,7 +1,5 @@
 package com.example.dheeraj.superprofs.models;
 
-import org.boon.Str;
-
 /**
  * Created by dheeraj on 20/2/15.
  */

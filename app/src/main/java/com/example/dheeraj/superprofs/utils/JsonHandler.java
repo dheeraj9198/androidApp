@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -44,7 +43,7 @@ public final class JsonHandler {
      * @param classOfT class to map the json to
      * @return T
      */
-    public static final <T> T parseToBaseResponse(String json, Class<T> classOfT, Class<?>... innerClassTypes) {
+    public static <T> T parseToBaseResponse(String json, Class<T> classOfT, Class<?>... innerClassTypes) {
         try {
             if (json == null) {
                 return null;
@@ -70,7 +69,7 @@ public final class JsonHandler {
      * @param classOfT class to map the json to
      * @return T
      */
-    public static final <T> T parse(String json, Class<T> classOfT) {
+    public static <T> T parse(String json, Class<T> classOfT) {
         try {
             if (json == null) {
                 return null;
@@ -89,8 +88,7 @@ public final class JsonHandler {
 
     public static String stringify(Object object) {
         try {
-            String value = mapper.writeValueAsString(object);
-            return value;
+            return mapper.writeValueAsString(object);
 
         } catch (JsonProcessingException e) {
             Log.e(TAG,"JsonProcessingException Failed to stringify json correctly. " , e);

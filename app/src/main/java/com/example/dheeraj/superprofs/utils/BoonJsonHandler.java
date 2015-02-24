@@ -8,7 +8,7 @@ import org.boon.json.ObjectMapper;
 /**
  * Created by dheeraj on 19/2/15.
  */
-public class BoonJsonHandler {
+public final class BoonJsonHandler {
     private static final String TAG = BoonJsonHandler.class.getSimpleName();
 
     private BoonJsonHandler() {
@@ -17,7 +17,7 @@ public class BoonJsonHandler {
 
     private static final ObjectMapper mapper = JsonFactory.create();
 
-    public static final <T> T parseToBaseResponse(String jsonString, Class<T> classOfT) {
+    public static <T> T parseToBaseResponse(String jsonString, Class<T> classOfT) {
 
         try {
             if (jsonString == null) {

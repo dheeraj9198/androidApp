@@ -31,7 +31,7 @@ public final class HttpAgent {
      * @param url URL
      * @return String response from the url
      */
-    public static final String get(String url) {
+    public static String get(String url) {
         String response = null;
         final HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
@@ -56,7 +56,7 @@ public final class HttpAgent {
      * @param params List of name:value pairs to sent with the request as post data
      * @return String response of the post request
      */
-    public static final String post(String url, List<NameValuePair> params) {
+    public static String post(String url, List<NameValuePair> params) {
         String response = null;
         Log.i(TAG, "sending post reqeust = " + url + ", params = " + params);
         final HttpParams httpParams = new BasicHttpParams();
