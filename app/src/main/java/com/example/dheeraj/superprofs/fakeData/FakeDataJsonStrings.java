@@ -17,4 +17,8 @@ public final class FakeDataJsonStrings {
     public static String getProfessor(){
         return "{\"id\":1,\"user_id\":1,\"tagline\":\"professor 1\",\"summary\":\"professor 1\",\"revenue_share_percentage\":\"22.00\",\"total_experience\":12,\"status\":1,\"profile_status\":1,\"created_by\":null,\"updated_by\":null,\"created_at\":0,\"updated_at\":0,\"user\":{\"id\":1,\"email\":\"admin@superprofs.com\",\"first_name\":\"admin\",\"last_name\":\"admin\",\"is_email_verified\":0,\"status\":1,\"created_by\":null,\"updated_by\":null,\"created_at\":0,\"updated_at\":0,\"last_login_at\":null,\"last_login_ip\":null,\"languages\":[{\"id\":1,\"name\":\"English\"}],\"profiles\":[{\"id\":1,\"user_id\":1,\"image_url\":\"http://farm1.static.flickr.com/213/504369245_77bc988400_m.jpg\",\"image_caption\":\"www.professor.com\",\"gender\":0,\"date_of_birth\":null,\"facebook_url\":null,\"linked_url\":null,\"twitter_url\":null,\"created_at\":null,\"updated_at\":null}]},\"professorEducations\":[{\"id\":1,\"professor_id\":1,\"college\":\"Kalicharan Nigam Institute of Technology\",\"graduation_year\":\"1990\",\"degree\":\"B. Com\",\"field\":\"Dhakkan\"}],\"professorExperiences\":[{\"id\":1,\"professor_id\":1,\"type\":1,\"company_name\":\"Aurus Networks\",\"position\":\"Right Arm Fast Medium\",\"start_year\":\"2015-02-01\",\"end_year\":\"2015-02-01\",\"is_current_position\":1},{\"id\":2,\"professor_id\":1,\"type\":1,\"company_name\":\"Aurus Networks\",\"position\":\"Right Arm Fast Medium\",\"start_year\":\"2015-02-01\",\"end_year\":\"2015-02-01\",\"is_current_position\":1}],\"numCourses\":\"2\"}";
     }
+
+    public static String getVideoUrl(){
+        return "http://frontend.test.superprofs.com:1935/vod_android/mp4:sample.mp4/manifest.mpd";
+    }
 }

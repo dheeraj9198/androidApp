@@ -1,8 +1,13 @@
 package com.example.dheeraj.superprofs;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -100,8 +105,6 @@ public class CourseActivity extends ActionBarActivity {
 
 
     public static class SpinnerFragment extends Fragment {
-        public SpinnerFragment() {
-        }
 
         @Override
         public void onStart() {
@@ -212,21 +215,19 @@ public class CourseActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class CoursesFragment extends Fragment {
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
-
             View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
-
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     TextView textView = (TextView) v.findViewById(R.id.lecture_name);
                     Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
 
-                    Intent intent = new Intent(getActivity(), PaymentActivity.class);
-                    getActivity().startActivityForResult(intent, 1);
+                    DialogFragment dialogFragment = new PurchaseDialogFragment();
+                    dialogFragment.show(getActivity().getFragmentManager(), "PurchaseDialogFragment");
                 }
             };
 
@@ -487,6 +488,39 @@ public class CourseActivity extends ActionBarActivity {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((LinearLayout) object);
+        }
+
+    }
+
+    public static final class PurchaseDialogFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(getActivity().getLayoutInflater().inflate(R.layout.purchase_dialog, null))
+                    .setPositiveButton("UPGRADE", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(getActivity(), PaymentActivity.class);
+                            getActivity().startActivityForResult(intent, 1);
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+            final AlertDialog alertDialog = builder.create();
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTypeface(Typeface.DEFAULT_BOLD);
+                    alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                }
+            });
+            return alertDialog;
+
         }
 
     }
