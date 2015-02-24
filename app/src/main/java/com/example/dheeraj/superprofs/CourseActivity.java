@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -34,7 +33,6 @@ import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.models.User;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -90,17 +88,13 @@ public class CourseActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Check which request we're responding to
-        Toast.makeText(this, "request code = " + requestCode, Toast.LENGTH_LONG).show();
         if (requestCode == 1) {
             // Make sure the request was successful
-            //     if (resultCode == RESULT_OK) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new SpinnerFragment())
-                    .commit();
-            //    }
-        } else {
-            //
-            Toast.makeText(this, requestCode + "", Toast.LENGTH_LONG).show();
+            if (resultCode == RESULT_OK) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new SpinnerFragment())
+                        .commit();
+            }
         }
     }
 
@@ -194,8 +188,8 @@ public class CourseActivity extends ActionBarActivity {
                 } catch (Exception e) {
                     Log.e(TAG, "executor.awaitTermination interrupted", e);
                 }
-                    //  publishProgress("ended");
-                    return course;
+                //  publishProgress("ended");
+                return course;
             }
 
             protected void onProgressUpdate(String... s) {
@@ -207,7 +201,7 @@ public class CourseActivity extends ActionBarActivity {
             protected void onPostExecute(Course c) {
                 course = c;
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new PlaceholderFragment())
+                        .replace(R.id.container, new CoursesFragment())
                         .commit();
             }
         }
@@ -217,11 +211,7 @@ public class CourseActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
+    public static class CoursesFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
