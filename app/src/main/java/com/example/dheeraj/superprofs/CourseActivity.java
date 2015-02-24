@@ -50,12 +50,11 @@ public class CourseActivity extends ActionBarActivity {
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
-    private static WeakReference<CourseActivity> wrActivity = null;
+    private static Course course;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wrActivity = new WeakReference<CourseActivity>(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -206,16 +205,11 @@ public class CourseActivity extends ActionBarActivity {
             }
 
             @Override
-            protected void onPostExecute(Course course) {
-
-                if ((wrActivity.get() != null) && (!wrActivity.get().isFinishing())) {
-                    FragmentManager fm = wrActivity.get().getSupportFragmentManager();
-                    PlaceholderFragment placeholderFragment = new PlaceholderFragment();
-                    placeholderFragment.setCourse(course);
-                    fm.beginTransaction()
-                            .replace(R.id.container, placeholderFragment)
-                            .commit();
-                }
+            protected void onPostExecute(Course c) {
+                course = c;
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new PlaceholderFragment())
+                        .commit();
             }
         }
 
@@ -225,12 +219,6 @@ public class CourseActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
-
-        private Course course;
-
-        private void setCourse(Course c) {
-            this.course = c;
-        }
 
         public PlaceholderFragment() {
         }
