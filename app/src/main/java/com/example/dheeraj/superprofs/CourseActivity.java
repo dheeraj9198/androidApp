@@ -345,9 +345,7 @@ public class CourseActivity extends ActionBarActivity {
                         isAttachmentExpanededList = false;
                         ImageView imageView = (ImageView) attachmentMasterRow.findViewById(R.id.attachment_drop_down);
                         imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.drop_down));
-                        //remove attachments
-                        LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
-                        linearLayout.removeAllViews();
+                        removeAttachments(rootView);
                     }else{
                         addAttachments(rootView,savedInstanceState);
                         isAttachmentExpanededList = true;
@@ -425,6 +423,11 @@ public class CourseActivity extends ActionBarActivity {
                 textViewAttachmentFile.setText(attachment.getCompleteFileName());
                 linearLayout.addView(attachmentView);
             }
+        }
+
+        private void removeAttachments(View rootView){
+            LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
+            linearLayout.removeAllViews();
         }
 
 
