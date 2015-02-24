@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -28,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dheeraj.superprofs.exoplayer.DemoUtil;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
@@ -223,11 +225,33 @@ public class CourseActivity extends ActionBarActivity {
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TextView textView = (TextView) v.findViewById(R.id.lecture_name);
-                    Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
+                    Lecture lecture = null;
+                    String lectureName = String.valueOf(((TextView) v.findViewById(R.id.lecture_name)).getText());
+                    //TODO do something better here
+                    for (Section section : course.getSections()) {
+                        for (Lecture lecture1 : section.getLectures()) {
+                            if (lecture1.getName().equals(lectureName)) {
+                                lecture = lecture1;
+                                break;
+                            }
+                            if (lecture != null) {
+                                break;
+                            }
+                        }
+                    }
 
-                    DialogFragment dialogFragment = new PurchaseDialogFragment();
-                    dialogFragment.show(getActivity().getFragmentManager(), "PurchaseDialogFragment");
+                    //TextView textView = (TextView) v.findViewById(R.id.lecture_name);
+                    //Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
+                    if (lecture.isPublic()) {
+                        Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
+                                .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
+                                .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
+                                .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
+                        startActivity(mpdIntent);
+                    } else {
+                        DialogFragment dialogFragment = new PurchaseDialogFragment();
+                        dialogFragment.show(getActivity().getFragmentManager(), "PurchaseDialogFragment");
+                    }
                 }
             };
 

@@ -5,4 +5,17 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!--exoplayer -->
+    <style name="RootTheme" parent="android:Theme.Holo"></style>
+
+    <style name="PlayerTheme" parent="@style/RootTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+    <style name="DemoButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">40dp</item>
+    </style>
 </resources>
