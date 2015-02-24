@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -242,7 +243,7 @@ public class CourseActivity extends ActionBarActivity {
 
                     //TextView textView = (TextView) v.findViewById(R.id.lecture_name);
                     //Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
-                    if (lecture.isPublic()) {
+                    if (lecture != null && lecture.isPublic()) {
                         Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                                 .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
                                 .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
@@ -407,6 +408,19 @@ public class CourseActivity extends ActionBarActivity {
 
         private void parseAndInflateCourse(View rootView, Course course) {
             //Toast.makeText(getActivity(), course.toString(), Toast.LENGTH_LONG).show();
+            RelativeLayout mainCourseLinearLayout =(RelativeLayout) rootView.findViewById(R.id.main_course);
+            mainCourseLinearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO replace by actual video
+                    Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
+                            .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
+                            .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
+                            .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
+                    startActivity(mpdIntent);
+                }
+            });
+
             try {
                 ImageView imageViewSubject = (ImageView) rootView.findViewById(R.id.iv_subject);
                 imageViewSubject.setImageBitmap(course.getBitmap());
