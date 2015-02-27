@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.models.User;
+import com.example.dheeraj.superprofs.services.DownloaderService;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class CourseActivity extends ActionBarActivity {
         // notificationID allows you to update the notification later on.
         threadRun = false;
         mNotificationManager.cancel(1);
+        stopService(new Intent(getBaseContext(), DownloaderService.class));
     }
     
     @Override
@@ -91,7 +94,9 @@ public class CourseActivity extends ActionBarActivity {
         // notificationID allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
         threadRun = true;
-        new Thread(new Runnable() {
+        startService(new Intent(getBaseContext(), DownloaderService.class));
+        
+      /*  new Thread(new Runnable() {
             @Override
             public void run() {
                 int k = 100;
@@ -106,7 +111,7 @@ public class CourseActivity extends ActionBarActivity {
                 }
 
             }
-        }).start();
+        }).start();*/
 
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
