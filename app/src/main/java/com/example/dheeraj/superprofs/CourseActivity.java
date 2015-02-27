@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -44,6 +47,7 @@ import com.example.dheeraj.superprofs.utils.JsonHandler;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +56,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class CourseActivity extends ActionBarActivity {
-
+    private boolean threadRun;
+    
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
@@ -60,8 +65,49 @@ public class CourseActivity extends ActionBarActivity {
     private static boolean isAttachmentExpanededList = false;
 
     @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        final NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // notificationID allows you to update the notification later on.
+        threadRun = false;
+        mNotificationManager.cancel(1);
+    }
+    
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //notification builder
+        final NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.play_button)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+        final NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // notificationID allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
+        threadRun = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int k = 100;
+                while(threadRun) {
+                    try{
+                    Thread.sleep(100);
+                    }catch (Exception e){
+                        
+                    }
+                    mBuilder.setContentText(++k + "");
+                    mNotificationManager.notify(1, mBuilder.build());
+                }
+
+            }
+        }).start();
+
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -341,13 +387,13 @@ public class CourseActivity extends ActionBarActivity {
             attachmentMasterRow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(isAttachmentExpanededList){
+                    if (isAttachmentExpanededList) {
                         isAttachmentExpanededList = false;
                         ImageView imageView = (ImageView) attachmentMasterRow.findViewById(R.id.attachment_drop_down);
                         imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.drop_down));
                         removeAttachments(rootView);
-                    }else{
-                        addAttachments(rootView,savedInstanceState);
+                    } else {
+                        addAttachments(rootView, savedInstanceState);
                         isAttachmentExpanededList = true;
                         ImageView imageView = (ImageView) attachmentMasterRow.findViewById(R.id.attachment_drop_down);
                         imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.drop_up));
@@ -413,7 +459,7 @@ public class CourseActivity extends ActionBarActivity {
             return rootView;
         }
 
-        private void addAttachments(View rootView,Bundle savedInstanceState){
+        private void addAttachments(View rootView, Bundle savedInstanceState) {
             LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
             for (Attachment attachment : course.getAttachments()) {
                 View attachmentView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_attachment, null);
@@ -425,7 +471,7 @@ public class CourseActivity extends ActionBarActivity {
             }
         }
 
-        private void removeAttachments(View rootView){
+        private void removeAttachments(View rootView) {
             LinearLayout linearLayout = (LinearLayout) rootView.findViewById(R.id.attachment_items);
             linearLayout.removeAllViews();
         }
@@ -433,7 +479,7 @@ public class CourseActivity extends ActionBarActivity {
 
         private void parseAndInflateCourse(View rootView, Course course) {
             //Toast.makeText(getActivity(), course.toString(), Toast.LENGTH_LONG).show();
-            RelativeLayout mainCourseLinearLayout =(RelativeLayout) rootView.findViewById(R.id.main_course);
+            RelativeLayout mainCourseLinearLayout = (RelativeLayout) rootView.findViewById(R.id.main_course);
             mainCourseLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
