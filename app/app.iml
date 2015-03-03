@@ -92,7 +92,10 @@
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.2.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="pegdown-1.4.2" level="project" />
     <orderEntry type="library" exported="" name="circleimageview-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="json-20080701" level="project" />
+    <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
   </component>
 </module>
 
