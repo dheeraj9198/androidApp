@@ -58,7 +58,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CourseActivity extends ActionBarActivity {
     public static boolean isDownloderServiceRunning = false;
-
+    public static final int appId = 32123;
 
     private boolean threadRun;
     private static final String TAG = CourseActivity.class.getSimpleName();
@@ -72,48 +72,14 @@ public class CourseActivity extends ActionBarActivity {
         super.onDestroy();
         final NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // notificationID allows you to update the notification later on.
-        threadRun = false;
-        mNotificationManager.cancel(1);
-        stopService(new Intent(getBaseContext(), DownloaderService.class));
+        //mNotificationManager.cancel(1);
+        //stopService(new Intent(getBaseContext(), DownloaderService.class));
     }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //notification builder
-        final NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.play_button)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
-        final NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // notificationID allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
-        threadRun = true;
         startService(new Intent(getBaseContext(), DownloaderService.class));
-        
-      /*  new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int k = 100;
-                while(threadRun) {
-                    try{
-                    Thread.sleep(100);
-                    }catch (Exception e){
-                        
-                    }
-                    mBuilder.setContentText(++k + "");
-                    mNotificationManager.notify(1, mBuilder.build());
-                }
-
-            }
-        }).start();*/
-
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -276,26 +242,11 @@ public class CourseActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  final Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
-            View.OnClickListener onClickListener = new View.OnClickListener() {
+            View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Lecture lecture = null;
-                    String lectureName = String.valueOf(((TextView) v.findViewById(R.id.lecture_name)).getText());
-                    //TODO do something better here
-                    for (Section section : course.getSections()) {
-                        for (Lecture lecture1 : section.getLectures()) {
-                            if (lecture1.getName().equals(lectureName)) {
-                                lecture = lecture1;
-                                break;
-                            }
-                            if (lecture != null) {
-                                break;
-                            }
-                        }
-                    }
-
-                    //TextView textView = (TextView) v.findViewById(R.id.lecture_name);
-                    //Toast.makeText(getActivity(), textView.getText(), Toast.LENGTH_LONG).show();
+                    Lecture lecture = (Lecture)v.getTag();
+                    Toast.makeText(getActivity(),"lecture id = "+lecture.getId(),Toast.LENGTH_LONG).show();
                     if (lecture != null && lecture.isPublic()) {
                         Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                                 .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
@@ -377,13 +328,14 @@ public class CourseActivity extends ActionBarActivity {
 
                 for (Lecture lecture : section.getLectures()) {
                     View lectureView = getLayoutInflater(savedInstanceState).inflate(R.layout.list_item_syllabus_lecture, null);
+                    lectureView.setTag(lecture);
                     TextView textView = (TextView) lectureView.findViewById(R.id.lecture_name);
                     ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
                     if (!lecture.isPublic()) {
                         imageView.setImageResource(R.drawable.iv_lock_button);
                     }
                     textView.setText(lecture.getName());
-                    lectureView.setOnClickListener(onClickListener);
+                    lectureView.setOnClickListener(lectureOnClickListener);
                     courseSectionLinearLayout.addView(lectureView);
                 }
             }
