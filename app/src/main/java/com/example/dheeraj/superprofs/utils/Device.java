@@ -12,7 +12,7 @@ import java.io.IOException;
  * Created by dheeraj on 19/2/15.
  */
 public class Device {
-    private static DisplayMetrics dimension = new DisplayMetrics();
+    private static final DisplayMetrics dimension = new DisplayMetrics();
 
 
     private Device() {

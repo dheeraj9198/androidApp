@@ -49,7 +49,6 @@ import com.example.dheeraj.superprofs.utils.JsonHandler;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +57,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class CourseActivity extends ActionBarActivity {
+    public static boolean isDownloderServiceRunning = false;
+
+
     private boolean threadRun;
-    
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 

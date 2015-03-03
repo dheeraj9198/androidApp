@@ -27,10 +27,14 @@ public class LectureDownloader {
     public static final String lectureFolderName = "lectures";
 
     private static long totalsize = 0;
-    private static long size = 0;
+    private static long downloadedSize = 0;
 
     private LectureDownloader() {
 
+    }
+
+    public static String getDownloadedPercent(){
+        return downloadedSize/totalsize + " % completed";
     }
 
     private static void encrypt(String src, String dst) throws IOException {
@@ -173,19 +177,16 @@ public class LectureDownloader {
     /**
      * actual file downloader
      */
-    public static void downloadFile(URL url, File file) {
-        URLConnection urlConnection = null;
+    private static void downloadFile(URL url, File file) {
         InputStream in = null;
         FileOutputStream fileOutputStream = null;
         try {
-            urlConnection = url.openConnection();
-            totalsize = urlConnection.getContentLength();
             byte[] bytes = new byte[1024];
             int k;
             in = url.openStream();
             fileOutputStream = new FileOutputStream(new File("/home/dheeraj/Desktop/bigVideo.mp4"));
             while ((k = in.read(bytes)) != -1) {
-                size = size + k;
+                downloadedSize = downloadedSize + k;
                 fileOutputStream.write(bytes);
             }
         } catch (SocketException e) {
@@ -211,7 +212,7 @@ public class LectureDownloader {
     /**
      * get remote file length
      */
-    public static int getFileLength(URL url) {
+    private static int getFileLength(URL url) {
         try {
             URLConnection urlConnection = url.openConnection();
             return urlConnection.getContentLength();
