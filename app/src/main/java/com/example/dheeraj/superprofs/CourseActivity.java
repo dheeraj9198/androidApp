@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,12 +12,15 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
@@ -43,8 +45,8 @@ import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.models.User;
-import com.example.dheeraj.superprofs.services.DownloaderService;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
+import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -55,8 +57,9 @@ import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
 public class CourseActivity extends ActionBarActivity {
+
+
     public static boolean isDownloderServiceRunning = false;
     public static final int appId = 32123;
 
@@ -64,22 +67,21 @@ public class CourseActivity extends ActionBarActivity {
     private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
-    private static Course course;
+    private static Course course = null;
     private static boolean isAttachmentExpanededList = false;
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         final NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotificationManager.cancel(1);
         //stopService(new Intent(getBaseContext(), DownloaderService.class));
     }
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startService(new Intent(getBaseContext(), DownloaderService.class));
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -102,9 +104,14 @@ public class CourseActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_download && course != null) {
+            Intent intent = new Intent(getApplicationContext(), DownloadActivity.class);
+            intent.putExtra("lectures", JsonHandler.stringify(course.getSections()));
+            startActivity(intent);
             return true;
         }
 
@@ -245,8 +252,8 @@ public class CourseActivity extends ActionBarActivity {
             View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Lecture lecture = (Lecture)v.getTag();
-                    Toast.makeText(getActivity(),"lecture id = "+lecture.getId(),Toast.LENGTH_LONG).show();
+                    Lecture lecture = (Lecture) v.getTag();
+                    Toast.makeText(getActivity(), "lecture id = " + lecture.getId(), Toast.LENGTH_LONG).show();
                     if (lecture != null && lecture.isPublic()) {
                         Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                                 .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))

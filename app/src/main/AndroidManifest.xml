@@ -50,6 +50,16 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".DownloadActivity"
+            android:label="@string/title_activity_download"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".CourseActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.dheeraj.superprofs.CourseActivity" />
+        </activity>
     </application>
 
 </manifest>

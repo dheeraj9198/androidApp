@@ -4,6 +4,7 @@
     <string name="app_name">SuperProfs</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_download">Download</string>
     <string name="review_text">The educational guidelines are similar to a treaty that has been adopted by copyright owners and academics. Under this arrangement, copyright owners will permit uses that are outlined in the guidelines. In other fair use situations, the only way to prove that a use is permitted is to submit</string>
     <string name="course_students">COURSE STUDENTS</string>
     <string name="title_activity_professor">ProfessorActivity</string>
@@ -36,5 +37,6 @@
         <item>New Zealand</item>
         <item>India</item>
     </string-array>
+    <string name="title_activity_download">DownloadActivity</string>
 
 </resources>

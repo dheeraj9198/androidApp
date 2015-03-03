@@ -8,6 +8,8 @@ import com.example.dheeraj.superprofs.models.MPDModels.SBase;
 import com.example.dheeraj.superprofs.utils.Device;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -23,18 +25,23 @@ public class LectureDownloader {
     private static final String TAG = LectureDownloader.class.getSimpleName();
     private static int PRETTY_PRINT_INDENT_FACTOR = 4;
     public static final String manifestFileNameUnencrypted = "manifest.mpd";
-    public static final String manifestFileNameEncrypted = "manifestE.xml";
+    public static final String manifestFileNameEncrypted = "manifestE.mpd";
     public static final String lectureFolderName = "lectures";
 
-    private static long totalsize = 0;
-    private static long downloadedSize = 0;
+    public static boolean completed = false;
+    private static int totalsize = 0;
+    private static int downloadedSize = 0;
 
     private LectureDownloader() {
 
     }
 
-    public static String getDownloadedPercent(){
-        return downloadedSize/totalsize + " % completed";
+    public static int getDownloadedPercent() {
+        try {
+            return downloadedSize / totalsize;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private static void encrypt(String src, String dst) throws IOException {
@@ -70,16 +77,30 @@ public class LectureDownloader {
     public static void downloadLecture(URL url, int lectureId) throws IOException {
 
         String folder = Device.getDir() +
-                File.separator + lectureFolderName +
-                File.separator + lectureId + File.separator;
+                File.separator + lectureFolderName;
+
+
+        File fileTemp = new File(folder);
+        if (!fileTemp.exists()) {
+            fileTemp.mkdir();
+        }
+
+        folder = folder + File.separator + lectureId + File.separator;
+        fileTemp = new File(folder);
+        if (!fileTemp.exists()) {
+            fileTemp.mkdir();
+        }
+        fileTemp = null;
+
         File file = new File(folder + manifestFileNameEncrypted);
         if (!file.exists()) {
-            downloadFile(url, new File(folder + manifestFileNameUnencrypted));
+            //downloadFile(url, new File(folder + manifestFileNameUnencrypted));
+            FileUtils.copyURLToFile(url,new File(folder + manifestFileNameUnencrypted));
         } else {
             Log.i(TAG, "manifest already exists , decrypting and using the same");
             encrypt(folder + manifestFileNameEncrypted, folder + manifestFileNameUnencrypted);
         }
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(folder + "manifest.mpd")));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(folder + manifestFileNameUnencrypted)));
         StringBuilder stringBuilder = new StringBuilder();
         String test;
         while ((test = bufferedReader.readLine()) != null) {
@@ -89,7 +110,8 @@ public class LectureDownloader {
         bufferedReader.close();
 
         encrypt(folder + manifestFileNameUnencrypted, folder + manifestFileNameEncrypted);
-        deleteFile(folder + manifestFileNameUnencrypted);
+        //TODO
+        //deleteFile(folder + manifestFileNameUnencrypted);
 
         try {
             JSONObject xmlJSONObj = XML.toJSONObject(test);
@@ -131,6 +153,7 @@ public class LectureDownloader {
         } catch (JSONException je) {
             Log.e(TAG, "caught exception", je);
         }
+        completed = true;
     }
 
     /**
@@ -158,7 +181,7 @@ public class LectureDownloader {
                     firstGone = true;
                     String mediaFinal = media.replace("$Time$", time + "");
                     try {
-                        totalsize = time + getFileLength(new URL(location + mediaFinal));
+                        totalsize = totalsize + getFileLength(new URL(location + mediaFinal));
                     } catch (MalformedURLException e) {
 
                     }
@@ -184,7 +207,7 @@ public class LectureDownloader {
             byte[] bytes = new byte[1024];
             int k;
             in = url.openStream();
-            fileOutputStream = new FileOutputStream(new File("/home/dheeraj/Desktop/bigVideo.mp4"));
+            fileOutputStream = new FileOutputStream(file);
             while ((k = in.read(bytes)) != -1) {
                 downloadedSize = downloadedSize + k;
                 fileOutputStream.write(bytes);
@@ -194,7 +217,7 @@ public class LectureDownloader {
             Log.e(TAG, "caught socket connection, may be net problem", e);
         } catch (IOException e) {
             // caught when file does not exist at http server
-            Log.e(TAG, "caught IO connection, may be net problem", e);
+            Log.e(TAG, "caught IO connection, may be storage problem", e);
         } finally {
             try {
                 in.close();
