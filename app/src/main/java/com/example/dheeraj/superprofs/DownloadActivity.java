@@ -1,15 +1,13 @@
 package com.example.dheeraj.superprofs;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,49 +15,88 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dheeraj.superprofs.events.DownloadProgressEvent;
 import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.services.DownloaderService;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 public class DownloadActivity extends ActionBarActivity {
     public static final String TAG = DownloadActivity.class.getSimpleName();
 
-    public class MessageHandler extends Handler {
-        @Override
-        public void handleMessage(Message message) {
-            int state = message.arg1;
-            int lectureId = message.arg2;
-            onDownloadProgressEvent(new DownloadProgressEvent(lectureId, state ));
-        }
-    }
-
-
-    public static Handler messageHandler;
+    private boolean keepRunning = false;
 
     public static final String LECTURE_ID = "lectureId";
+    private DownloaderService downloaderService;
+    private boolean bound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            DownloaderService.LocalBinder binder = (DownloaderService.LocalBinder) service;
+            downloaderService = binder.getDownloaderService();
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            bound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(messageHandler == null) {
-            messageHandler = new MessageHandler();
+        if(DownloaderService.isRunning){
+            Intent intent = new Intent(DownloadActivity.this, DownloaderService.class);
+            intent.putExtra(LECTURE_ID, 1);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+
+        keepRunning = !keepRunning;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(keepRunning)
+                {
+                    try{
+                        Thread.sleep(5000);
+                    }catch (Exception e){
+
+                    }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(bound)
+                        Toast.makeText(DownloadActivity.this,"got random number = "+downloaderService.gerRandom(),Toast.LENGTH_LONG).show();
+                        else if(DownloaderService.isRunning)
+                            Toast.makeText(DownloadActivity.this,"service already running",Toast.LENGTH_LONG).show();
+                        else if(!DownloaderService.isRunning)
+                            Toast.makeText(DownloadActivity.this,"service NOT running",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+                    }
+            }
+        }).start();
+
         setContentView(R.layout.activity_download);
         View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Lecture lecture = (Lecture) v.getTag();
                 if (lecture != null) {
-                    Intent intent = new Intent(getBaseContext(), DownloaderService.class);
-                    intent.putExtra("MESSENGER", new Messenger(messageHandler));
-
+                    Intent intent = new Intent(DownloadActivity.this, DownloaderService.class);
                     intent.putExtra(LECTURE_ID, lecture.getId());
-                    startService(intent);
+                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                    if(!DownloaderService.isRunning){
+                        startService(intent);
+                    }
                 }
             }
         };
@@ -91,11 +128,6 @@ public class DownloadActivity extends ActionBarActivity {
     }
 
     @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-        return super.onCreateView(parent, name, context, attrs);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_download, menu);
@@ -118,7 +150,13 @@ public class DownloadActivity extends ActionBarActivity {
 
     @Override
     protected void onStop() {
+        keepRunning =
+                !keepRunning;
         super.onStop();
+        if (bound) {
+            unbindService(mConnection);
+            bound = false;
+        }
     }
 
     @Override

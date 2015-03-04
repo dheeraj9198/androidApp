@@ -4,12 +4,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
+import android.os.Binder;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,26 +18,37 @@ import com.example.dheeraj.superprofs.downloader.LectureDownloader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 
 public class DownloaderService extends Service {
     private static final String TAG = DownloaderService.class.getSimpleName();
+
+    private final IBinder mBinder = new LocalBinder();
+
+
     private int lectureId;
     private String dashUrl;
 
-    private Messenger messageHandler;
+    public static boolean isRunning = false;
+   // public static Messenger messageHandler;
+
+    public class LocalBinder extends Binder {
+        public DownloaderService getDownloaderService() {
+            // Return this instance of LocalService so clients can call public methods
+            return DownloaderService.this;
+        }
+    }
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
+    public IBinder onBind(Intent intent) {
+        return mBinder;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Bundle extras = intent.getExtras();
-        messageHandler = (Messenger) extras.get("MESSENGER");
-
+        isRunning = true;
         lectureId = (int) intent.getExtras().get(DownloadActivity.LECTURE_ID);
-        //TODO get it from intent
+        //TODO get it from intent, make it a queue
         dashUrl = "http://54.86.202.143:1935/vod_android/mp4:100k.mp4/manifest.mpd";
         // Let it continue running until it is stopped.
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
@@ -80,7 +87,6 @@ public class DownloaderService extends Service {
 
                     }
                     int percent = LectureDownloader.getDownloadedPercent();
-                    sendMessage(percent,lectureId);
                     mBuilder.setContentText(percent+"% completed");
                     mNotificationManager.notify(CourseActivity.appId, mBuilder.build());
                 }
@@ -90,20 +96,13 @@ public class DownloaderService extends Service {
         return START_STICKY;
     }
 
-    public void sendMessage(int state,int lid) {
-        Message message = Message.obtain();
-        message.arg1 = state;
-        message.arg2 = lid;
-
-        try {
-            messageHandler.send(message);
-        }catch (RemoteException e){
-            Log.e(TAG,"caught remote exception : ",e);
-        }
-    }
-
     @Override
     public void onDestroy() {
+        isRunning = false;
         super.onDestroy();
+    }
+
+    public int gerRandom(){
+        return new Random().nextInt();
     }
 }
