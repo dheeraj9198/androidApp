@@ -48,7 +48,7 @@ public class DbHandler{
         return databaseHelper;
     }
 
-    public List<LectureDownloadStatus> getLectureDownloadStatusList() {
+/*    public List<LectureDownloadStatus> getLectureDownloadStatusList() {
         try {
             QueryBuilder<LectureDownloadStatus, Long> queryBuilder = getHelper().getLectureDownloadStatusDao().queryBuilder();
             queryBuilder.where().not().eq("status", TranscodeStatus.PENDING).and().eq("postedOnApi", false);
@@ -99,5 +99,5 @@ public class DbHandler{
             //Log.w(TAG, "Failed to delete schedule from db");
             logger.error("Failed to delete schedule from db");
         }
-    }
+    }*/
 }
