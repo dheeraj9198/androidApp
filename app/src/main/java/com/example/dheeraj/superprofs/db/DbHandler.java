@@ -16,24 +16,47 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * interface for db operations
- * <br>
- * <p/>
  * Created with IntelliJ IDEA.
  * User: dheeraj
  * Date: 18/10/13
  * Time: 3:48 PM
  */
 
-public class DbHandler{
+//make it a singleton
+public class DbHandler {
 
-    private static final String TAG = DbHandler.class.getName();
+    private static final String TAG = DbHandler.class.getSimpleName();
+
+    private static DbHandler dbHandler;
+
     private DatabaseHelper databaseHelper = null;
     private Context context;
 
-    public void start(Context context) {
-        if (this.context == null) {
-            this.context = context;
+    private DbHandler(DatabaseHelper databaseHelper, Context context) {
+        this.databaseHelper = databaseHelper;
+        this.context = context;
+    }
+
+
+    //TODO attach to first activity's start
+    public static void start(Context context) {
+        if (dbHandler == null) {
+            synchronized (DbHandler.class) {
+                if (dbHandler == null) {
+                    synchronized (DbHandler.class) {
+                        dbHandler = new DbHandler(OpenHelperManager.getHelper(context, DatabaseHelper.class), context);
+                    }
+                }
+            }
+        }
+    }
+
+    //TODO attach to first activity's stop
+    public static void stop() {
+        dbHandler.context = null;
+        if (dbHandler.databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            dbHandler.databaseHelper = null;
         }
     }
 
@@ -41,12 +64,13 @@ public class DbHandler{
         return context != null;
     }
 
-    private DatabaseHelper getHelper() {
-        if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+    public static DatabaseHelper getDatabaseHelper() {
+        if (dbHandler != null) {
+            return dbHandler.databaseHelper;
         }
-        return databaseHelper;
+        throw new RuntimeException("null db handler, start method not called yet");
     }
+
 
 /*    public List<LectureDownloadStatus> getLectureDownloadStatusList() {
         try {

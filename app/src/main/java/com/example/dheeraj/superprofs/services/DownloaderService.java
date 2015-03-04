@@ -24,13 +24,9 @@ public class DownloaderService extends Service {
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private final IBinder mBinder = new LocalBinder();
-
-
-    private int lectureId;
-    private String dashUrl;
-
     public static boolean isRunning = false;
-   // public static Messenger messageHandler;
+
+
 
     public class LocalBinder extends Binder {
         public DownloaderService getDownloaderService() {

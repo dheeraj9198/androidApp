@@ -9,10 +9,16 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "LectureDownloadStatus")
 public class LectureDownloadStatus {
 
-    public static final int PENDING =0;
-    public static final int RUNNING =0;
-    public static final int FINISHED =0;
-    public static final int ERROR =0;
+    /**
+     * fields
+     */
+    public static final String FIELD_LECTURE_Id = "lectureId";
+    public static final String FIELD_STATE = "status";
+
+    public static final int STATUS_PENDING =0;
+    public static final int STATUS_RUNNING =0;
+    public static final int STATUS_FINISHED =0;
+    public static final int STATUS_ERROR =0;
 
 
 
@@ -26,7 +32,7 @@ public class LectureDownloadStatus {
     String dashUrl;
 
     @DatabaseField()
-    int state = PENDING;
+    int status = STATUS_PENDING;
 
     @DatabaseField()
     int percentCompleted = 0;
@@ -50,12 +56,12 @@ public class LectureDownloadStatus {
         this.percentCompleted = percentCompleted;
     }
 
-    public int getState() {
-        return state;
+    public int getStatus() {
+        return status;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getDashUrl() {
