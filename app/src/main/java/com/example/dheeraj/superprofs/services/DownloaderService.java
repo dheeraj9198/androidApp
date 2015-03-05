@@ -32,7 +32,7 @@ public class DownloaderService extends Service {
         }
     }
 
-    private LectureDownloader currentLectureDownloader = null;
+    public static LectureDownloader currentLectureDownloader = null;
 
 
     @Override
@@ -75,6 +75,8 @@ public class DownloaderService extends Service {
                                 break;
                             case LectureDownloader.COMPLETED:
                                 lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_FINISHED);
+                                lectureDownloadStatus.setCompleted(true);
+                                lectureDownloadStatus.setPercentCompleted(100);
                                 break;
                         }
                         if(!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus))

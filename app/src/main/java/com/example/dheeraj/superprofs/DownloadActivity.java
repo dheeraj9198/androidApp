@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
@@ -62,15 +64,10 @@ public class DownloadActivity extends ActionBarActivity {
             @Override
             public void run() {
                 while (keepRunning) {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (Exception e) {
-
-                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (bound && DownloaderService.isRunning) {
+                            if (bound && DownloaderService.isRunning && DownloaderService.currentLectureDownloader != null) {
                                 DownloaderService.DownloadStats downloadStats = downloaderService.getDownloadStats();
                                 LinearLayout linearLayout = (LinearLayout) findViewById(R.id.section_lectures);
                                 View view = linearLayout.findViewById( downloadStats.getLectureId());
@@ -81,6 +78,11 @@ public class DownloadActivity extends ActionBarActivity {
                             }
                         }
                     });
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         }).start();
@@ -91,7 +93,7 @@ public class DownloadActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Lecture lecture = (Lecture) v.getTag();
                 if (lecture != null) {
-
+                    Toast.makeText(DownloadActivity.this,"Added lecture in download queue "+lecture.getId(),Toast.LENGTH_SHORT).show();
                     //make db entry
                     DbHandler.getDbHandler().saveLectureDownloadStatus(new LectureDownloadStatus(lecture.getId(),
                             CourseActivity.course.getId(),
@@ -107,6 +109,9 @@ public class DownloadActivity extends ActionBarActivity {
                             startService(intent);
                         }
                     }
+                }else{
+                    Toast.makeText(DownloadActivity.this,"no lecture found",Toast.LENGTH_SHORT).show();
+                    Log.e(TAG,"no lecture found int the tag");
                 }
             }
         };
