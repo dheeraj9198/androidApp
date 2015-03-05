@@ -4,7 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.dheeraj.superprofs.db.dao.current.LectureDownloadStatus;
+import com.example.dheeraj.superprofs.db.tables.CourseJson;
+import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -32,7 +33,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 
     private Dao<LectureDownloadStatus,Long> lectureDownloadStatusDao;
-
+    private Dao<CourseJson,Long> courseJsonDao;
+    
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -47,9 +49,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(TAG,"onCreate");
             TableUtils.createTableIfNotExists(connectionSource, LectureDownloadStatus.class);
-
+            TableUtils.createTableIfNotExists(connectionSource, CourseJson.class);
         } catch (SQLException e) {
-            // Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
             Log.e(TAG,"Can't create database",e);
             throw new RuntimeException(e);
         }
@@ -80,10 +81,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return lectureDownloadStatusDao;
     }
 
+    public Dao<CourseJson, Long> getCourseJsonDao() throws SQLException {
+        if (courseJsonDao == null) {
+            courseJsonDao = getDao(CourseJson.class);
+        }
+        return courseJsonDao;
+    }
 
     @Override
     public void close() {
         super.close();
         lectureDownloadStatusDao = null;
+        courseJsonDao = null;
     }
 }

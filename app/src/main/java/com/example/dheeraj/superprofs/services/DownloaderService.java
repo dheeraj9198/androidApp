@@ -11,22 +11,19 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.dheeraj.superprofs.CourseActivity;
-import com.example.dheeraj.superprofs.DownloadActivity;
 import com.example.dheeraj.superprofs.R;
+import com.example.dheeraj.superprofs.db.DbHandler;
+import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
 import com.example.dheeraj.superprofs.downloader.LectureDownloader;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DownloaderService extends Service {
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private final IBinder mBinder = new LocalBinder();
     public static boolean isRunning = false;
-
-
 
     public class LocalBinder extends Binder {
         public DownloaderService getDownloaderService() {
@@ -35,17 +32,66 @@ public class DownloaderService extends Service {
         }
     }
 
+    private LectureDownloader currentLectureDownloader = null;
+
+
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, final int startId) {
         isRunning = true;
-        lectureId = (int) intent.getExtras().get(DownloadActivity.LECTURE_ID);
-        //TODO get it from intent, make it a queue
-        dashUrl = "http://54.86.202.143:1935/vod_android/mp4:100k.mp4/manifest.mpd";
+
+        //directly read pending data
+        ExecutorService downloderExecutorService = Executors.newSingleThreadExecutor();
+        downloderExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        currentLectureDownloader = null;
+                        LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getOnePendingLectureDownloadStatus();
+                        if (lectureDownloadStatus == null) {
+                            break;
+                        }
+                        lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_RUNNING);
+                        if(!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus))
+                        {
+                            Log.e(TAG,"unable to save lecture download status");
+                        }
+                        LectureDownloader lectureDownloader = new LectureDownloader(/* TODO lectureDownloadStatus.getDashUrl()*/
+                                "http://frontend.test.superprofs.com:1935/vod_android/mp4:sp_high_4.mp4/manifest.mpd",
+                                lectureDownloadStatus.getLectureId());
+                        currentLectureDownloader = lectureDownloader;
+                        int status = lectureDownloader.downloadLecture();
+                        switch (status) {
+                            case LectureDownloader.ERROR:
+                                lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_ERROR);
+                                break;
+                            case LectureDownloader.INTERRUPTED:
+                                lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PENDING);
+                                break;
+                            case LectureDownloader.COMPLETED:
+                                lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_FINISHED);
+                                break;
+                        }
+                        if(!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus))
+                        {
+                            Log.e(TAG,"unable to save lecture download status");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "caught exception in downloaderExecutorService", e);
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        });
         // Let it continue running until it is stopped.
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
         final NotificationCompat.Builder mBuilder =
@@ -60,31 +106,22 @@ public class DownloaderService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    LectureDownloader.downloadLecture(new URL(dashUrl), lectureId);
-                } catch (MalformedURLException e) {
-                    Log.e(TAG, "caught exception while setting up url", e);
-                } catch (IOException e) {
-                    Log.e(TAG, "caught exception while setting up url", e);
-                }
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!LectureDownloader.completed) {
+                while (true) {
+                    if(!DownloaderService.isRunning){
+                        break;
+                    }
                     try {
                         /**
                          * to avoid device crash
                          */
                         Thread.sleep(1000);
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
-                    int percent = LectureDownloader.getDownloadedPercent();
-                    mBuilder.setContentText(percent+"% completed");
-                    mNotificationManager.notify(CourseActivity.appId, mBuilder.build());
+                    if (currentLectureDownloader != null) {
+                        mBuilder.setContentText(currentLectureDownloader.getDownloadedPercent() + "% completed");
+                        mNotificationManager.notify(CourseActivity.appId, mBuilder.build());
+                    }
                 }
             }
         }).start();
@@ -98,7 +135,25 @@ public class DownloaderService extends Service {
         super.onDestroy();
     }
 
-    public int gerRandom(){
-        return new Random().nextInt();
+    public DownloadStats getDownloadStats() {
+        return new DownloadStats(currentLectureDownloader.getDownloadedPercent(), currentLectureDownloader.getLectureId());
+    }
+
+    public static class DownloadStats {
+        int percent;
+        int lectureId;
+
+        public DownloadStats(int percent, int lectureId) {
+            this.percent = percent;
+            this.lectureId = lectureId;
+        }
+
+        public int getPercent() {
+            return percent;
+        }
+
+        public int getLectureId() {
+            return lectureId;
+        }
     }
 }

@@ -1,10 +1,10 @@
-package com.example.dheeraj.superprofs.db.dao.current;
+package com.example.dheeraj.superprofs.db.tables;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * Created by windows 7 on 3/4/2015.
+ * Created by dheeraj on 3/4/2015.
  */
 @DatabaseTable(tableName = "LectureDownloadStatus")
 public class LectureDownloadStatus {
@@ -16,22 +16,24 @@ public class LectureDownloadStatus {
     public static final String FIELD_STATE = "status";
 
     public static final int STATUS_PENDING =0;
-    public static final int STATUS_RUNNING =0;
-    public static final int STATUS_FINISHED =0;
-    public static final int STATUS_ERROR =0;
+    public static final int STATUS_RUNNING =1;
+    public static final int STATUS_FINISHED =2;
+    public static final int STATUS_ERROR =3;
 
 
-
-    @DatabaseField(generatedId = true)
-    long id;
-
-    @DatabaseField(canBeNull = false,index = true,unique = true)
-    long lectureId;
+    /**
+     * primary key
+     */
+    @DatabaseField(id = true,index = true)
+    int lectureId;
+    
+    @DatabaseField(canBeNull = false)
+    int courseId;
 
     @DatabaseField(canBeNull =  false)
     String dashUrl;
 
-    @DatabaseField()
+    @DatabaseField(index = true)
     int status = STATUS_PENDING;
 
     @DatabaseField()
@@ -39,6 +41,27 @@ public class LectureDownloadStatus {
 
     @DatabaseField()
     boolean completed = false;
+
+    
+    public LectureDownloadStatus(){
+    }
+    
+    public LectureDownloadStatus(int lectureId, int courseId, String dashUrl, int status, int percentCompleted, boolean completed) {
+        this.lectureId = lectureId;
+        this.courseId = courseId;
+        this.dashUrl = dashUrl;
+        this.status = status;
+        this.percentCompleted = percentCompleted;
+        this.completed = completed;
+    }
+
+    public long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
 
     public boolean isCompleted() {
         return completed;
@@ -72,7 +95,7 @@ public class LectureDownloadStatus {
         this.dashUrl = dashUrl;
     }
 
-    public long getLectureId() {
+    public int getLectureId() {
         return lectureId;
     }
 
@@ -80,11 +103,4 @@ public class LectureDownloadStatus {
         this.lectureId = lectureId;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.exoplayer.DemoUtil;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
@@ -58,21 +59,25 @@ import java.util.concurrent.TimeUnit;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CourseActivity extends ActionBarActivity {
-
+    private static final String TAG = CourseActivity.class.getSimpleName();
 
     public static boolean isDownloderServiceRunning = false;
     public static final int appId = 32123;
 
     private boolean threadRun;
-    private static final String TAG = CourseActivity.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
-    private static Course course = null;
+    public static Course course = null;
+    /**
+     * to save it to db for offline content
+     */
+    public static String courseJsonStringOF = null;
     private static boolean isAttachmentExpanededList = false;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        DbHandler.stop();
         final NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotificationManager.cancel(1);
@@ -82,6 +87,9 @@ public class CourseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DbHandler.start(this);
+        
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -158,7 +166,10 @@ public class CourseActivity extends ActionBarActivity {
             @Override
             protected Course doInBackground(Void... params) {
                 // publishProgress("started");
-                final Course course = JsonHandler.parse(FakeDataJsonStrings.getCourse(), Course.class);
+                // TODO api call
+                String courseJsonString = FakeDataJsonStrings.getCourse();
+                courseJsonStringOF =  courseJsonString;
+                final Course course = JsonHandler.parse(courseJsonString, Course.class);
                 // publishProgress("ended");
                 // download images
                 // download images in multi threads to reduce loading time

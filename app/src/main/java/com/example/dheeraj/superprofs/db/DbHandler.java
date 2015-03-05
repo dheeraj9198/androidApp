@@ -1,19 +1,14 @@
 package com.example.dheeraj.superprofs.db;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.net.TrafficStats;
 import android.util.Log;
 
-import com.example.dheeraj.superprofs.db.dao.current.LectureDownloadStatus;
+import com.example.dheeraj.superprofs.db.tables.CourseJson;
+import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.squareup.otto.Subscribe;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +21,8 @@ import java.util.List;
 public class DbHandler {
 
     private static final String TAG = DbHandler.class.getSimpleName();
+
+    private static final Long LIMIT_ONE = 1L;
 
     private static DbHandler dbHandler;
 
@@ -64,14 +61,52 @@ public class DbHandler {
         return context != null;
     }
 
-    public static DatabaseHelper getDatabaseHelper() {
+    public static DbHandler getDbHandler() {
         if (dbHandler != null) {
-            return dbHandler.databaseHelper;
+            return dbHandler;
         }
         throw new RuntimeException("null db handler, start method not called yet");
     }
 
+    public LectureDownloadStatus getOnePendingLectureDownloadStatus() {
+        try {
+            return databaseHelper.getLectureDownloadStatusDao().queryForFirst(
+                    databaseHelper.getLectureDownloadStatusDao().queryBuilder().where()
+                            .eq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_PENDING)
+                            .prepare());
+        } catch (SQLException e) {
+            return null;
+        }
 
+    }
+
+    public boolean saveLectureDownloadStatus(LectureDownloadStatus lectureDownloadStatus) {
+        try {
+            return databaseHelper.getLectureDownloadStatusDao().createOrUpdate(lectureDownloadStatus).getNumLinesChanged() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+
+    }
+    
+    public boolean saveCourseJson(CourseJson courseJson) {
+        try {
+            return databaseHelper.getCourseJsonDao().createOrUpdate(courseJson).getNumLinesChanged() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+
+    }
+
+    public CourseJson getCourseJson(long courseId) {
+        try {
+            return databaseHelper.getCourseJsonDao().queryForId(courseId);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get course json for course id : " + courseId, e);
+            return null;
+        }
+    }
+    
 /*    public List<LectureDownloadStatus> getLectureDownloadStatusList() {
         try {
             QueryBuilder<LectureDownloadStatus, Long> queryBuilder = getHelper().getLectureDownloadStatusDao().queryBuilder();

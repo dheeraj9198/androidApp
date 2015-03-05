@@ -15,9 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.dheeraj.superprofs.events.DownloadProgressEvent;
+import com.example.dheeraj.superprofs.db.DbHandler;
+import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
 import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.services.DownloaderService;
@@ -52,9 +52,8 @@ public class DownloadActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(DownloaderService.isRunning){
+        if (DownloaderService.isRunning) {
             Intent intent = new Intent(DownloadActivity.this, DownloaderService.class);
-            intent.putExtra(LECTURE_ID, 1);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 
@@ -62,26 +61,27 @@ public class DownloadActivity extends ActionBarActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while(keepRunning)
-                {
-                    try{
+                while (keepRunning) {
+                    try {
                         Thread.sleep(5000);
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(bound)
-                        Toast.makeText(DownloadActivity.this,"got random number = "+downloaderService.gerRandom(),Toast.LENGTH_LONG).show();
-                        else if(DownloaderService.isRunning)
-                            Toast.makeText(DownloadActivity.this,"service already running",Toast.LENGTH_LONG).show();
-                        else if(!DownloaderService.isRunning)
-                            Toast.makeText(DownloadActivity.this,"service NOT running",Toast.LENGTH_LONG).show();
-
-                    }
-                });
-                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (bound && DownloaderService.isRunning) {
+                                DownloaderService.DownloadStats downloadStats = downloaderService.getDownloadStats();
+                                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.section_lectures);
+                                View view = linearLayout.findViewById( downloadStats.getLectureId());
+                                ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.download_progress_bar);
+                                progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+                                progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+                                progressBar.setProgress(downloadStats.getPercent());
+                            }
+                        }
+                    });
+                }
             }
         }).start();
 
@@ -91,11 +91,21 @@ public class DownloadActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Lecture lecture = (Lecture) v.getTag();
                 if (lecture != null) {
-                    Intent intent = new Intent(DownloadActivity.this, DownloaderService.class);
-                    intent.putExtra(LECTURE_ID, lecture.getId());
-                    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                    if(!DownloaderService.isRunning){
-                        startService(intent);
+
+                    //make db entry
+                    DbHandler.getDbHandler().saveLectureDownloadStatus(new LectureDownloadStatus(lecture.getId(),
+                            CourseActivity.course.getId(),
+                    /*TODO dash url*/"http://frontend.test.superprofs.com:1935/vod_android/mp4:sp_high_4.mp4/manifest.mpd",
+                            LectureDownloadStatus.STATUS_PENDING,
+                            0, false
+                    ));
+
+                    if (!bound) {
+                        Intent intent = new Intent(DownloadActivity.this, DownloaderService.class);
+                        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                        if (!DownloaderService.isRunning) {
+                            startService(intent);
+                        }
                     }
                 }
             }
@@ -164,12 +174,4 @@ public class DownloadActivity extends ActionBarActivity {
         super.onStop();
     }
 
-    public void onDownloadProgressEvent(DownloadProgressEvent downloadProgressEvent) {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.section_lectures);
-        View view = linearLayout.findViewById(downloadProgressEvent.getLectureId());
-        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.download_progress_bar);
-        progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
-        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
-        progressBar.setProgress(downloadProgressEvent.getPercent());
-    }
 }

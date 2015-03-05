@@ -5,11 +5,10 @@ import android.util.Log;
 import com.example.dheeraj.superprofs.models.MPDModels.AdaptationSetBase;
 import com.example.dheeraj.superprofs.models.MPDModels.MPDParser;
 import com.example.dheeraj.superprofs.models.MPDModels.SBase;
-import com.example.dheeraj.superprofs.utils.Device;
+import com.example.dheeraj.superprofs.utils.App;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -23,25 +22,34 @@ import java.util.ArrayList;
 
 public class LectureDownloader {
     private static final String TAG = LectureDownloader.class.getSimpleName();
-    private static int PRETTY_PRINT_INDENT_FACTOR = 4;
-    public static final String manifestFileNameUnencrypted = "manifest.mpd";
-    public static final String manifestFileNameEncrypted = "manifestE.mpd";
-    public static final String lectureFolderName = "lectures";
+    private static final int PRETTY_PRINT_INDENT_FACTOR = 4;
 
-    public static boolean completed = false;
-    private static int totalsize = 0;
-    private static int downloadedSize = 0;
 
-    private LectureDownloader() {
+    public static final int ERROR = 0;
+    public static final int COMPLETED = 1;
+    public static final int INTERRUPTED = 2;
 
+    private int totalsize = 0;
+    private int downloadedSize = 0;
+
+    private String dashUrl;
+    private int lectureId;
+
+    public LectureDownloader(String dashUrl, int lectureId) {
+        this.dashUrl = dashUrl;
+        this.lectureId = lectureId;
     }
 
-    public static int getDownloadedPercent() {
+    public int getDownloadedPercent() {
         try {
-            return downloadedSize / totalsize;
+            return 100 * downloadedSize / totalsize;
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public int getLectureId() {
+        return lectureId;
     }
 
     private static void encrypt(String src, String dst) throws IOException {
@@ -74,45 +82,58 @@ public class LectureDownloader {
 
     }
 
-    public static void downloadLecture(URL url, int lectureId) throws IOException {
-
-        String folder = Device.getDir() +
-                File.separator + lectureFolderName;
-
-
-        File fileTemp = new File(folder);
-        if (!fileTemp.exists()) {
-            fileTemp.mkdir();
+    public int downloadLecture() {
+        URL url;
+        try {
+            url = new URL(dashUrl);
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "caught malformed url exception for : " + dashUrl, e);
+            return ERROR;
         }
 
-        folder = folder + File.separator + lectureId + File.separator;
-        fileTemp = new File(folder);
-        if (!fileTemp.exists()) {
-            fileTemp.mkdir();
-        }
-        fileTemp = null;
+        String lectureFolder = App.getLectureFolderName(lectureId + "");
 
-        File file = new File(folder + manifestFileNameEncrypted);
+        File file = new File(lectureFolder + File.separator + App.manifestFileNameEncrypted);
         if (!file.exists()) {
             //downloadFile(url, new File(folder + manifestFileNameUnencrypted));
-            FileUtils.copyURLToFile(url,new File(folder + manifestFileNameUnencrypted));
+            try {
+                FileUtils.copyURLToFile(url, new File(lectureFolder + File.separator + App.manifestFileNameUnencrypted));
+            } catch (SocketException e) {
+                Log.e(TAG, "caught socket exception ", e);
+                return INTERRUPTED;
+            } catch (IOException e) {
+                Log.e(TAG, "caught io exception ", e);
+                return ERROR;
+            }
         } else {
             Log.i(TAG, "manifest already exists , decrypting and using the same");
-            encrypt(folder + manifestFileNameEncrypted, folder + manifestFileNameUnencrypted);
+            try {
+                encrypt(lectureFolder + File.separator + App.manifestFileNameEncrypted, lectureFolder + File.separator + App.manifestFileNameUnencrypted);
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while decrypting file", e);
+                return ERROR;
+            }
         }
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(folder + manifestFileNameUnencrypted)));
-        StringBuilder stringBuilder = new StringBuilder();
         String test;
-        while ((test = bufferedReader.readLine()) != null) {
-            stringBuilder.append(test);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(lectureFolder + File.separator + App.manifestFileNameUnencrypted)));
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((test = bufferedReader.readLine()) != null) {
+                stringBuilder.append(test);
+            }
+            test = stringBuilder.toString();
+            bufferedReader.close();
+            try {
+                encrypt(lectureFolder + File.separator + App.manifestFileNameUnencrypted, lectureFolder + File.separator + App.manifestFileNameEncrypted);
+            } catch (Exception e) {
+                Log.e(TAG, "caught exception while encrypting ", e);
+            }
+            deleteFile(lectureFolder + File.separator + App.manifestFileNameUnencrypted);
+
+        } catch (Exception e) {
+            Log.e(TAG, "caught exception while creating string  from xml file content", e);
+            return ERROR;
         }
-        test = stringBuilder.toString();
-        bufferedReader.close();
-
-        encrypt(folder + manifestFileNameUnencrypted, folder + manifestFileNameEncrypted);
-        //TODO
-        //deleteFile(folder + manifestFileNameUnencrypted);
-
         try {
             JSONObject xmlJSONObj = XML.toJSONObject(test);
             String jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
@@ -124,75 +145,118 @@ public class LectureDownloader {
              * remove reference to release it
              */
             test = null;
-            calculateTotalFileSize(mpdParser.getMPD().getPeriod().getAdaptationSet(), location);
+            try {
+                calculateTotalFileSize(mpdParser.getMPD().getPeriod().getAdaptationSet(), location);
+            } catch (MalformedURLException e) {
+                return ERROR;
+            } catch (SocketException e) {
+                return INTERRUPTED;
+            } catch (IOException e) {
+                return ERROR;
+            }
             for (AdaptationSetBase adaptationSetBase : mpdParser.getMPD().getPeriod().getAdaptationSet()) {
                 String repId = adaptationSetBase.getRepresentation().getId();
                 String init = adaptationSetBase.getSegmentTemplate().getInitialization();
                 //"initialization": "chunk_ctvideo_cfm4s_rid$RepresentationID$_cinit_w664894557_mpd.m4s",
                 init = init.replace("$RepresentationID$", repId);
-                downloadFile(new URL(location + init), new File(folder + init));
+                try {
+                    url = new URL(location + init);
+                } catch (MalformedURLException e) {
+                    Log.e(TAG,"caught malformed url exception",e);
+                    return ERROR;
+                }
+                try {
+                    file = new File(lectureFolder + File.separator + init);
+                    if (file.exists() && file.length() == getFileLength(url)) {
+                        downloadedSize = downloadedSize + (int)file.length();
+                        Log.i(TAG, "file already downloaded : " + file.toString());
+                    } else {
+                        downloadFile(url, file);
+                    }
+                } catch (SocketException e) {
+                    return INTERRUPTED;
+                } catch (IOException e) {
+                    return ERROR;
+                }
 
                 //"media": "chunk_ctvideo_cfm4s_rid$RepresentationID$_cs$Time$_w664894557_mpd.m4s",
                 String media = adaptationSetBase.getSegmentTemplate().getMedia();
                 media = media.replace("$RepresentationID$", repId);
 
                 long time = 0;
-                boolean firstGone = false;
                 for (SBase s : adaptationSetBase.getSegmentTemplate().getSegmentTimeline().getS()) {
-                    if (!firstGone) {
-                        firstGone = true;
-                        String mediaFinal = media.replace("$Time$", time + "");
-                        downloadFile(new URL(location + mediaFinal), new File(folder + mediaFinal));
+                    String mediaFinal = media.replace("$Time$", time + "");
+                    try {
+                        url = new URL(location + mediaFinal);
+                    } catch (MalformedURLException e) {
+                        Log.e(TAG, "malformed url exception", e);
+                        return ERROR;
+                    }
+                    try {
+                        file = new File(lectureFolder + File.separator + mediaFinal);
+                        if (file.exists() && file.length() == getFileLength(url)) {
+                            Log.i(TAG, "file already downloaded : " + file.toString());
+                        } else {
+                            downloadFile(url, file);
+                        }
+                    } catch (SocketException e) {
+                        return INTERRUPTED;
+                    } catch (IOException e) {
+                        return ERROR;
                     }
                     time = time + Long.parseLong(s.getD());
-                    String mediaFinal = media.replace("$Time$", time + "");
-                    downloadFile(new URL(location + mediaFinal), new File(folder + mediaFinal));
                 }
             }
-
         } catch (JSONException je) {
             Log.e(TAG, "caught exception", je);
         }
-        completed = true;
+        return COMPLETED;
     }
 
     /**
      * actual file downloader
      */
-    private static void calculateTotalFileSize(ArrayList<AdaptationSetBase> adaptationSetBases, String location) {
+    private void calculateTotalFileSize(ArrayList<AdaptationSetBase> adaptationSetBases, String location) throws MalformedURLException, SocketException, IOException {
+        URL url;
         for (AdaptationSetBase adaptationSetBase : adaptationSetBases) {
             String repId = adaptationSetBase.getRepresentation().getId();
             String init = adaptationSetBase.getSegmentTemplate().getInitialization();
             //"initialization": "chunk_ctvideo_cfm4s_rid$RepresentationID$_cinit_w664894557_mpd.m4s",
             init = init.replace("$RepresentationID$", repId);
             try {
-                totalsize = totalsize + getFileLength(new URL(location + init));
+                url = new URL(location + init);
+                totalsize = totalsize + getFileLength(url);
             } catch (MalformedURLException e) {
-
+                Log.e(TAG, "caught malformed url exception", e);
+                throw e;
+            } catch (SocketException e) {
+                Log.e(TAG, "caught socket exception", e);
+                throw e;
+            } catch (IOException e) {
+                Log.e(TAG, "caught IO exception", e);
+                throw e;
             }
             //"media": "chunk_ctvideo_cfm4s_rid$RepresentationID$_cs$Time$_w664894557_mpd.m4s",
             String media = adaptationSetBase.getSegmentTemplate().getMedia();
             media = media.replace("$RepresentationID$", repId);
 
             long time = 0;
-            boolean firstGone = false;
             for (SBase s : adaptationSetBase.getSegmentTemplate().getSegmentTimeline().getS()) {
-                if (!firstGone) {
-                    firstGone = true;
-                    String mediaFinal = media.replace("$Time$", time + "");
-                    try {
-                        totalsize = totalsize + getFileLength(new URL(location + mediaFinal));
-                    } catch (MalformedURLException e) {
-
-                    }
-                }
-                time = time + Long.parseLong(s.getD());
                 String mediaFinal = media.replace("$Time$", time + "");
                 try {
-                    totalsize = totalsize + getFileLength(new URL(location + mediaFinal));
+                    url = new URL(location + mediaFinal);
+                    totalsize = totalsize + getFileLength(url);
                 } catch (MalformedURLException e) {
-
+                    Log.e(TAG, "caught malformed url exception", e);
+                    throw e;
+                } catch (SocketException e) {
+                    Log.e(TAG, "caught socket exception", e);
+                    throw e;
+                } catch (IOException e) {
+                    Log.e(TAG, "caught IO exception", e);
+                    throw e;
                 }
+                time = time + Long.parseLong(s.getD());
             }
         }
     }
@@ -200,49 +264,64 @@ public class LectureDownloader {
     /**
      * actual file downloader
      */
-    private static void downloadFile(URL url, File file) {
+    private void downloadFile(URL url, File file) throws SocketException, IOException {
+        Log.i(TAG,"downloading file"+file);
         InputStream in = null;
         FileOutputStream fileOutputStream = null;
         try {
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[50*1024];
             int k;
             in = url.openStream();
             fileOutputStream = new FileOutputStream(file);
             while ((k = in.read(bytes)) != -1) {
+                Log.i(TAG, "downloaded bytes = " + k);
                 downloadedSize = downloadedSize + k;
                 fileOutputStream.write(bytes);
             }
         } catch (SocketException e) {
             // caught when there is no net connection
             Log.e(TAG, "caught socket connection, may be net problem", e);
-        } catch (IOException e) {
-            // caught when file does not exist at http server
-            Log.e(TAG, "caught IO connection, may be storage problem", e);
-        } finally {
             try {
                 in.close();
-            } catch (Exception e) {
+            } catch (Exception e1) {
                 //
             }
             try {
                 fileOutputStream.close();
-            } catch (Exception e) {
+            } catch (Exception e1) {
                 //
             }
+            throw e;
+        } catch (IOException e) {
+            // caught when file does not exist at http server
+            Log.e(TAG, "caught IO connection, may be storage problem", e);
+            try {
+                in.close();
+            } catch (Exception e1) {
+                //
+            }
+            try {
+                fileOutputStream.close();
+            } catch (Exception e1) {
+                //
+            }
+            throw e;
         }
     }
 
     /**
      * get remote file length
      */
-    private static int getFileLength(URL url) {
+    private static int getFileLength(URL url) throws SocketException, IOException {
         try {
             URLConnection urlConnection = url.openConnection();
             return urlConnection.getContentLength();
+        } catch (SocketException se) {
+            Log.e(TAG,"caught socket exception",se);
+            throw se;
         } catch (IOException e) {
-            //TODO do something better here
-            Log.e(TAG, "", e);
-            return 0;
+            Log.e(TAG,"caught socket exception",e);
+            throw e;
         }
     }
 
