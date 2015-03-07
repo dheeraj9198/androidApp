@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.example.dheeraj.superprofs.db.DatabaseHelper;
 import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.fragments.courseActivity.SpinnerFragment;
 import com.example.dheeraj.superprofs.models.Course;
@@ -78,17 +80,21 @@ public class CourseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO shift this to starting activity also
-        if (DownloaderService.isRunning) {
-            Intent intent = new Intent(CourseActivity.this, DownloaderService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-
-
         backPressedOnce = false;
         if (!DbHandler.isStarted()) {
             DbHandler.start(getApplicationContext());
         }
+
+
+        //TODO shift this to starting activity also
+        Intent intent = new Intent(CourseActivity.this, DownloaderService.class);
+        if (DbHandler.getDbHandler().getAllPendingLectureDownloadStatuses().size() > 0 && !DownloaderService.isRunning) {
+            startService(intent);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        } else if (DownloaderService.isRunning) {
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        }
+
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
