@@ -12,7 +12,7 @@ public class CourseJson {
     public static final String FIELD_COURSE_ID = "courseId";
     
     @DatabaseField(id = true,index = true)
-    long courseId;
+    int courseId;
     
     @DatabaseField(canBeNull = false)
     String jsonData;
@@ -20,16 +20,16 @@ public class CourseJson {
     public CourseJson(){
     }
     
-    public CourseJson(long courseId, String jsonData) {
+    public CourseJson(int courseId, String jsonData) {
         this.courseId = courseId;
         this.jsonData = jsonData;
     }
 
-    public long getCourseId() {
+    public int getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(long courseId) {
+    public void setCourseId(int courseId) {
         this.courseId = courseId;
     }
 

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dheeraj.superprofs.fragments.courseActivity.CoursesFragment;
 import com.example.dheeraj.superprofs.models.Professor;
 import com.example.dheeraj.superprofs.models.ProfessorEducation;
 import com.example.dheeraj.superprofs.models.ProfessorExperience;
@@ -152,7 +153,7 @@ public class ProfessorActivity extends ActionBarActivity {
         public void onStart() {
             super.onStart();
             Intent intent = getActivity().getIntent();
-            String professorData = intent.getStringExtra(CourseActivity.PROFESSOR_JSON_DATA);
+            String professorData = intent.getStringExtra(CoursesFragment.PROFESSOR_JSON_DATA);
             DataFetcher dataFetcher = new DataFetcher();
             dataFetcher.execute(professorData);
         }

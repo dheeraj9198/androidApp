@@ -24,7 +24,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:src="@drawable/download_one_icon" />
+            android:src="@drawable/download_1" />
     </LinearLayout>
     <ProgressBar
         android:id="@+id/download_progress_bar"

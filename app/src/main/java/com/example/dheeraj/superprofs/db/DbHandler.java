@@ -49,8 +49,8 @@ public class DbHandler {
                         /**
                          * do one time tasks here
                          */
-                    List<LectureDownloadStatus> lectureDownloadStatuses = dbHandler.getAllPendingLectureDownloadStatuses();
-                        for(LectureDownloadStatus lectureDownloadStatus : lectureDownloadStatuses){
+                        List<LectureDownloadStatus> lectureDownloadStatuses = dbHandler.getAllPendingLectureDownloadStatuses();
+                        for (LectureDownloadStatus lectureDownloadStatus : lectureDownloadStatuses) {
                             lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PENDING);
                             dbHandler.saveLectureDownloadStatus(lectureDownloadStatus);
                         }
@@ -91,9 +91,9 @@ public class DbHandler {
         }
     }
 
-    public List<LectureDownloadStatus> getAllPendingLectureDownloadStatuses(){
+    public List<LectureDownloadStatus> getAllPendingLectureDownloadStatuses() {
         try {
-           return databaseHelper.getLectureDownloadStatusDao().queryForEq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_RUNNING);
+            return databaseHelper.getLectureDownloadStatusDao().queryForEq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_RUNNING);
         } catch (SQLException e) {
             return null;
         }
@@ -107,7 +107,7 @@ public class DbHandler {
         }
 
     }
-    
+
     public boolean saveCourseJson(CourseJson courseJson) {
         try {
             return databaseHelper.getCourseJsonDao().createOrUpdate(courseJson).getNumLinesChanged() == 1;

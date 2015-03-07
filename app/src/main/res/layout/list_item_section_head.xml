@@ -7,11 +7,12 @@
     <TextView
         android:id="@+id/section_title"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:background="@color/light_gray"
         android:gravity="center|left"
         android:paddingLeft="20dp"
         android:text=""
+        android:padding="5dp"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />

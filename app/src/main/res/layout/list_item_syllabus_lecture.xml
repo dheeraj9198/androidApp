@@ -1,59 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test_add_dynamic"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:background="#FFFFFF"
-    android:id="@+id/test_add_dynamic">
+    android:orientation="horizontal">
 
 
     <ImageView
         android:id="@+id/iv_lecture_list"
-        android:padding="10dp"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:src="@drawable/play_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="center"
-      />
+        android:padding="5dp"
+        android:src="@drawable/play_button" />
 
     <LinearLayout
+        android:id="@+id/linear_layout_lecture_data"
         android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_weight="1"
         android:gravity="center"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/lecture_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="History Of Tax"
             android:textColor="@color/gray"
-            android:textStyle="normal"
-            android:textSize="30sp"
-            android:layout_gravity="center"/>
+            android:textSize="20sp"
+            android:textStyle="normal" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="60:00"
             android:textColor="@color/gray"
-            android:textStyle="normal"
             android:textSize="15sp"
-            android:layout_gravity="center"/>
-        </LinearLayout>
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/download_icon_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/download_lecture_icon"
+            android:layout_gravity="center_vertical"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            android:src="@drawable/download_1"/>
+
+    </LinearLayout>
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/watched_icon"
-        android:padding="10dp"
-        android:layout_gravity="center"/>
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:src="@drawable/watched_icon" />
 
 
 </LinearLayout>
