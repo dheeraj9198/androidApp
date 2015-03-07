@@ -8,7 +8,9 @@ import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import java.security.cert.LDAPCertStoreParameters;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,7 +43,17 @@ public class DbHandler {
             synchronized (DbHandler.class) {
                 if (dbHandler == null) {
                     synchronized (DbHandler.class) {
-                        dbHandler = new DbHandler(OpenHelperManager.getHelper(context, DatabaseHelper.class), context);
+                        DatabaseHelper databaseHelper1 = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+                        dbHandler = new DbHandler(databaseHelper1, context);
+
+                        /**
+                         * do one time tasks here
+                         */
+                    List<LectureDownloadStatus> lectureDownloadStatuses = dbHandler.getAllPendingLectureDownloadStatuses();
+                        for(LectureDownloadStatus lectureDownloadStatus : lectureDownloadStatuses){
+                            lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PENDING);
+                            dbHandler.saveLectureDownloadStatus(lectureDownloadStatus);
+                        }
                     }
                 }
             }
@@ -57,8 +69,8 @@ public class DbHandler {
         }
     }
 
-    public boolean isStarted() {
-        return context != null;
+    public static boolean isStarted() {
+        return dbHandler != null;
     }
 
     public static DbHandler getDbHandler() {
@@ -77,7 +89,14 @@ public class DbHandler {
         } catch (SQLException e) {
             return null;
         }
+    }
 
+    public List<LectureDownloadStatus> getAllPendingLectureDownloadStatuses(){
+        try {
+           return databaseHelper.getLectureDownloadStatusDao().queryForEq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_RUNNING);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     public boolean saveLectureDownloadStatus(LectureDownloadStatus lectureDownloadStatus) {

@@ -65,6 +65,7 @@ public class CourseActivity extends ActionBarActivity {
     public static final int appId = 32123;
 
     private boolean threadRun;
+    private boolean backPressedOnce;
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
 
     public static Course course = null;
@@ -77,19 +78,31 @@ public class CourseActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DbHandler.stop();
-        final NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+          //final NotificationManager mNotificationManager =
+            //    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotificationManager.cancel(1);
         //stopService(new Intent(getBaseContext(), DownloaderService.class));
     }
 
     @Override
+    public void onBackPressed() {
+        if(!backPressedOnce){
+            Toast.makeText(this,"Press back button once more to exit",Toast.LENGTH_SHORT).show();
+            backPressedOnce = true;
+        }else{
+            DbHandler.stop();
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        DbHandler.start(this);
-        
+        backPressedOnce = false;
+        if(!DbHandler.isStarted())
+        {
+            DbHandler.start(getApplicationContext());
+        }
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -284,8 +297,8 @@ public class CourseActivity extends ActionBarActivity {
              *set progress bar %completed scaled out of max course duration;
              */
             ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.course_progress_bar);
-            progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
-            progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+            //progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+            //progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
 
             try {
                 progressBar.setMax(course.getCourseMetas().get(0).getTotal_duration());

@@ -5,7 +5,7 @@ import android.util.Log;
 import com.example.dheeraj.superprofs.models.MPDModels.AdaptationSetBase;
 import com.example.dheeraj.superprofs.models.MPDModels.MPDParser;
 import com.example.dheeraj.superprofs.models.MPDModels.SBase;
-import com.example.dheeraj.superprofs.utils.App;
+import com.example.dheeraj.superprofs.utils.AppUtils;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
 import org.apache.commons.io.FileUtils;
@@ -91,13 +91,13 @@ public class LectureDownloader {
             return ERROR;
         }
 
-        String lectureFolder = App.getLectureFolderName(lectureId + "");
+        String lectureFolder = AppUtils.getLectureFolderName(lectureId + "");
 
-        File file = new File(lectureFolder + File.separator + App.manifestFileNameEncrypted);
+        File file = new File(lectureFolder + File.separator + AppUtils.manifestFileNameEncrypted);
         if (!file.exists()) {
             //downloadFile(url, new File(folder + manifestFileNameUnencrypted));
             try {
-                FileUtils.copyURLToFile(url, new File(lectureFolder + File.separator + App.manifestFileNameUnencrypted));
+                FileUtils.copyURLToFile(url, new File(lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted));
             } catch (SocketException e) {
                 Log.e(TAG, "caught socket exception ", e);
                 return INTERRUPTED;
@@ -108,7 +108,7 @@ public class LectureDownloader {
         } else {
             Log.i(TAG, "manifest already exists , decrypting and using the same");
             try {
-                encrypt(lectureFolder + File.separator + App.manifestFileNameEncrypted, lectureFolder + File.separator + App.manifestFileNameUnencrypted);
+                encrypt(lectureFolder + File.separator + AppUtils.manifestFileNameEncrypted, lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted);
             } catch (Exception e) {
                 Log.e(TAG, "caught exception while decrypting file", e);
                 return ERROR;
@@ -116,7 +116,7 @@ public class LectureDownloader {
         }
         String test;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(lectureFolder + File.separator + App.manifestFileNameUnencrypted)));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted)));
             StringBuilder stringBuilder = new StringBuilder();
             while ((test = bufferedReader.readLine()) != null) {
                 stringBuilder.append(test);
@@ -124,11 +124,11 @@ public class LectureDownloader {
             test = stringBuilder.toString();
             bufferedReader.close();
             try {
-                encrypt(lectureFolder + File.separator + App.manifestFileNameUnencrypted, lectureFolder + File.separator + App.manifestFileNameEncrypted);
+                encrypt(lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted, lectureFolder + File.separator + AppUtils.manifestFileNameEncrypted);
             } catch (Exception e) {
                 Log.e(TAG, "caught exception while encrypting ", e);
             }
-            deleteFile(lectureFolder + File.separator + App.manifestFileNameUnencrypted);
+            deleteFile(lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted);
 
         } catch (Exception e) {
             Log.e(TAG, "caught exception while creating string  from xml file content", e);

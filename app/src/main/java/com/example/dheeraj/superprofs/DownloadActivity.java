@@ -72,7 +72,7 @@ public class DownloadActivity extends ActionBarActivity {
                                 LinearLayout linearLayout = (LinearLayout) findViewById(R.id.section_lectures);
                                 View view = linearLayout.findViewById( downloadStats.getLectureId());
                                 ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.download_progress_bar);
-                                progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
+                                //progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
                                 progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
                                 progressBar.setProgress(downloadStats.getPercent());
                             }

@@ -20,7 +20,7 @@
             android:layout_marginTop="-6dp"
             android:max="10"
             android:progress="7"
-            android:progressTint="@color/orange" />
+        />
 
 
         <RelativeLayout

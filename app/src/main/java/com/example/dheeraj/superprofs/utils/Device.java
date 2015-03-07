@@ -28,7 +28,6 @@ public class Device {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 File.separator + "superprofs";
 
-
         File file = new File(dir);
         if (!file.exists()) {
             if (!file.mkdir()) {
@@ -36,6 +35,7 @@ public class Device {
             }
         }
         return dir;
-
     }
+
+
 }
