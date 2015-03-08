@@ -124,6 +124,7 @@ public class CoursesFragment extends Fragment {
                 if (lecture != null && lecture.isPublic()) {
                     Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                             .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
+                            .putExtra(CourseActivity.LECTURE_ID,lecture.getId())
                             .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
                             .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
                     startActivity(mpdIntent);

@@ -17,14 +17,14 @@ import java.util.Map;
  */
 public class FileServer extends NanoHTTPD {
     private static final String TAG = FileServer.class.getSimpleName();
-
+    public static final int port = 10000;
     private static NanoHTTPD nanoHTTPD;
 
-    private String fileToServe;
+    private String folderName;
 
     public FileServer(String fileName) {
-        super(10000);
-        fileToServe = fileName;
+        super(port);
+        folderName = fileName;
     }
 
     public static class Mystream extends FileInputStream {
@@ -71,7 +71,7 @@ public class FileServer extends NanoHTTPD {
         if (!uri.contains("manifest")) {
             InputStream fis = null;
             try {
-                fis = new FileInputStream("/sdcard/Download/" + uri);
+                fis = new FileInputStream(folderName + uri);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -85,7 +85,7 @@ public class FileServer extends NanoHTTPD {
         InputStream fis = null;
 
         try {
-            fis = new Mystream(fileToServe);
+            fis = new Mystream(folderName+AppUtils.manifestFileNameEncrypted);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

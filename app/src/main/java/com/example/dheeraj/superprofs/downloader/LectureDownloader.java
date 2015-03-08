@@ -80,6 +80,8 @@ public class LectureDownloader {
     }
 
     private static void deleteFile(String src) {
+        //TODO
+        if(true)return;
         File file = new File(src);
         if (file.delete()) {
             Log.i(TAG, "file deleted successfully : " + file);
