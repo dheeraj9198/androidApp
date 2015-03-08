@@ -83,6 +83,7 @@ public class CourseActivity extends ActionBarActivity {
         backPressedOnce = false;
 
         //TODO shift this to starting activity
+        DbHandler.stop();
         if (!DbHandler.isStarted()) {
             DbHandler.start(getApplicationContext());
         }
@@ -108,12 +109,10 @@ public class CourseActivity extends ActionBarActivity {
         }
     }
 
-    public void startAndBindToDownloadService(){
+    public void startAndBindToDownloadService() {
         Intent intent = new Intent(CourseActivity.this, DownloaderService.class);
-        if(!bound){
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-        if(!DownloaderService.isRunning){
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        if (!DownloaderService.isRunning) {
             startService(intent);
         }
     }

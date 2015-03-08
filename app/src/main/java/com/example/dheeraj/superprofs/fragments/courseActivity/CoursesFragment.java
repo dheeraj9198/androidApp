@@ -26,6 +26,7 @@ import com.example.dheeraj.superprofs.CourseActivity;
 import com.example.dheeraj.superprofs.PlayerActivity;
 import com.example.dheeraj.superprofs.ProfessorActivity;
 import com.example.dheeraj.superprofs.R;
+import com.example.dheeraj.superprofs.db.DatabaseHelper;
 import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.db.tables.CourseJson;
 import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
@@ -59,6 +60,7 @@ public class CoursesFragment extends Fragment {
     private boolean keepRunning = false;
 
     private View.OnClickListener mDeleteListener = null;
+    private View.OnClickListener mDownloadPauseListener = null;
 
     @Override
     public void onDestroy() {
@@ -90,11 +92,11 @@ public class CoursesFragment extends Fragment {
                                     View view = rootView.findViewById(downloadStats.getLectureId());
                                     ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.circularProgressbar);
                                     progressBar.setProgress(downloadStats.getPercent());
-                                    if(downloadStats.getPercent() == 100){
-                                        ImageView imageView = (ImageView) view.findViewById(R.id.download_lecture_icon);
-                                        imageView.setImageDrawable(getResources().getDrawable(R.drawable.trash));
+                                    if (downloadStats.getPercent() == 100) {
                                         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.download_icon_section);
-                                        if(mDeleteListener != null) {
+                                        ImageView imageView = (ImageView) view.findViewById(R.id.image_view);
+                                        imageView.setImageDrawable(getResources().getDrawable(R.drawable.trash));
+                                        if (mDeleteListener != null) {
                                             linearLayout.setOnClickListener(mDeleteListener);
                                         }
                                     }
@@ -205,7 +207,7 @@ public class CoursesFragment extends Fragment {
                  */
                 lectureView.setId(lecture.getId());
                 lectureView.setTag(lecture);
-                LinearLayout linearLayout = (LinearLayout) lectureView.findViewById(R.id.linear_layout_lecture_data);
+                final LinearLayout linearLayout = (LinearLayout) lectureView.findViewById(R.id.linear_layout_lecture_data);
                 TextView textView = (TextView) linearLayout.findViewById(R.id.lecture_name);
                 ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
                 if (!lecture.isPublic()) {
@@ -229,13 +231,46 @@ public class CoursesFragment extends Fragment {
                 linearLayoutDownloads.setTag(lecture);
                 //listeners
 
+                final View.OnClickListener downloadResumeOnClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Lecture lecture1 = (Lecture) v.getTag();
+                        DbHandler.getDbHandler().saveStatusById(lecture1.getId(), LectureDownloadStatus.STATUS_PENDING);
+
+                        LinearLayout linearLayout1 = (LinearLayout) v;
+                        linearLayout1.removeAllViews();
+                        View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
+                        ImageView  imageView1 = (ImageView) view.findViewById(R.id.image_view);
+                        imageView1.setImageDrawable(getResources().getDrawable(R.drawable.cancel));
+                        linearLayout1.addView(view);
+                        linearLayout1.setOnClickListener(mDownloadPauseListener);
+
+                        ((CourseActivity) getActivity()).startAndBindToDownloadService();
+                    }
+                };
+
                 final View.OnClickListener downloadPauseListener = new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
+                        Lecture lecture1 = (Lecture) v.getTag();
+                        DbHandler.getDbHandler().saveStatusById(lecture1.getId(), LectureDownloadStatus.STATUS_PAUSED);
+                        if (DownloaderService.currentLectureDownloader != null &&
+                                DownloaderService.currentLectureDownloader.getLectureId() == lecture1.getId()) {
+                            DownloaderService.currentLectureDownloader.cancel();
 
+                            LinearLayout linearLayout1 = (LinearLayout) v;
+                            linearLayout1.removeAllViews();
+                            View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
+                            ImageView  imageView1 = (ImageView) view.findViewById(R.id.image_view);
+                            imageView1.setImageDrawable(getResources().getDrawable(R.drawable.resume_download));
+                            linearLayout1.addView(view);
+                            linearLayout1.setOnClickListener(downloadResumeOnClickListener);
+                        }
                     }
                 };
+
+                mDownloadPauseListener = downloadPauseListener;
 
                 final View.OnClickListener downloadOnClickListener = new View.OnClickListener() {
                     @Override
@@ -252,10 +287,12 @@ public class CoursesFragment extends Fragment {
                                 0, false
                         ));
 
-                        linearLayoutDownloads.removeAllViews();
+                        LinearLayout linearLayout1 = (LinearLayout) v;
+
+                        linearLayout1.removeAllViews();
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
-                        linearLayoutDownloads.addView(view);
-                        linearLayoutDownloads.setOnClickListener(downloadPauseListener);
+                        linearLayout1.addView(view);
+                        linearLayout1.setOnClickListener(downloadPauseListener);
                         ((CourseActivity) getActivity()).startAndBindToDownloadService();
                     }
                 };
@@ -264,57 +301,51 @@ public class CoursesFragment extends Fragment {
                 View.OnClickListener deleteOnClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Lecture lecture1 = (Lecture)v.getTag();
+                        Lecture lecture1 = (Lecture) v.getTag();
                         AppUtils.deleteAllFilesAndFolderInNewThread(lecture1.getId());
                         DbHandler.getDbHandler().deleteLectureDownloadStatus(lecture1.getId());
-                        Toast.makeText(getActivity(),"deleted files",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "deleted files", Toast.LENGTH_SHORT).show();
+
                         //change icon and listener
-
-                        linearLayoutDownloads.removeAllViews();
-                        View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout,null);
-                        linearLayoutDownloads.addView(view);
-                        linearLayoutDownloads.setOnClickListener(downloadOnClickListener);
-
-
+                        LinearLayout linearLayout1 = (LinearLayout) v;
+                        linearLayout1.removeAllViews();
+                        View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout, null);
+                        linearLayout1.addView(view);
+                        linearLayout1.setOnClickListener(downloadOnClickListener);
                     }
                 };
                 mDeleteListener = deleteOnClickListener;
 
 
-
-
-
                 LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lecture.getId());
-                if(lectureDownloadStatus != null ){
+                if (lectureDownloadStatus != null) {
                     linearLayoutDownloads.removeAllViews();
-                    if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PENDING ||
-                        lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_RUNNING){
+                    if (lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PENDING ||
+                            lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_RUNNING) {
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
                         linearLayoutDownloads.addView(view);
-
-
-
-                    }else if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED){
+                        linearLayoutDownloads.setOnClickListener(downloadPauseListener);
+                    } else if (lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED) {
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
-                        ImageView imageView1 = (ImageView)view.findViewById(R.id.image_view);
+                        ImageView imageView1 = (ImageView) view.findViewById(R.id.image_view);
                         imageView1.setImageDrawable(getResources().getDrawable(R.drawable.trash));
                         ProgressBar progressBar1 = (ProgressBar) view.findViewById(R.id.circularProgressbar);
                         progressBar1.setProgress(100);
-
                         linearLayoutDownloads.setOnClickListener(deleteOnClickListener);
                         linearLayoutDownloads.addView(view);
-                    }else if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PAUSED){
+                    } else if (lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PAUSED) {
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
-                        ImageView imageView1 = (ImageView)view.findViewById(R.id.image_view);
+                        ImageView imageView1 = (ImageView) view.findViewById(R.id.image_view);
                         imageView1.setImageDrawable(getResources().getDrawable(R.drawable.resume_download));
                         view.setTag(lecture);
                         ProgressBar progressBar1 = (ProgressBar) view.findViewById(R.id.circularProgressbar);
                         progressBar1.setProgress(lectureDownloadStatus.getPercentCompleted());
                         linearLayoutDownloads.addView(view);
+                        linearLayoutDownloads.setOnClickListener(downloadResumeOnClickListener);
                     }
-                }else if(lectureDownloadStatus == null || lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_ERROR){
+                } else if (lectureDownloadStatus == null || lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_ERROR) {
                     linearLayoutDownloads.removeAllViews();
-                    View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout,null);
+                    View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout, null);
                     linearLayoutDownloads.addView(view);
                     linearLayoutDownloads.setOnClickListener(downloadOnClickListener);
                 }

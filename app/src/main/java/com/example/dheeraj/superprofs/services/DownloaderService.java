@@ -49,17 +49,18 @@ public class DownloaderService extends Service {
         downloderExecutorService.execute(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (isRunning) {
                     try {
                         currentLectureDownloader = null;
                         LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getOnePendingLectureDownloadStatus();
                         if (lectureDownloadStatus == null) {
+                            isRunning = false;
+                            stopSelf();
                             break;
                         }
                         lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_RUNNING);
-                        if(!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus))
-                        {
-                            Log.e(TAG,"unable to save lecture download status");
+                        if (!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus)) {
+                            Log.e(TAG, "unable to save lecture download status");
                         }
                         LectureDownloader lectureDownloader = new LectureDownloader(/* TODO lectureDownloadStatus.getDashUrl()*/
                                 "http://frontend.test.superprofs.com:1935/vod_android/mp4:sp_high_4.mp4/manifest.mpd",
@@ -72,6 +73,11 @@ public class DownloaderService extends Service {
                                 break;
                             case LectureDownloader.INTERRUPTED:
                                 lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PENDING);
+                                lectureDownloadStatus.setPercentCompleted(lectureDownloader.getDownloadedPercent());
+                                break;
+                            case LectureDownloader.PAUSED:
+                                lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PAUSED);
+                                lectureDownloadStatus.setPercentCompleted(lectureDownloader.getDownloadedPercent());
                                 break;
                             case LectureDownloader.COMPLETED:
                                 lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_FINISHED);
@@ -79,15 +85,14 @@ public class DownloaderService extends Service {
                                 lectureDownloadStatus.setPercentCompleted(100);
                                 break;
                         }
-                        if(!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus))
-                        {
-                            Log.e(TAG,"unable to save lecture download status");
+                        if (!DbHandler.getDbHandler().saveLectureDownloadStatus(lectureDownloadStatus)) {
+                            Log.e(TAG, "unable to save lecture download status");
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "caught exception in downloaderExecutorService", e);
                     }
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (Exception e) {
 
                     }
@@ -109,7 +114,7 @@ public class DownloaderService extends Service {
             @Override
             public void run() {
                 while (true) {
-                    if(!DownloaderService.isRunning){
+                    if (!DownloaderService.isRunning) {
                         break;
                     }
                     try {

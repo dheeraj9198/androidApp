@@ -62,10 +62,12 @@ public class DbHandler {
 
     //TODO attach to first activity's stop
     public static void stop() {
-        dbHandler.context = null;
-        if (dbHandler.databaseHelper != null) {
-            OpenHelperManager.releaseHelper();
-            dbHandler.databaseHelper = null;
+        if (dbHandler != null) {
+            dbHandler.context = null;
+            if (dbHandler.databaseHelper != null) {
+                OpenHelperManager.releaseHelper();
+                dbHandler.databaseHelper = null;
+            }
         }
     }
 
@@ -80,20 +82,32 @@ public class DbHandler {
         throw new RuntimeException("null db handler, start method not called yet");
     }
 
-    public void deleteLectureDownloadStatus(int id){
+    public void deleteLectureDownloadStatus(int id) {
         try {
-            databaseHelper.getLectureDownloadStatusDao().deleteById((long)id);
+            databaseHelper.getLectureDownloadStatusDao().deleteById((long) id);
         } catch (Exception e) {
             Log.e(TAG, "Failed to delete lecture download status by id : " + id, e);
         }
     }
 
-    public LectureDownloadStatus getLectureDownloadStatusById(int id){
+    public LectureDownloadStatus getLectureDownloadStatusById(int id) {
         try {
-            return databaseHelper.getLectureDownloadStatusDao().queryForId((long)id);
+            return databaseHelper.getLectureDownloadStatusDao().queryForId((long) id);
         } catch (Exception e) {
             Log.e(TAG, "Failed to get lecture download status id : " + id, e);
             return null;
+        }
+    }
+
+    public void saveStatusById(int id,int status){
+        try {
+            LectureDownloadStatus lectureDownloadStatus =  databaseHelper.getLectureDownloadStatusDao().queryForId((long) id);
+            if(lectureDownloadStatus != null){
+                lectureDownloadStatus.setStatus(status);
+                saveLectureDownloadStatus(lectureDownloadStatus);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to save lecture download status id : " + id, e);
         }
     }
 

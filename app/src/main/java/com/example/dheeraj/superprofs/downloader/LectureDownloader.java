@@ -28,6 +28,7 @@ public class LectureDownloader {
     public static final int ERROR = 0;
     public static final int COMPLETED = 1;
     public static final int INTERRUPTED = 2;
+    public static final int PAUSED = 3;
 
     private int totalsize = 0;
     private int downloadedSize = 0;
@@ -35,9 +36,15 @@ public class LectureDownloader {
     private String dashUrl;
     private int lectureId;
 
+    private volatile boolean cancelBoolean = false;
+
     public LectureDownloader(String dashUrl, int lectureId) {
         this.dashUrl = dashUrl;
         this.lectureId = lectureId;
+    }
+
+    public void cancel(){
+        cancelBoolean = true;
     }
 
     public int getDownloadedPercent() {
@@ -97,6 +104,9 @@ public class LectureDownloader {
         if (!file.exists()) {
             //downloadFile(url, new File(folder + manifestFileNameUnencrypted));
             try {
+                if(cancelBoolean){
+                    return PAUSED;
+                }
                 FileUtils.copyURLToFile(url, new File(lectureFolder + File.separator + AppUtils.manifestFileNameUnencrypted));
             } catch (SocketException e) {
                 Log.e(TAG, "caught socket exception ", e);
@@ -146,6 +156,9 @@ public class LectureDownloader {
              */
             test = null;
             try {
+                if(cancelBoolean){
+                    return PAUSED;
+                }
                 calculateTotalFileSize(mpdParser.getMPD().getPeriod().getAdaptationSet(), location);
             } catch (MalformedURLException e) {
                 return ERROR;
@@ -155,6 +168,9 @@ public class LectureDownloader {
                 return ERROR;
             }
             for (AdaptationSetBase adaptationSetBase : mpdParser.getMPD().getPeriod().getAdaptationSet()) {
+                if(cancelBoolean){
+                    return PAUSED;
+                }
                 String repId = adaptationSetBase.getRepresentation().getId();
                 String init = adaptationSetBase.getSegmentTemplate().getInitialization();
                 //"initialization": "chunk_ctvideo_cfm4s_rid$RepresentationID$_cinit_w664894557_mpd.m4s",
@@ -185,6 +201,9 @@ public class LectureDownloader {
 
                 long time = 0;
                 for (SBase s : adaptationSetBase.getSegmentTemplate().getSegmentTimeline().getS()) {
+                    if(cancelBoolean){
+                        return PAUSED;
+                    }
                     String mediaFinal = media.replace("$Time$", time + "");
                     try {
                         url = new URL(location + mediaFinal);
@@ -209,6 +228,9 @@ public class LectureDownloader {
             }
         } catch (JSONException je) {
             Log.e(TAG, "caught exception", je);
+        }
+        if(cancelBoolean){
+            return PAUSED;
         }
         return COMPLETED;
     }
@@ -274,6 +296,9 @@ public class LectureDownloader {
             in = url.openStream();
             fileOutputStream = new FileOutputStream(file);
             while ((k = in.read(bytes)) != -1) {
+                if(cancelBoolean){
+                    return;
+                }
                 Log.i(TAG, "downloaded bytes = " + k);
                 downloadedSize = downloadedSize + k;
                 fileOutputStream.write(bytes);
