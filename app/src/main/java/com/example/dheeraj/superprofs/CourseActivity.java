@@ -37,8 +37,8 @@ public class CourseActivity extends ActionBarActivity {
     private boolean keepRunning = false;
 
     public static final String LECTURE_ID = "lectureId";
-    private DownloaderService downloaderService;
-    private boolean bound = false;
+    public DownloaderService downloaderService;
+    public boolean bound = false;
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -81,17 +81,22 @@ public class CourseActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         backPressedOnce = false;
+
+        //TODO shift this to starting activity
         if (!DbHandler.isStarted()) {
             DbHandler.start(getApplicationContext());
         }
 
 
         //TODO shift this to starting activity also
+        // start downloader service if there is any pending download
         Intent intent = new Intent(CourseActivity.this, DownloaderService.class);
-        if (DbHandler.getDbHandler().getAllPendingLectureDownloadStatuses().size() > 0 && !DownloaderService.isRunning) {
-            startService(intent);
+        if (DbHandler.getDbHandler().getAllPendingLectureDownloadStatuses() != null && DbHandler.getDbHandler().getAllPendingLectureDownloadStatuses().size() > 0 && !DownloaderService.isRunning) {
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        } else if (DownloaderService.isRunning) {
+            startService(intent);
+        }
+        // bind if download service is already running
+        else if (DownloaderService.isRunning) {
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 
@@ -103,6 +108,15 @@ public class CourseActivity extends ActionBarActivity {
         }
     }
 
+    public void startAndBindToDownloadService(){
+        Intent intent = new Intent(CourseActivity.this, DownloaderService.class);
+        if(!bound){
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        }
+        if(!DownloaderService.isRunning){
+            startService(intent);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

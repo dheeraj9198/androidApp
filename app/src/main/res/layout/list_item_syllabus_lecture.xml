@@ -54,14 +54,6 @@
         android:orientation="horizontal"
         android:layout_gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/download_lecture_icon"
-            android:layout_gravity="center_vertical"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="5dp"
-            android:src="@drawable/download_1"/>
-
     </LinearLayout>
 
     <ImageView

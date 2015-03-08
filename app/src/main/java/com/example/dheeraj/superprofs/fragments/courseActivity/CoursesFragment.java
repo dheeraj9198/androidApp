@@ -37,10 +37,14 @@ import com.example.dheeraj.superprofs.models.CourseReview;
 import com.example.dheeraj.superprofs.models.Lecture;
 import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
+import com.example.dheeraj.superprofs.services.DownloaderService;
+import com.example.dheeraj.superprofs.utils.AppUtils;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -52,10 +56,64 @@ public class CoursesFragment extends Fragment {
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
     private boolean isAttachmentExpanededList = false;
 
+    private boolean keepRunning = false;
+
+    private View.OnClickListener mDeleteListener = null;
+
+    @Override
+    public void onDestroy() {
+        keepRunning = false;
+        super.onDestroy();
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
+
         final View rootView = inflater.inflate(R.layout.fragment_course_details, container, false);
+
+
+        keepRunning = true;
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (keepRunning) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (((CourseActivity) getActivity()).bound && DownloaderService.isRunning && DownloaderService.currentLectureDownloader != null) {
+                                try {
+                                    DownloaderService.DownloadStats downloadStats = ((CourseActivity) getActivity()).downloaderService.getDownloadStats();
+                                    View view = rootView.findViewById(downloadStats.getLectureId());
+                                    ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.circularProgressbar);
+                                    progressBar.setProgress(downloadStats.getPercent());
+                                    if(downloadStats.getPercent() == 100){
+                                        ImageView imageView = (ImageView) view.findViewById(R.id.download_lecture_icon);
+                                        imageView.setImageDrawable(getResources().getDrawable(R.drawable.trash));
+                                        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.download_icon_section);
+                                        if(mDeleteListener != null) {
+                                            linearLayout.setOnClickListener(mDeleteListener);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "caught exception on ui updater thread", e);
+                                }
+                            }
+                        }
+                    });
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        });
+
+
         View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,9 +226,18 @@ public class CoursesFragment extends Fragment {
                  * download icon section
                  */
                 final LinearLayout linearLayoutDownloads = (LinearLayout) lectureView.findViewById(R.id.download_icon_section);
-                ImageView imageView1 = (ImageView) linearLayoutDownloads.findViewById(R.id.download_lecture_icon);
-                imageView1.setTag(lecture);
-                imageView1.setOnClickListener(new View.OnClickListener() {
+                linearLayoutDownloads.setTag(lecture);
+                //listeners
+
+                final View.OnClickListener downloadPauseListener = new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                };
+
+                final View.OnClickListener downloadOnClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Lecture lecture = (Lecture) v.getTag();
@@ -185,14 +252,72 @@ public class CoursesFragment extends Fragment {
                                 0, false
                         ));
 
-
                         linearLayoutDownloads.removeAllViews();
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
                         linearLayoutDownloads.addView(view);
+                        linearLayoutDownloads.setOnClickListener(downloadPauseListener);
+                        ((CourseActivity) getActivity()).startAndBindToDownloadService();
                     }
-                });
+                };
 
 
+                View.OnClickListener deleteOnClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Lecture lecture1 = (Lecture)v.getTag();
+                        AppUtils.deleteAllFilesAndFolderInNewThread(lecture1.getId());
+                        DbHandler.getDbHandler().deleteLectureDownloadStatus(lecture1.getId());
+                        Toast.makeText(getActivity(),"deleted files",Toast.LENGTH_SHORT).show();
+                        //change icon and listener
+
+                        linearLayoutDownloads.removeAllViews();
+                        View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout,null);
+                        linearLayoutDownloads.addView(view);
+                        linearLayoutDownloads.setOnClickListener(downloadOnClickListener);
+
+
+                    }
+                };
+                mDeleteListener = deleteOnClickListener;
+
+
+
+
+
+                LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lecture.getId());
+                if(lectureDownloadStatus != null ){
+                    linearLayoutDownloads.removeAllViews();
+                    if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PENDING ||
+                        lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_RUNNING){
+                        View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
+                        linearLayoutDownloads.addView(view);
+
+
+
+                    }else if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED){
+                        View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
+                        ImageView imageView1 = (ImageView)view.findViewById(R.id.image_view);
+                        imageView1.setImageDrawable(getResources().getDrawable(R.drawable.trash));
+                        ProgressBar progressBar1 = (ProgressBar) view.findViewById(R.id.circularProgressbar);
+                        progressBar1.setProgress(100);
+
+                        linearLayoutDownloads.setOnClickListener(deleteOnClickListener);
+                        linearLayoutDownloads.addView(view);
+                    }else if(lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_PAUSED){
+                        View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
+                        ImageView imageView1 = (ImageView)view.findViewById(R.id.image_view);
+                        imageView1.setImageDrawable(getResources().getDrawable(R.drawable.resume_download));
+                        view.setTag(lecture);
+                        ProgressBar progressBar1 = (ProgressBar) view.findViewById(R.id.circularProgressbar);
+                        progressBar1.setProgress(lectureDownloadStatus.getPercentCompleted());
+                        linearLayoutDownloads.addView(view);
+                    }
+                }else if(lectureDownloadStatus == null || lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_ERROR){
+                    linearLayoutDownloads.removeAllViews();
+                    View view = getLayoutInflater(null).inflate(R.layout.download_lecture_layout,null);
+                    linearLayoutDownloads.addView(view);
+                    linearLayoutDownloads.setOnClickListener(downloadOnClickListener);
+                }
                 courseSectionLinearLayout.addView(lectureView);
             }
         }
@@ -336,6 +461,7 @@ public class CoursesFragment extends Fragment {
             Log.e(TAG, "caught exception while filling course rating ", e);
         }
     }
+
 
     private static class MyPagerAdapter1 extends PagerAdapter {
 

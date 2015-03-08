@@ -49,7 +49,7 @@ public class DbHandler {
                         /**
                          * do one time tasks here
                          */
-                        List<LectureDownloadStatus> lectureDownloadStatuses = dbHandler.getAllPendingLectureDownloadStatuses();
+                        List<LectureDownloadStatus> lectureDownloadStatuses = dbHandler.getAllRunningLectureDownloadStatuses();
                         for (LectureDownloadStatus lectureDownloadStatus : lectureDownloadStatuses) {
                             lectureDownloadStatus.setStatus(LectureDownloadStatus.STATUS_PENDING);
                             dbHandler.saveLectureDownloadStatus(lectureDownloadStatus);
@@ -80,6 +80,23 @@ public class DbHandler {
         throw new RuntimeException("null db handler, start method not called yet");
     }
 
+    public void deleteLectureDownloadStatus(int id){
+        try {
+            databaseHelper.getLectureDownloadStatusDao().deleteById((long)id);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to delete lecture download status by id : " + id, e);
+        }
+    }
+
+    public LectureDownloadStatus getLectureDownloadStatusById(int id){
+        try {
+            return databaseHelper.getLectureDownloadStatusDao().queryForId((long)id);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get lecture download status id : " + id, e);
+            return null;
+        }
+    }
+
     public LectureDownloadStatus getOnePendingLectureDownloadStatus() {
         try {
             return databaseHelper.getLectureDownloadStatusDao().queryForFirst(
@@ -91,7 +108,16 @@ public class DbHandler {
         }
     }
 
+
     public List<LectureDownloadStatus> getAllPendingLectureDownloadStatuses() {
+        try {
+            return databaseHelper.getLectureDownloadStatusDao().queryForEq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_PENDING);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    public List<LectureDownloadStatus> getAllRunningLectureDownloadStatuses() {
         try {
             return databaseHelper.getLectureDownloadStatusDao().queryForEq(LectureDownloadStatus.FIELD_STATE, LectureDownloadStatus.STATUS_RUNNING);
         } catch (SQLException e) {

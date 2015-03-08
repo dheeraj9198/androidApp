@@ -5,7 +5,7 @@
             android:innerRadiusRatio="3"
             android:shape="ring"
             android:useLevel="true"
-            android:thicknessRatio="14.0">
+            android:thicknessRatio="8.0">
 
             <gradient
                 android:startColor="#999999"
@@ -24,7 +24,7 @@
                 android:innerRadiusRatio="3"
                 android:shape="ring"
                 android:useLevel="true"
-                android:thicknessRatio="14.0">
+                android:thicknessRatio="8.0">
                 <rotate
                     android:fromDegrees="0"
                     android:toDegrees="360"
