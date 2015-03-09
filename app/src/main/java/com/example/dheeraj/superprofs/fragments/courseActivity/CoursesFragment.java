@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -38,7 +37,6 @@ import com.example.dheeraj.superprofs.CourseActivity;
 import com.example.dheeraj.superprofs.PlayerActivity;
 import com.example.dheeraj.superprofs.ProfessorActivity;
 import com.example.dheeraj.superprofs.R;
-import com.example.dheeraj.superprofs.db.DatabaseHelper;
 import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.db.tables.CourseJson;
 import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
@@ -114,12 +112,13 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     private long playerPosition;
     private boolean enableBackgroundAudio;
 
-    private Uri contentUri = Uri.parse("http://frontend.test.superprofs.com:1935/vod_android/mp4:sp_high_4.mp4/manifest.mpd");
+    private Uri contentUri = Uri.parse("http://frontend.test.superprofs.com:1935/vod_android/mp4:sample.mp4/manifest.mpd");
     private int contentType = DemoUtil.TYPE_DASH;
     private String contentId = null;
 
     @Override
     public void onStateChanged(boolean playWhenReady, int playbackState) {
+        
         if (playbackState == ExoPlayer.STATE_ENDED) {
             showControls();
         }
@@ -658,9 +657,11 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
             FileServer.stopServer();
             FileServer.startServer(AppUtils.getLectureFolderName(lectureId+"")+File.separator);
             Toast.makeText(getActivity(),"playing offline",Toast.LENGTH_SHORT).show();
+            contentUri = Uri.parse("http://localhost:"+FileServer.port+"/"+AppUtils.manifestFileNameEncrypted);
+        }else{
+            contentUri = Uri.parse("http://frontend.test.superprofs.com:1935/vod_android/mp4:sample.mp4/manifest.mpd");
         }
         
-        contentUri = Uri.parse("http://localhost:"+FileServer.port+"/"+AppUtils.manifestFileNameEncrypted);
 
 
         RelativeLayout playerView = (RelativeLayout) rootView.findViewById(R.id.main_course);
