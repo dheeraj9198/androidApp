@@ -62,6 +62,7 @@ import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.services.DownloaderService;
 import com.example.dheeraj.superprofs.utils.AppUtils;
 import com.example.dheeraj.superprofs.utils.Device;
+import com.example.dheeraj.superprofs.utils.FileServer;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.VideoSurfaceView;
@@ -70,6 +71,7 @@ import com.google.android.exoplayer.text.CaptionStyleCompat;
 import com.google.android.exoplayer.text.SubtitleView;
 import com.google.android.exoplayer.util.Util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -274,6 +276,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     public void onDestroy() {
         keepRunning = false;
         releasePlayer();
+        FileServer.stopServer();
         super.onDestroy();
     }
 
@@ -330,6 +333,8 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
             public void onClick(View v) {
 
                 playVideo("", 1, rootView);
+                
+                
                 if (true) return;
 
                 Lecture lecture = (Lecture) v.getTag();
@@ -650,6 +655,18 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     }
 
     private void playVideo(String url, int lectureId, View rootView) {
+
+        LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lectureId);
+        
+        if(lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED){
+            FileServer.stopServer();
+            FileServer.startServer(AppUtils.getLectureFolderName(lectureId+"")+File.separator);
+            Toast.makeText(getActivity(),"playing offline",Toast.LENGTH_SHORT).show();
+        }
+        
+        contentUri = Uri.parse("http://localhost:"+FileServer.port+"/"+AppUtils.manifestFileNameEncrypted);
+
+
         RelativeLayout playerView = (RelativeLayout) rootView.findViewById(R.id.main_course);
         ViewGroup.LayoutParams layoutParams11 = playerView.getLayoutParams();
         layoutParams11.width = Device.getWidth(getActivity());
