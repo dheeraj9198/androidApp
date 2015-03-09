@@ -50,6 +50,7 @@ import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingRendererBuilder;
 import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingTestMediaDrmCallback;
 import com.example.dheeraj.superprofs.exoplayer.UnsupportedDrmException;
 import com.example.dheeraj.superprofs.exoplayer.WidevineTestMediaDrmCallback;
+import com.example.dheeraj.superprofs.exoplayer.custom.CustomMediaController;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
@@ -731,7 +732,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         playerStateTextView = (TextView) playerMainView.findViewById(R.id.player_state_view);
         subtitleView = (SubtitleView) playerMainView.findViewById(R.id.subtitles);
 
-        mediaController = new MediaController(getActivity());
+        mediaController = new CustomMediaController(getActivity());//MediaController(getActivity());
         mediaController.setAnchorView(playerMainView);
         retryButton = (Button) playerMainView.findViewById(R.id.retry_button);
         retryButton.setOnClickListener(this);
