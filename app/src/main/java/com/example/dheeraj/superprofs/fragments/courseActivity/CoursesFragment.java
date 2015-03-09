@@ -274,11 +274,25 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     @Override
     public void onDestroy() {
         keepRunning = false;
-        releasePlayer();
+        releasePlayer(false);
         FileServer.stopServer();
         super.onDestroy();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer(true);
+
+    }
+    
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (player != null) {
+            preparePlayer();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -676,7 +690,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         mediaController = null;
         
         playerView.removeAllViews();
-        releasePlayer();
+        releasePlayer(false);
         
         
         View playerMainView = getLayoutInflater(null).inflate(R.layout.player_activity, null);
@@ -719,9 +733,9 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
 
     }
     
-        private void releasePlayer() {
+        private void releasePlayer(boolean saveTime) {
         if (player != null) {
-            playerPosition = 0L;//player.getCurrentPosition();
+            playerPosition = saveTime ? player.getCurrentPosition() : 0L;
             player.release();
             player = null;
             eventLogger.endSession();
