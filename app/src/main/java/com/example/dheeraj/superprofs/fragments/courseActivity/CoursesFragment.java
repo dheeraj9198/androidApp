@@ -331,13 +331,9 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                playVideo("", 1, rootView);
-                
-                
-                if (true) return;
-
                 Lecture lecture = (Lecture) v.getTag();
+                playVideo("", lecture.getId(), rootView);
+                if (true) return;
                 Toast.makeText(getActivity(), "lecture id = " + lecture.getId(), Toast.LENGTH_LONG).show();
                 if (lecture != null && lecture.isPublic()) {
                     Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
