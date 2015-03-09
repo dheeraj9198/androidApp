@@ -1,8 +1,11 @@
 package com.example.dheeraj.superprofs.fragments.courseActivity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,13 +13,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.accessibility.CaptioningManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,7 +42,16 @@ import com.example.dheeraj.superprofs.db.DatabaseHelper;
 import com.example.dheeraj.superprofs.db.DbHandler;
 import com.example.dheeraj.superprofs.db.tables.CourseJson;
 import com.example.dheeraj.superprofs.db.tables.LectureDownloadStatus;
+import com.example.dheeraj.superprofs.exoplayer.DashRendererBuilder;
+import com.example.dheeraj.superprofs.exoplayer.DefaultRendererBuilder;
+import com.example.dheeraj.superprofs.exoplayer.DemoPlayer;
 import com.example.dheeraj.superprofs.exoplayer.DemoUtil;
+import com.example.dheeraj.superprofs.exoplayer.EventLogger;
+import com.example.dheeraj.superprofs.exoplayer.HlsRendererBuilder;
+import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingRendererBuilder;
+import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingTestMediaDrmCallback;
+import com.example.dheeraj.superprofs.exoplayer.UnsupportedDrmException;
+import com.example.dheeraj.superprofs.exoplayer.WidevineTestMediaDrmCallback;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
@@ -40,10 +61,18 @@ import com.example.dheeraj.superprofs.models.Profile;
 import com.example.dheeraj.superprofs.models.Section;
 import com.example.dheeraj.superprofs.services.DownloaderService;
 import com.example.dheeraj.superprofs.utils.AppUtils;
+import com.example.dheeraj.superprofs.utils.Device;
 import com.example.dheeraj.superprofs.utils.JsonHandler;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.VideoSurfaceView;
+import com.google.android.exoplayer.metadata.TxxxMetadata;
+import com.google.android.exoplayer.text.CaptionStyleCompat;
+import com.google.android.exoplayer.text.SubtitleView;
+import com.google.android.exoplayer.util.Util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,7 +81,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by windows 7 on 3/8/2015.
  */
-public class CoursesFragment extends Fragment {
+public class CoursesFragment extends Fragment implements SurfaceHolder.Callback, View.OnClickListener,
+        DemoPlayer.Listener, DemoPlayer.TextListener, DemoPlayer.Id3MetadataListener {
     public static final String TAG = CoursesFragment.class.getSimpleName();
     public static final String PROFESSOR_JSON_DATA = "professor_json_data";
     private boolean isAttachmentExpanededList = false;
@@ -62,9 +92,188 @@ public class CoursesFragment extends Fragment {
     private View.OnClickListener mDeleteListener = null;
     private View.OnClickListener mDownloadPauseListener = null;
 
+    //player related stuff
+    private EventLogger eventLogger;
+    private MediaController mediaController;
+    private View debugRootView;
+    private View shutterView;
+    private VideoSurfaceView surfaceView;
+    private TextView debugTextView;
+    private TextView playerStateTextView;
+    private SubtitleView subtitleView;
+    private Button videoButton;
+    private Button audioButton;
+    private Button textButton;
+    private Button retryButton;
+
+    private DemoPlayer player;
+    private boolean playerNeedsPrepare;
+
+    private long playerPosition;
+    private boolean enableBackgroundAudio;
+
+    private Uri contentUri = Uri.parse("http://frontend.test.superprofs.com:1935/vod_android/mp4:sp_high_4.mp4/manifest.mpd");
+    private int contentType = DemoUtil.TYPE_DASH;
+    private String contentId = null;
+
+    @Override
+    public void onStateChanged(boolean playWhenReady, int playbackState) {
+        if (playbackState == ExoPlayer.STATE_ENDED) {
+            showControls();
+        }
+        String text = "playWhenReady=" + playWhenReady + ", playbackState=";
+        switch (playbackState) {
+            case ExoPlayer.STATE_BUFFERING:
+                text += "buffering";
+                break;
+            case ExoPlayer.STATE_ENDED:
+                text += "ended";
+                break;
+            case ExoPlayer.STATE_IDLE:
+                text += "idle";
+                break;
+            case ExoPlayer.STATE_PREPARING:
+                text += "preparing";
+                break;
+            case ExoPlayer.STATE_READY:
+                text += "ready";
+                break;
+            default:
+                text += "unknown";
+                break;
+        }
+        playerStateTextView.setText(text);
+        updateButtonVisibilities();
+    }
+
+    @Override
+    public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
+        shutterView.setVisibility(View.GONE);
+        surfaceView.setVideoWidthHeightRatio(
+                height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
+    }
+
+    @Override
+    public void onError(Exception e) {
+        if (e instanceof UnsupportedDrmException) {
+            // Special case DRM failures.
+            UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
+            int stringId = unsupportedDrmException.reason == UnsupportedDrmException.REASON_NO_DRM
+                    ? R.string.drm_error_not_supported
+                    : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
+                    ? R.string.drm_error_unsupported_scheme
+                    : R.string.drm_error_unknown;
+            Toast.makeText(getActivity().getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
+        }
+        playerNeedsPrepare = true;
+        updateButtonVisibilities();
+        showControls();
+    }
+
+    @Override
+    public void onId3Metadata(Map<String, Object> metadata) {
+        for (int i = 0; i < metadata.size(); i++) {
+            if (metadata.containsKey(TxxxMetadata.TYPE)) {
+                TxxxMetadata txxxMetadata = (TxxxMetadata) metadata.get(TxxxMetadata.TYPE);
+                Log.i(TAG, String.format("ID3 TimedMetadata: description=%s, value=%s",
+                        txxxMetadata.description, txxxMetadata.value));
+            }
+        }
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (player != null) {
+            player.setSurface(holder.getSurface());
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // Do nothing.
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        if (player != null) {
+            player.blockingClearSurface();
+        }
+    }
+
+    @Override
+    public void onText(String text) {
+        if (TextUtils.isEmpty(text)) {
+            subtitleView.setVisibility(View.INVISIBLE);
+        } else {
+            subtitleView.setVisibility(View.VISIBLE);
+            subtitleView.setText(text);
+        }
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        if (view == retryButton) {
+            preparePlayer();
+        }
+    }
+
+    private DemoPlayer.RendererBuilder getRendererBuilder() {
+        String userAgent = DemoUtil.getUserAgent(getActivity().getApplicationContext());
+        switch (contentType) {
+            case DemoUtil.TYPE_SS:
+                return new SmoothStreamingRendererBuilder(userAgent, contentUri.toString(), contentId,
+                        new SmoothStreamingTestMediaDrmCallback(), debugTextView);
+            case DemoUtil.TYPE_DASH:
+                return new DashRendererBuilder(userAgent, contentUri.toString(), contentId,
+                        new WidevineTestMediaDrmCallback(contentId), debugTextView);
+            case DemoUtil.TYPE_HLS:
+                return new HlsRendererBuilder(userAgent, contentUri.toString(), contentId);
+            default:
+                return new DefaultRendererBuilder(getActivity().getApplicationContext(), contentUri, debugTextView);
+        }
+    }
+
+    private void preparePlayer() {
+        if (player == null) {
+            player = new DemoPlayer(getRendererBuilder());
+            player.addListener(this);
+            player.setTextListener(this);
+            player.setMetadataListener(this);
+            player.seekTo(playerPosition);
+            playerNeedsPrepare = true;
+            mediaController.setMediaPlayer(player.getPlayerControl());
+            mediaController.setEnabled(true);
+            eventLogger = new EventLogger();
+            eventLogger.startSession();
+            player.addListener(eventLogger);
+            player.setInfoListener(eventLogger);
+            player.setInternalErrorListener(eventLogger);
+        }
+        if (playerNeedsPrepare) {
+            player.prepare();
+            playerNeedsPrepare = false;
+            updateButtonVisibilities();
+        }
+        player.setSurface(surfaceView.getHolder().getSurface());
+        player.setPlayWhenReady(true);
+    }
+
+    private void updateButtonVisibilities() {
+        retryButton.setVisibility(playerNeedsPrepare ? View.VISIBLE : View.GONE);
+        videoButton.setVisibility(haveTracks(DemoPlayer.TYPE_VIDEO) ? View.VISIBLE : View.GONE);
+        audioButton.setVisibility(haveTracks(DemoPlayer.TYPE_AUDIO) ? View.VISIBLE : View.GONE);
+        textButton.setVisibility(haveTracks(DemoPlayer.TYPE_TEXT) ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean haveTracks(int type) {
+        return player != null && player.getTracks(type) != null;
+    }
+
     @Override
     public void onDestroy() {
         keepRunning = false;
+        releasePlayer();
         super.onDestroy();
     }
 
@@ -119,12 +328,16 @@ public class CoursesFragment extends Fragment {
         View.OnClickListener lectureOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                playVideo("", 1, rootView);
+                if (true) return;
+
                 Lecture lecture = (Lecture) v.getTag();
                 Toast.makeText(getActivity(), "lecture id = " + lecture.getId(), Toast.LENGTH_LONG).show();
                 if (lecture != null && lecture.isPublic()) {
                     Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                             .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
-                            .putExtra(CourseActivity.LECTURE_ID,lecture.getId())
+                            .putExtra(CourseActivity.LECTURE_ID, lecture.getId())
                             .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
                             .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
                     startActivity(mpdIntent);
@@ -156,6 +369,11 @@ public class CoursesFragment extends Fragment {
          */
         parseAndInflateCourse(rootView, CourseActivity.course);
 
+        View view11 = (RelativeLayout) rootView.findViewById(R.id.main_course);
+        ViewGroup.LayoutParams layoutParams11 = view11.getLayoutParams();
+        layoutParams11.width = Device.getWidth(getActivity());
+        layoutParams11.height = Device.getWidth(getActivity()) * 9 / 16;
+        view11.setLayoutParams(layoutParams11);
         /**
          * professor info
          */
@@ -241,7 +459,7 @@ public class CoursesFragment extends Fragment {
                         LinearLayout linearLayout1 = (LinearLayout) v;
                         linearLayout1.removeAllViews();
                         View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
-                        ImageView  imageView1 = (ImageView) view.findViewById(R.id.image_view);
+                        ImageView imageView1 = (ImageView) view.findViewById(R.id.image_view);
                         imageView1.setImageDrawable(getResources().getDrawable(R.drawable.cancel));
                         linearLayout1.addView(view);
                         linearLayout1.setOnClickListener(mDownloadPauseListener);
@@ -263,7 +481,7 @@ public class CoursesFragment extends Fragment {
                             LinearLayout linearLayout1 = (LinearLayout) v;
                             linearLayout1.removeAllViews();
                             View view = getLayoutInflater(null).inflate(R.layout.circular_progress_with_image, null);
-                            ImageView  imageView1 = (ImageView) view.findViewById(R.id.image_view);
+                            ImageView imageView1 = (ImageView) view.findViewById(R.id.image_view);
                             imageView1.setImageDrawable(getResources().getDrawable(R.drawable.resume_download));
                             linearLayout1.addView(view);
                             linearLayout1.setOnClickListener(downloadResumeOnClickListener);
@@ -429,6 +647,125 @@ public class CoursesFragment extends Fragment {
             }
         }
         return rootView;
+    }
+
+    private void playVideo(String url, int lectureId, View rootView) {
+        RelativeLayout playerView = (RelativeLayout) rootView.findViewById(R.id.main_course);
+        ViewGroup.LayoutParams layoutParams11 = playerView.getLayoutParams();
+        layoutParams11.width = Device.getWidth(getActivity());
+        layoutParams11.height = Device.getWidth(getActivity()) * 9 / 16;
+        playerView.setLayoutParams(layoutParams11);
+
+        if (mediaController != null && mediaController.isShowing()) {
+            mediaController.hide();
+        }
+        mediaController = null;
+        
+        playerView.removeAllViews();
+        releasePlayer();
+        
+        
+        View playerMainView = getLayoutInflater(null).inflate(R.layout.player_activity, null);
+
+        playerMainView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    toggleControlsVisibility();
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    view.performClick();
+                }
+                return true;
+            }
+        });
+
+        shutterView = playerMainView.findViewById(R.id.shutter);
+        debugRootView = playerMainView.findViewById(R.id.controls_root);
+
+        surfaceView = (VideoSurfaceView) playerMainView.findViewById(R.id.surface_view);
+        surfaceView.getHolder().addCallback(this);
+        debugTextView = (TextView) playerMainView.findViewById(R.id.debug_text_view);
+
+        playerStateTextView = (TextView) playerMainView.findViewById(R.id.player_state_view);
+        subtitleView = (SubtitleView) playerMainView.findViewById(R.id.subtitles);
+
+        mediaController = new MediaController(getActivity());
+        mediaController.setAnchorView(playerMainView);
+        retryButton = (Button) playerMainView.findViewById(R.id.retry_button);
+        retryButton.setOnClickListener(this);
+        videoButton = (Button) playerMainView.findViewById(R.id.video_controls);
+        audioButton = (Button) playerMainView.findViewById(R.id.audio_controls);
+        textButton = (Button) playerMainView.findViewById(R.id.text_controls);
+
+        DemoUtil.setDefaultCookieManager();
+
+        configureSubtitleView();
+        preparePlayer();
+        playerView.addView(playerMainView);
+
+    }
+    
+        private void releasePlayer() {
+        if (player != null) {
+            playerPosition = 0L;//player.getCurrentPosition();
+            player.release();
+            player = null;
+            eventLogger.endSession();
+            eventLogger = null;
+        }
+    }
+    
+    private void configureSubtitleView() {
+        CaptionStyleCompat captionStyle;
+        float captionTextSize = getCaptionFontSize();
+        if (Util.SDK_INT >= 19) {
+            captionStyle = getUserCaptionStyleV19();
+            captionTextSize *= getUserCaptionFontScaleV19();
+        } else {
+            captionStyle = CaptionStyleCompat.DEFAULT;
+        }
+        subtitleView.setStyle(captionStyle);
+        subtitleView.setTextSize(captionTextSize);
+    }
+
+    private float getCaptionFontSize() {
+        Display display = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+        Point displaySize = new Point();
+        display.getSize(displaySize);
+        return Math.max(getResources().getDimension(R.dimen.subtitle_minimum_font_size),
+                CAPTION_LINE_HEIGHT_RATIO * Math.min(displaySize.x, displaySize.y));
+    }
+
+    private static final float CAPTION_LINE_HEIGHT_RATIO = 0.0533f;
+
+    @TargetApi(19)
+    private float getUserCaptionFontScaleV19() {
+        CaptioningManager captioningManager =
+                (CaptioningManager) getActivity().getSystemService(Context.CAPTIONING_SERVICE);
+        return captioningManager.getFontScale();
+    }
+
+    @TargetApi(19)
+    private CaptionStyleCompat getUserCaptionStyleV19() {
+        CaptioningManager captioningManager =
+                (CaptioningManager) getActivity().getSystemService(Context.CAPTIONING_SERVICE);
+        return CaptionStyleCompat.createFromCaptionStyle(captioningManager.getUserStyle());
+    }
+
+    private void toggleControlsVisibility() {
+        if (mediaController.isShowing()) {
+            mediaController.hide();
+            debugRootView.setVisibility(View.GONE);
+        } else {
+            showControls();
+        }
+    }
+
+
+    private void showControls() {
+        mediaController.show(0);
+        debugRootView.setVisibility(View.VISIBLE);
     }
 
     private void addAttachments(View rootView, Bundle savedInstanceState) {

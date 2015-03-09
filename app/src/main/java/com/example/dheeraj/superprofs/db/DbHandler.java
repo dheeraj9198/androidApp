@@ -69,6 +69,7 @@ public class DbHandler {
                 dbHandler.databaseHelper = null;
             }
         }
+        dbHandler = null;
     }
 
     public static boolean isStarted() {
