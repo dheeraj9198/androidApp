@@ -60,13 +60,7 @@ public class FileServer extends NanoHTTPD {
                           Map<String, String> files) {
 
         //Toast.makeText(context,"got request = "+uri,Toast.LENGTH_LONG).show();
-        Log.e(TAG, "-------------------------------------------------------");
-        Log.e(TAG, "-------------------------------------------------------");
-        Log.e(TAG, "-------------------------------------------------------");
-        Log.e(TAG, "got request = " + uri, new NullPointerException());
-        Log.e(TAG, "-------------------------------------------------------");
-        Log.e(TAG, "-------------------------------------------------------");
-        Log.e(TAG, "-------------------------------------------------------");
+        Log.i(TAG, "got request = " + uri);
 
         if (!uri.contains("manifest")) {
             InputStream fis = null;

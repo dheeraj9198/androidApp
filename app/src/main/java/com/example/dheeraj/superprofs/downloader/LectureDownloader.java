@@ -104,7 +104,6 @@ public class LectureDownloader {
 
         File file = new File(lectureFolder + File.separator + AppUtils.manifestFileNameEncrypted);
         if (!file.exists()) {
-            //downloadFile(url, new File(folder + manifestFileNameUnencrypted));
             try {
                 if(cancelBoolean){
                     return PAUSED;
@@ -216,6 +215,7 @@ public class LectureDownloader {
                     try {
                         file = new File(lectureFolder + File.separator + mediaFinal);
                         if (file.exists() && file.length() == getFileLength(url)) {
+                            downloadedSize = downloadedSize + (int)file.length();
                             Log.i(TAG, "file already downloaded : " + file.toString());
                         } else {
                             downloadFile(url, file);
@@ -293,7 +293,7 @@ public class LectureDownloader {
         InputStream in = null;
         FileOutputStream fileOutputStream = null;
         try {
-            byte[] bytes = new byte[50*1024];
+            byte[] bytes = new byte[1024];
             int k;
             in = url.openStream();
             fileOutputStream = new FileOutputStream(file);
@@ -303,7 +303,7 @@ public class LectureDownloader {
                 }
                 Log.i(TAG, "downloaded bytes = " + k);
                 downloadedSize = downloadedSize + k;
-                fileOutputStream.write(bytes);
+                fileOutputStream.write(bytes,0,k);
             }
         } catch (SocketException e) {
             // caught when there is no net connection
