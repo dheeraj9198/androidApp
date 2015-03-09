@@ -116,9 +116,12 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     private int contentType = DemoUtil.TYPE_DASH;
     private String contentId = null;
 
+    private String currentLectureFile = null;
+    private boolean paused = false;
+
     @Override
     public void onStateChanged(boolean playWhenReady, int playbackState) {
-        
+
         if (playbackState == ExoPlayer.STATE_ENDED) {
             showControls();
         }
@@ -283,14 +286,23 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     public void onPause() {
         super.onPause();
         releasePlayer(true);
+        player = null;
+        paused = true;
 
     }
-    
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        
-        if (player != null) {
+        if (currentLectureFile != null) {
+            FileServer.stopServer();
+            FileServer.startServer(currentLectureFile);
+        }
+        if (paused) {
+            if (mediaController != null && mediaController.isShowing()) {
+                mediaController.hide();
+            }
+            paused = false;
             preparePlayer();
         }
     }
@@ -667,16 +679,17 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     private void playVideo(String url, int lectureId, View rootView) {
 
         LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lectureId);
-        
-        if(lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED){
+
+        if (lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED) {
             FileServer.stopServer();
-            FileServer.startServer(AppUtils.getLectureFolderName(lectureId+"")+File.separator);
-            Toast.makeText(getActivity(),"playing offline",Toast.LENGTH_SHORT).show();
-            contentUri = Uri.parse("http://localhost:"+FileServer.port+"/"+AppUtils.manifestFileNameEncrypted);
-        }else{
+            currentLectureFile = AppUtils.getLectureFolderName(lectureId + "") + File.separator;
+            FileServer.startServer(currentLectureFile);
+            Toast.makeText(getActivity(), "playing offline", Toast.LENGTH_SHORT).show();
+            contentUri = Uri.parse("http://localhost:" + FileServer.port + "/" + AppUtils.manifestFileNameEncrypted);
+        } else {
+            currentLectureFile = null;
             contentUri = Uri.parse("http://frontend.test.superprofs.com:1935/vod_android/mp4:sample.mp4/manifest.mpd");
         }
-        
 
 
         RelativeLayout playerView = (RelativeLayout) rootView.findViewById(R.id.main_course);
@@ -689,11 +702,11 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
             mediaController.hide();
         }
         mediaController = null;
-        
+
         playerView.removeAllViews();
         releasePlayer(false);
-        
-        
+
+
         View playerMainView = getLayoutInflater(null).inflate(R.layout.player_activity, null);
 
         playerMainView.setOnTouchListener(new View.OnTouchListener() {
@@ -733,8 +746,8 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         playerView.addView(playerMainView);
 
     }
-    
-        private void releasePlayer(boolean saveTime) {
+
+    private void releasePlayer(boolean saveTime) {
         if (player != null) {
             playerPosition = saveTime ? player.getCurrentPosition() : 0L;
             player.release();
@@ -743,7 +756,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
             eventLogger = null;
         }
     }
-    
+
     private void configureSubtitleView() {
         CaptionStyleCompat captionStyle;
         float captionTextSize = getCaptionFontSize();
