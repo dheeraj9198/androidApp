@@ -289,6 +289,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     @Override
     public void onResume(){
         super.onResume();
+        
         if (player != null) {
             preparePlayer();
         }
