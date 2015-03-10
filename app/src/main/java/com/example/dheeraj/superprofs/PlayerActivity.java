@@ -192,6 +192,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 
     @Override
     public void onBackPressed() {
+        Log.e(TAG,"here");
         super.onBackPressed();
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CoursesFragment.CURRENT_TIME,playerPosition+"");
