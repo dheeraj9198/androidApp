@@ -18,19 +18,19 @@ public final class Course {
     private int id;
     private String name;
     private String description;
-    private String image_url;
+    private String imageUrl;
     private int status;
     private int priority;
-    private int subject_id;
-    private int broadcast_type;
-    private int owned_by_professor;
-    private String published_at;
-    private int approval_status;
-    private int is_discussion_enabled;
-    private String created_at;
-    private String updated_at;
-    private int created_by;
-    private int updated_by;
+    private int subjectId;
+    private int broadcastType;
+    private int ownedByProfessor;
+    private String publishedAt;
+    private int approvalStatus;
+    private int isDiscussionEnabled;
+    private String createdAt;
+    private String updatedAt;
+    private int createdBy;
+    private int updatedBy;
 
     /**
      * relational data
@@ -41,6 +41,16 @@ public final class Course {
     private ArrayList<Attachment> attachments;
     private ArrayList<CourseMeta> courseMetas;
     private ArrayList<Course> similarCourses;
+    private ArrayList<CourseReview> courseReviews;
+
+    public ArrayList<CourseReview> getCourseReviews() {
+        return courseReviews;
+    }
+
+    public void setCourseReviews(ArrayList<CourseReview> courseReviews) {
+        this.courseReviews = courseReviews;
+    }
+
     /**
      * from access-log/mongo-db
      */
@@ -52,70 +62,27 @@ public final class Course {
     @JsonIgnore
     private Bitmap bitmap;
 
-    @Override
-    public String toString() {
-        return "Course{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", image_url='" + image_url + '\'' +
-                ", status=" + status +
-                ", priority=" + priority +
-                ", subject_id=" + subject_id +
-                ", broadcast_type=" + broadcast_type +
-                ", owned_by_professor=" + owned_by_professor +
-                ", published_at='" + published_at + '\'' +
-                ", approval_status=" + approval_status +
-                ", is_discussion_enabled=" + is_discussion_enabled +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", created_by=" + created_by +
-                ", updated_by=" + updated_by +
-                ", professor=" + professor +
-                ", languages=" + languages +
-                ", sections=" + sections +
-                ", attachments=" + attachments +
-                ", courseMetas=" + courseMetas +
-                ", similarCourses=" + similarCourses +
-                ", students=" + students +
-                ", courseReviews=" + courseReviews +
-                '}';
+    public Bitmap getBitmap() {
+        return bitmap;
     }
 
-    public ArrayList<Course> getSimilarCourses() {
-        return similarCourses;
+    public void downloadBitmap() {
+        this.bitmap = ImageUtils.getBitmapFromUrl(imageUrl);
     }
 
-    public void setSimilarCourses(ArrayList<Course> similarCourses) {
-        this.similarCourses = similarCourses;
+
+
+    public String getAllLanguages(){
+        StringBuilder stringBuilder = new StringBuilder();
+        Iterator<Language> languageIterator = getLanguages().iterator();
+        while(languageIterator.hasNext()){
+            stringBuilder.append(languageIterator.next().getName());
+            if(languageIterator.hasNext()) {
+                stringBuilder.append(", ");
+            }
+        }
+        return stringBuilder.toString();
     }
-
-    public ArrayList<User> getStudents() {
-        return students;
-    }
-
-    public void setStudents(ArrayList<User> students) {
-        this.students = students;
-    }
-
-    public ArrayList<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(ArrayList<Attachment> attachments) {
-        this.attachments = attachments;
-    }
-
-    public ArrayList<CourseMeta> getCourseMetas() {
-        return courseMetas;
-    }
-
-    public void setCourseMetas(ArrayList<CourseMeta> courseMetas) {
-        this.courseMetas = courseMetas;
-    }
-
-    private ArrayList<CourseReview> courseReviews;
-
 
     public int getId() {
         return id;
@@ -141,22 +108,12 @@ public final class Course {
         this.description = description;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void downloadBitmap() {
-        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
-    }
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public int getStatus() {
@@ -175,84 +132,84 @@ public final class Course {
         this.priority = priority;
     }
 
-    public int getSubject_id() {
-        return subject_id;
+    public int getSubjectId() {
+        return subjectId;
     }
 
-    public void setSubject_id(int subject_id) {
-        this.subject_id = subject_id;
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
     }
 
-    public int getBroadcast_type() {
-        return broadcast_type;
+    public int getBroadcastType() {
+        return broadcastType;
     }
 
-    public void setBroadcast_type(int broadcast_type) {
-        this.broadcast_type = broadcast_type;
+    public void setBroadcastType(int broadcastType) {
+        this.broadcastType = broadcastType;
     }
 
-    public int getOwned_by_professor() {
-        return owned_by_professor;
+    public int getOwnedByProfessor() {
+        return ownedByProfessor;
     }
 
-    public void setOwned_by_professor(int owned_by_professor) {
-        this.owned_by_professor = owned_by_professor;
+    public void setOwnedByProfessor(int ownedByProfessor) {
+        this.ownedByProfessor = ownedByProfessor;
     }
 
-    public String getPublished_at() {
-        return published_at;
+    public String getPublishedAt() {
+        return publishedAt;
     }
 
-    public void setPublished_at(String published_at) {
-        this.published_at = published_at;
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
-    public int getApproval_status() {
-        return approval_status;
+    public int getApprovalStatus() {
+        return approvalStatus;
     }
 
-    public void setApproval_status(int approval_status) {
-        this.approval_status = approval_status;
+    public void setApprovalStatus(int approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 
-    public int getIs_discussion_enabled() {
-        return is_discussion_enabled;
+    public int getIsDiscussionEnabled() {
+        return isDiscussionEnabled;
     }
 
-    public void setIs_discussion_enabled(int is_discussion_enabled) {
-        this.is_discussion_enabled = is_discussion_enabled;
+    public void setIsDiscussionEnabled(int isDiscussionEnabled) {
+        this.isDiscussionEnabled = isDiscussionEnabled;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public int getCreated_by() {
-        return created_by;
+    public int getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreated_by(int created_by) {
-        this.created_by = created_by;
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public int getUpdated_by() {
-        return updated_by;
+    public int getUpdatedBy() {
+        return updatedBy;
     }
 
-    public void setUpdated_by(int updated_by) {
-        this.updated_by = updated_by;
+    public void setUpdatedBy(int updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
     public Professor getProfessor() {
@@ -267,18 +224,6 @@ public final class Course {
         return languages;
     }
 
-    public String getAllLanguages(){
-        StringBuilder stringBuilder = new StringBuilder();
-        Iterator<Language> languageIterator = getLanguages().iterator();
-        while(languageIterator.hasNext()){
-            stringBuilder.append(languageIterator.next().getName());
-            if(languageIterator.hasNext()) {
-                stringBuilder.append(", ");
-            }
-        }
-        return stringBuilder.toString();
-    }
-
     public void setLanguages(ArrayList<Language> languages) {
         this.languages = languages;
     }
@@ -291,12 +236,64 @@ public final class Course {
         this.sections = sections;
     }
 
-    public ArrayList<CourseReview> getCourseReviews() {
-        return courseReviews;
+    public ArrayList<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setCourseReviews(ArrayList<CourseReview> courseReviews) {
-        this.courseReviews = courseReviews;
+    public void setAttachments(ArrayList<Attachment> attachments) {
+        this.attachments = attachments;
     }
 
+    public ArrayList<CourseMeta> getCourseMetas() {
+        return courseMetas;
+    }
+
+    public void setCourseMetas(ArrayList<CourseMeta> courseMetas) {
+        this.courseMetas = courseMetas;
+    }
+
+    public ArrayList<Course> getSimilarCourses() {
+        return similarCourses;
+    }
+
+    public void setSimilarCourses(ArrayList<Course> similarCourses) {
+        this.similarCourses = similarCourses;
+    }
+
+    public ArrayList<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(ArrayList<User> students) {
+        this.students = students;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", subjectId=" + subjectId +
+                ", broadcastType=" + broadcastType +
+                ", ownedByProfessor=" + ownedByProfessor +
+                ", publishedAt='" + publishedAt + '\'' +
+                ", approvalStatus=" + approvalStatus +
+                ", isDiscussionEnabled=" + isDiscussionEnabled +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", createdBy=" + createdBy +
+                ", updatedBy=" + updatedBy +
+                ", professor=" + professor +
+                ", languages=" + languages +
+                ", sections=" + sections +
+                ", attachments=" + attachments +
+                ", courseMetas=" + courseMetas +
+                ", similarCourses=" + similarCourses +
+                ", students=" + students +
+                '}';
+    }
 }

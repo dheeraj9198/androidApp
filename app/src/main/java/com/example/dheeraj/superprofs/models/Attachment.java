@@ -8,8 +8,8 @@ public final class Attachment {
     private int id;
     private String name;
     private String url;
-    private String file_name;
-    private String file_extension;
+    private String fileName;
+    private String fileExtension;
     private String description;
     private String mimetype;
 
@@ -19,15 +19,23 @@ public final class Attachment {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
-                ", file_name='" + file_name + '\'' +
-                ", file_extension='" + file_extension + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", fileExtension='" + fileExtension + '\'' +
                 ", description='" + description + '\'' +
                 ", mimetype='" + mimetype + '\'' +
                 '}';
     }
 
-    public String getCompleteFileName(){
-        return file_name+"."+file_extension;
+    public String getCompleteFileName()
+    {
+        return fileName+"."+fileExtension;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -46,27 +54,27 @@ public final class Attachment {
         this.url = url;
     }
 
-    public String getFile_name() {
-        return file_name;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFile_name(String file_name) {
-        this.file_name = file_name;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public String getFile_extension() {
-        return file_extension;
+    public String getFileExtension() {
+        return fileExtension;
     }
 
-    public void setFile_extension(String file_extension) {
-        this.file_extension = file_extension;
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDexcription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -76,14 +84,5 @@ public final class Attachment {
 
     public void setMimetype(String mimetype) {
         this.mimetype = mimetype;
-    }
-
-    public int getId() {
-
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

@@ -53,6 +53,7 @@ import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingRendererBuilder;
 import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingTestMediaDrmCallback;
 import com.example.dheeraj.superprofs.exoplayer.UnsupportedDrmException;
 import com.example.dheeraj.superprofs.exoplayer.WidevineTestMediaDrmCallback;
+import com.example.dheeraj.superprofs.fragments.courseActivity.CoursesFragment;
 import com.example.dheeraj.superprofs.utils.AppUtils;
 import com.example.dheeraj.superprofs.utils.Device;
 import com.example.dheeraj.superprofs.utils.FileServer;
@@ -112,17 +113,23 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 
         Intent intent = getIntent();
         contentUri = intent.getData();
-        contentType = intent.getIntExtra(CONTENT_TYPE_EXTRA, DemoUtil.TYPE_OTHER);
+        String time = intent.getStringExtra(CoursesFragment.CURRENT_TIME);
+        try{
+            playerPosition = Long.parseLong(time);
+        }catch (Exception e){
+            playerPosition = 0;
+        }
+        contentType = intent.getIntExtra(CONTENT_TYPE_EXTRA, DemoUtil.TYPE_DASH);
         contentId = intent.getStringExtra(CONTENT_ID_EXTRA);
         int lectureId = intent.getIntExtra(CourseActivity.LECTURE_ID, 0);
 
         LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lectureId);
-        if(lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED){
-            Toast.makeText(PlayerActivity.this,"offline lecture found",Toast.LENGTH_SHORT).show();
-            contentUri = Uri.parse("http://localhost:"+ FileServer.port+"/"+ AppUtils.manifestFileNameUnencrypted);
-            FileServer.startServer(Device.getDir()+ File.separator+AppUtils.lectureFolderName+File.separator+lectureId+File.separator);
-        }else{
-            Toast.makeText(PlayerActivity.this,"playing online",Toast.LENGTH_SHORT).show();
+        if (lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED) {
+            Toast.makeText(PlayerActivity.this, "offline lecture found", Toast.LENGTH_SHORT).show();
+            contentUri = Uri.parse("http://localhost:" + FileServer.port + "/" + AppUtils.manifestFileNameUnencrypted);
+            FileServer.startServer(Device.getDir() + File.separator + AppUtils.lectureFolderName + File.separator + lectureId + File.separator);
+        } else {
+            Toast.makeText(PlayerActivity.this, "playing online", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -188,6 +195,12 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
         FileServer.stopServer();
         super.onDestroy();
         releasePlayer();
+
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(CoursesFragment.CURRENT_TIME,playerPosition+"");
+        setResult(RESULT_OK,returnIntent);
+        finish();
     }
 
     // OnClickListener methods

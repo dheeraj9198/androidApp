@@ -37,11 +37,12 @@ public class SpinnerFragment extends Fragment {
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstance) {
         View rootView = layoutInflater.inflate(R.layout.loading, container, false);
         DataFetcher dataFetcher = new DataFetcher();
-        dataFetcher.execute();
+        dataFetcher.execute(this);
         return rootView;
     }
 
-    private class DataFetcher extends AsyncTask<Void, String, Course> {
+    private static class DataFetcher extends AsyncTask<Fragment, String, Course> {
+        private Fragment fragment;
 
         @Override
         protected void onPreExecute() {
@@ -49,7 +50,8 @@ public class SpinnerFragment extends Fragment {
         }
 
         @Override
-        protected Course doInBackground(Void... params) {
+        protected Course doInBackground(Fragment... fragments) {
+            fragment = fragments[0];
             // publishProgress("started");
             // TODO api call
             String courseJsonString = FakeDataJsonStrings.getCourse();
@@ -122,13 +124,12 @@ public class SpinnerFragment extends Fragment {
 
         protected void onProgressUpdate(String... s) {
             String mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-            Toast.makeText(getActivity(), s[0] + " at " + mydate, Toast.LENGTH_LONG).show();
         }
 
         @Override
         protected void onPostExecute(Course c) {
             CourseActivity.course = c;
-            getFragmentManager().beginTransaction()
+            fragment.getFragmentManager().beginTransaction()
                     .replace(R.id.container, new CoursesFragment())
                     .commit();
         }

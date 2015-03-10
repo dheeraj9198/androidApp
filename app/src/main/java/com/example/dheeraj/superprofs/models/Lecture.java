@@ -8,35 +8,16 @@ public final class Lecture {
     private int id;
     private String name;
     private String description;
-    private int is_public;
+    private int isPublic;
     private int duration;
-    private String image_url;
-    private int broadcast_state;
+    private String imageUrl;
+    private int broadcastState;
     private int status;
-    private int is_quality_verified;
-    private int quality_verified_by;
+    private int isQualityVerified;
+    private int qualityVerifiedBy;
     private String comment;
 
-    @Override
-    public String toString() {
-        return "Lecture{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", is_public=" + is_public +
-                ", duration=" + duration +
-                ", image_url='" + image_url + '\'' +
-                ", broadcast_state=" + broadcast_state +
-                ", status=" + status +
-                ", is_quality_verified=" + is_quality_verified +
-                ", quality_verified_by=" + quality_verified_by +
-                ", comment='" + comment + '\'' +
-                '}';
-    }
 
-    public boolean isPublic(){
-        return is_public == 1;
-    }
 
     public int getId() {
         return id;
@@ -62,12 +43,12 @@ public final class Lecture {
         this.description = description;
     }
 
-    public int getIs_public() {
-        return is_public;
+    public boolean getIsPublic() {
+        return isPublic == 1;
     }
 
-    public void setIs_public(int is_public) {
-        this.is_public = is_public;
+    public void setIsPublic(int isPublic) {
+        this.isPublic = isPublic;
     }
 
     public int getDuration() {
@@ -78,20 +59,20 @@ public final class Lecture {
         this.duration = duration;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public int getBroadcast_state() {
-        return broadcast_state;
+    public int getBroadcastState() {
+        return broadcastState;
     }
 
-    public void setBroadcast_state(int broadcast_state) {
-        this.broadcast_state = broadcast_state;
+    public void setBroadcastState(int broadcastState) {
+        this.broadcastState = broadcastState;
     }
 
     public int getStatus() {
@@ -102,20 +83,20 @@ public final class Lecture {
         this.status = status;
     }
 
-    public int getIs_quality_verified() {
-        return is_quality_verified;
+    public int getIsQualityVerified() {
+        return isQualityVerified;
     }
 
-    public void setIs_quality_verified(int is_quality_verified) {
-        this.is_quality_verified = is_quality_verified;
+    public void setIsQualityVerified(int isQualityVerified) {
+        this.isQualityVerified = isQualityVerified;
     }
 
-    public int getQuality_verified_by() {
-        return quality_verified_by;
+    public int getQualityVerifiedBy() {
+        return qualityVerifiedBy;
     }
 
-    public void setQuality_verified_by(int quality_verified_by) {
-        this.quality_verified_by = quality_verified_by;
+    public void setQualityVerifiedBy(int qualityVerifiedBy) {
+        this.qualityVerifiedBy = qualityVerifiedBy;
     }
 
     public String getComment() {
@@ -124,5 +105,22 @@ public final class Lecture {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "Lecture{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", isPublic=" + isPublic +
+                ", duration=" + duration +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", broadcastState=" + broadcastState +
+                ", status=" + status +
+                ", isQualityVerified=" + isQualityVerified +
+                ", qualityVerifiedBy=" + qualityVerifiedBy +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }

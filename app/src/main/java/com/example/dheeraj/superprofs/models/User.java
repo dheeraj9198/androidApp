@@ -8,16 +8,16 @@ import java.util.ArrayList;
 public final class User {
     private int id;
     private String email;
-    private String first_name;
-    private String last_name;
-    private int is_email_verified;
+    private String firstName;
+    private String lastName;
+    private int isEmailVerified;
     private int status;
-    private int created_by;
-    private int updated_by;
-    private String created_at;
-    private String updated_at;
-    private String last_login_at;
-    private String last_login_ip;
+    private int createdBy;
+    private int updatedBy;
+    private String createdAt;
+    private String updatedAt;
+    private String lastLoginAt;
+    private String lastLoginIp;
 
     /**
      * relational data
@@ -25,38 +25,9 @@ public final class User {
     private ArrayList<Language> languages;
     private ArrayList<Profile> profiles;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                ", is_email_verified=" + is_email_verified +
-                ", status=" + status +
-                ", created_by=" + created_by +
-                ", updated_by=" + updated_by +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", last_login_at='" + last_login_at + '\'' +
-                ", last_login_ip='" + last_login_ip + '\'' +
-                ", languages=" + languages +
-                ", profiles=" + profiles +
-                '}';
+    public String getFullName(){
+        return firstName+" "+lastName;
     }
-
-    public ArrayList<Profile> getProfiles() {
-        return profiles;
-    }
-
-    public void setProfiles(ArrayList<Profile> profiles) {
-        this.profiles = profiles;
-    }
-
-    public  String getFullName(){
-        return first_name+" "+last_name;
-    }
-
 
     public int getId() {
         return id;
@@ -74,28 +45,28 @@ public final class User {
         this.email = email;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public int getIs_email_verified() {
-        return is_email_verified;
+    public int getIsEmailVerified() {
+        return isEmailVerified;
     }
 
-    public void setIs_email_verified(int is_email_verified) {
-        this.is_email_verified = is_email_verified;
+    public void setIsEmailVerified(int isEmailVerified) {
+        this.isEmailVerified = isEmailVerified;
     }
 
     public int getStatus() {
@@ -106,52 +77,52 @@ public final class User {
         this.status = status;
     }
 
-    public int getCreated_by() {
-        return created_by;
+    public int getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreated_by(int created_by) {
-        this.created_by = created_by;
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public int getUpdated_by() {
-        return updated_by;
+    public int getUpdatedBy() {
+        return updatedBy;
     }
 
-    public void setUpdated_by(int updated_by) {
-        this.updated_by = updated_by;
+    public void setUpdatedBy(int updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public String getLast_login_at() {
-        return last_login_at;
+    public String getLastLoginAt() {
+        return lastLoginAt;
     }
 
-    public void setLast_login_at(String last_login_at) {
-        this.last_login_at = last_login_at;
+    public void setLastLoginAt(String lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 
-    public String getLast_login_ip() {
-        return last_login_ip;
+    public String getLastLoginIp() {
+        return lastLoginIp;
     }
 
-    public void setLast_login_ip(String last_login_ip) {
-        this.last_login_ip = last_login_ip;
+    public void setLastLoginIp(String lastLoginIp) {
+        this.lastLoginIp = lastLoginIp;
     }
 
     public ArrayList<Language> getLanguages() {
@@ -162,4 +133,31 @@ public final class User {
         this.languages = languages;
     }
 
+    public ArrayList<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(ArrayList<Profile> profiles) {
+        this.profiles = profiles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", isEmailVerified=" + isEmailVerified +
+                ", status=" + status +
+                ", createdBy=" + createdBy +
+                ", updatedBy=" + updatedBy +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", lastLoginAt='" + lastLoginAt + '\'' +
+                ", lastLoginIp='" + lastLoginIp + '\'' +
+                ", languages=" + languages +
+                ", profiles=" + profiles +
+                '}';
+    }
 }

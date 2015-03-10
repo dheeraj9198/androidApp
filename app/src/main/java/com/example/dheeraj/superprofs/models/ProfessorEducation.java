@@ -6,23 +6,11 @@ package com.example.dheeraj.superprofs.models;
 public final class ProfessorEducation {
 
     private int id;
-    private int professor_id;
+    private int professorId;
     private String college;
-    private String graduation_year;
+    private String graduationYear;
     private String degree;
     private String field;
-
-    @Override
-    public String toString() {
-        return "ProfessorEducation{" +
-                "id=" + id +
-                ", professor_id=" + professor_id +
-                ", college='" + college + '\'' +
-                ", graduation_year='" + graduation_year + '\'' +
-                ", degree='" + degree + '\'' +
-                ", field='" + field + '\'' +
-                '}';
-    }
 
     public int getId() {
         return id;
@@ -32,12 +20,12 @@ public final class ProfessorEducation {
         this.id = id;
     }
 
-    public int getProfessor_id() {
-        return professor_id;
+    public int getProfessorId() {
+        return professorId;
     }
 
-    public void setProfessor_id(int professor_id) {
-        this.professor_id = professor_id;
+    public void setProfessorId(int professorId) {
+        this.professorId = professorId;
     }
 
     public String getCollege() {
@@ -48,12 +36,12 @@ public final class ProfessorEducation {
         this.college = college;
     }
 
-    public String getGraduation_year() {
-        return graduation_year;
+    public String getGraduationYear() {
+        return graduationYear;
     }
 
-    public void setGraduation_year(String graduation_year) {
-        this.graduation_year = graduation_year;
+    public void setGraduationYear(String graduationYear) {
+        this.graduationYear = graduationYear;
     }
 
     public String getDegree() {
@@ -70,5 +58,17 @@ public final class ProfessorEducation {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    @Override
+    public String toString() {
+        return "ProfessorEducation{" +
+                "id=" + id +
+                ", professorId=" + professorId +
+                ", college='" + college + '\'' +
+                ", graduationYear='" + graduationYear + '\'' +
+                ", degree='" + degree + '\'' +
+                ", field='" + field + '\'' +
+                '}';
     }
 }

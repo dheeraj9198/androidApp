@@ -5,16 +5,16 @@ package com.example.dheeraj.superprofs.models;
  */
 public final class ProfessorExperience {
     private int id;
-    private int professor_id;
+    private int professorId;
     private int type;
-    private String company_name;
+    private String companyName;
     private String position;
-    private String start_year;
-    private String end_year;
-    private int is_current_position;
+    private String startYear;
+    private String endYear;
+    private int isCurrentPosition;
 
     public String getDetail(){
-        return position+ " ("+start_year+" to "+end_year+") ";
+        return position+ " ("+startYear+" to "+endYear+") ";
     }
 
     public int getId() {
@@ -25,12 +25,12 @@ public final class ProfessorExperience {
         this.id = id;
     }
 
-    public int getProfessor_id() {
-        return professor_id;
+    public int getProfessorId() {
+        return professorId;
     }
 
-    public void setProfessor_id(int professor_id) {
-        this.professor_id = professor_id;
+    public void setProfessorId(int professorId) {
+        this.professorId = professorId;
     }
 
     public int getType() {
@@ -41,12 +41,12 @@ public final class ProfessorExperience {
         this.type = type;
     }
 
-    public String getCompany_name() {
-        return company_name;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setCompany_name(String company_name) {
-        this.company_name = company_name;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getPosition() {
@@ -57,41 +57,41 @@ public final class ProfessorExperience {
         this.position = position;
     }
 
-    public String getStart_year() {
-        return start_year;
+    public String getStartYear() {
+        return startYear;
     }
 
-    public void setStart_year(String start_year) {
-        this.start_year = start_year;
+    public void setStartYear(String startYear) {
+        this.startYear = startYear;
     }
 
-    public String getEnd_year() {
-        return end_year;
+    public String getEndYear() {
+        return endYear;
     }
 
-    public void setEnd_year(String end_year) {
-        this.end_year = end_year;
+    public void setEndYear(String endYear) {
+        this.endYear = endYear;
     }
 
-    public int getIs_current_position() {
-        return is_current_position;
+    public int getIsCurrentPosition() {
+        return isCurrentPosition;
     }
 
-    public void setIs_current_position(int is_current_position) {
-        this.is_current_position = is_current_position;
+    public void setIsCurrentPosition(int isCurrentPosition) {
+        this.isCurrentPosition = isCurrentPosition;
     }
 
     @Override
     public String toString() {
         return "ProfessorExperience{" +
                 "id=" + id +
-                ", professor_id=" + professor_id +
+                ", professorId=" + professorId +
                 ", type=" + type +
-                ", company_name='" + company_name + '\'' +
+                ", companyName='" + companyName + '\'' +
                 ", position='" + position + '\'' +
-                ", start_year='" + start_year + '\'' +
-                ", end_year='" + end_year + '\'' +
-                ", is_current_position=" + is_current_position +
+                ", startYear='" + startYear + '\'' +
+                ", endYear='" + endYear + '\'' +
+                ", isCurrentPosition=" + isCurrentPosition +
                 '}';
     }
 }

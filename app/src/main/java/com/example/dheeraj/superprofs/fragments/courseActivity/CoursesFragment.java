@@ -50,7 +50,6 @@ import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingRendererBuilder;
 import com.example.dheeraj.superprofs.exoplayer.SmoothStreamingTestMediaDrmCallback;
 import com.example.dheeraj.superprofs.exoplayer.UnsupportedDrmException;
 import com.example.dheeraj.superprofs.exoplayer.WidevineTestMediaDrmCallback;
-import com.example.dheeraj.superprofs.exoplayer.custom.CustomMediaController;
 import com.example.dheeraj.superprofs.fakeData.FakeDataJsonStrings;
 import com.example.dheeraj.superprofs.models.Attachment;
 import com.example.dheeraj.superprofs.models.Course;
@@ -119,6 +118,12 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
 
     private String currentLectureFile = null;
     private boolean paused = false;
+
+    private ImageView fullScreenImageView = null;
+    private View.OnClickListener fullScreenListener = null;
+    public static final String CURRENT_TIME = "currentTime";
+
+    public static final int REQUEST_CODE = 420;
 
     @Override
     public void onStateChanged(boolean playWhenReady, int playbackState) {
@@ -286,10 +291,11 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayer(true);
-        player = null;
-        paused = true;
-
+        if (player != null) {
+            releasePlayer(true);
+            paused = true;
+            player = null;
+        }
     }
 
     @Override
@@ -301,6 +307,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         }
         if (paused) {
             if (mediaController != null && mediaController.isShowing()) {
+                fullScreenImageView.setVisibility(View.INVISIBLE);
                 mediaController.hide();
             }
             paused = false;
@@ -359,16 +366,8 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
             @Override
             public void onClick(View v) {
                 Lecture lecture = (Lecture) v.getTag();
-                playVideo("", lecture.getId(), rootView);
-                if (true) return;
-                Toast.makeText(getActivity(), "lecture id = " + lecture.getId(), Toast.LENGTH_LONG).show();
-                if (lecture != null && lecture.isPublic()) {
-                    Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
-                            .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
-                            .putExtra(CourseActivity.LECTURE_ID, lecture.getId())
-                            .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
-                            .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
-                    startActivity(mpdIntent);
+                if (lecture != null && lecture.getIsPublic()) {
+                    playVideo("", lecture, rootView);
                 } else {
                     DialogFragment dialogFragment = new PurchaseDialogFragment();
                     dialogFragment.show(getActivity().getFragmentManager(), "PurchaseDialogFragment");
@@ -386,8 +385,8 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.SRC_IN);
 
         try {
-            progressBar.setMax(CourseActivity.course.getCourseMetas().get(0).getTotal_duration());
-            progressBar.setProgress(CourseActivity.course.getCourseMetas().get(0).getAvailable_content_duration());
+            progressBar.setMax(CourseActivity.course.getCourseMetas().get(0).getTotalDuration());
+            progressBar.setProgress(CourseActivity.course.getCourseMetas().get(0).getAvailableContentDuration());
         } catch (Exception e) {
             Log.e(TAG, "caught exception while setting up progress bar ", e);
         }
@@ -457,7 +456,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
                 final LinearLayout linearLayout = (LinearLayout) lectureView.findViewById(R.id.linear_layout_lecture_data);
                 TextView textView = (TextView) linearLayout.findViewById(R.id.lecture_name);
                 ImageView imageView = (ImageView) lectureView.findViewById(R.id.iv_lecture_list);
-                if (!lecture.isPublic()) {
+                if (!lecture.getIsPublic()) {
                     imageView.setImageResource(R.drawable.iv_lock_button);
                 }
                 textView.setText(lecture.getName());
@@ -677,13 +676,13 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         return rootView;
     }
 
-    private void playVideo(String url, int lectureId, View rootView) {
+    private void playVideo(String url, Lecture lecture, View rootView) {
 
-        LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lectureId);
+        LectureDownloadStatus lectureDownloadStatus = DbHandler.getDbHandler().getLectureDownloadStatusById(lecture.getId());
 
         if (lectureDownloadStatus != null && lectureDownloadStatus.getStatus() == LectureDownloadStatus.STATUS_FINISHED) {
             FileServer.stopServer();
-            currentLectureFile = AppUtils.getLectureFolderName(lectureId + "") + File.separator;
+            currentLectureFile = AppUtils.getLectureFolderName(lecture.getId() + "") + File.separator;
             FileServer.startServer(currentLectureFile);
             Toast.makeText(getActivity(), "playing offline", Toast.LENGTH_SHORT).show();
             contentUri = Uri.parse("http://localhost:" + FileServer.port + "/" + AppUtils.manifestFileNameEncrypted);
@@ -694,6 +693,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
 
 
         RelativeLayout playerView = (RelativeLayout) rootView.findViewById(R.id.main_course);
+
         ViewGroup.LayoutParams layoutParams11 = playerView.getLayoutParams();
         layoutParams11.width = Device.getWidth(getActivity());
         layoutParams11.height = Device.getWidth(getActivity()) * 9 / 16;
@@ -706,10 +706,43 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
 
         playerView.removeAllViews();
         releasePlayer(false);
-
-
         View playerMainView = getLayoutInflater(null).inflate(R.layout.player_activity, null);
 
+        fullScreenListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getVisibility() == View.INVISIBLE) {
+                    return;
+                }
+                long k = player.getCurrentPosition();
+                Toast.makeText(getActivity(), "position = " + k, Toast.LENGTH_SHORT).show();
+                Lecture lecture = (Lecture) v.getTag();
+                Toast.makeText(getActivity(), "lecture id = " + lecture.getId(), Toast.LENGTH_LONG).show();
+                if (lecture != null && lecture.getIsPublic()) {
+                    Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
+                            .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
+                            .putExtra(CourseActivity.LECTURE_ID, lecture.getId())
+                            .putExtra(CoursesFragment.CURRENT_TIME, player.getCurrentPosition() + "")
+                            .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")
+                            .putExtra(PlayerActivity.CONTENT_TYPE_EXTRA, /*sample.type*/DemoUtil.TYPE_DASH);
+                    startActivityForResult(mpdIntent, REQUEST_CODE);
+                } else {
+                    DialogFragment dialogFragment = new PurchaseDialogFragment();
+                    dialogFragment.show(getActivity().getFragmentManager(), "PurchaseDialogFragment");
+                }
+            }
+        };
+
+        if (fullScreenImageView == null) {
+            fullScreenImageView = new ImageView(getActivity());
+            //setting image resource
+            fullScreenImageView.setImageResource(R.drawable.fullscreen);
+            //setting image position
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(70, 70);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            fullScreenImageView.setLayoutParams(layoutParams);
+        }
+        fullScreenImageView.setTag(lecture);
         playerMainView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -732,7 +765,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         playerStateTextView = (TextView) playerMainView.findViewById(R.id.player_state_view);
         subtitleView = (SubtitleView) playerMainView.findViewById(R.id.subtitles);
 
-        mediaController = new CustomMediaController(getActivity());//MediaController(getActivity());
+        mediaController = new MediaController(getActivity());
         mediaController.setAnchorView(playerMainView);
         retryButton = (Button) playerMainView.findViewById(R.id.retry_button);
         retryButton.setOnClickListener(this);
@@ -746,6 +779,28 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         preparePlayer();
         playerView.addView(playerMainView);
 
+        fullScreenImageView.setVisibility(View.INVISIBLE);
+        fullScreenImageView.setOnClickListener(fullScreenListener);
+        playerView.addView(fullScreenImageView);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(getActivity(), "rc-rc" + requestCode + "*" + resultCode + "*" + data.getStringExtra(CURRENT_TIME), Toast.LENGTH_LONG).show();
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra(CURRENT_TIME);
+                try {
+                    playerPosition = Long.parseLong(result);
+                } catch (Exception e) {
+                    Log.e(TAG, "caught exception while parsing string to long", e);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     private void releasePlayer(boolean saveTime) {
@@ -799,9 +854,11 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
     private void toggleControlsVisibility() {
         if (mediaController.isShowing()) {
             mediaController.hide();
+            fullScreenImageView.setVisibility(View.INVISIBLE);
             debugRootView.setVisibility(View.GONE);
         } else {
             showControls();
+            fullScreenImageView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -835,7 +892,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         mainCourseLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO replace by actual video
+                //TODO take to course page
                 Intent mpdIntent = new Intent(getActivity(), PlayerActivity.class)
                         .setData(Uri.parse(FakeDataJsonStrings.getVideoUrl()))
                         .putExtra(PlayerActivity.CONTENT_ID_EXTRA, /*sample.contentId*/"")

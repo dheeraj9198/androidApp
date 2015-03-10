@@ -5,34 +5,18 @@ package com.example.dheeraj.superprofs.models;
  */
 public final class CourseReview {
     private int id;
-    private int user_id;
-    private int course_id;
+    private int userId;
+    private int courseId;
     private String tile;
     private String review;
     private float rating;
-    private int is_approved;
-    private String created_at;
-    private String updated_at;
+    private int isApproved;
+    private String createdAt;
+    private String updatedAt;
     /**
      * realational data
      */
     private User user;
-
-    @Override
-    public String toString() {
-        return "CourseReview{" +
-                "id=" + id +
-                ", user_id=" + user_id +
-                ", course_id=" + course_id +
-                ", tile='" + tile + '\'' +
-                ", review='" + review + '\'' +
-                ", rating=" + rating +
-                ", is_approved=" + is_approved +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
-                ", user=" + user +
-                '}';
-    }
 
     public int getId() {
         return id;
@@ -42,20 +26,20 @@ public final class CourseReview {
         this.id = id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public int getCourse_id() {
-        return course_id;
+    public int getCourseId() {
+        return courseId;
     }
 
-    public void setCourse_id(int course_id) {
-        this.course_id = course_id;
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public String getTile() {
@@ -82,28 +66,28 @@ public final class CourseReview {
         this.rating = rating;
     }
 
-    public int getIs_approved() {
-        return is_approved;
+    public int getIsApproved() {
+        return isApproved;
     }
 
-    public void setIs_approved(int is_approved) {
-        this.is_approved = is_approved;
+    public void setIsApproved(int isApproved) {
+        this.isApproved = isApproved;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public User getUser() {
@@ -112,5 +96,21 @@ public final class CourseReview {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "CourseReview{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", courseId=" + courseId +
+                ", tile='" + tile + '\'' +
+                ", review='" + review + '\'' +
+                ", rating=" + rating +
+                ", isApproved=" + isApproved +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", user=" + user +
+                '}';
     }
 }

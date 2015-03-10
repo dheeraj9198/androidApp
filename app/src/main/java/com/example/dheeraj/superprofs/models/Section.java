@@ -8,10 +8,10 @@ import java.util.ArrayList;
 public final class Section {
     private int id;
     private String name;
-    private int course_id;
+    private int courseId;
     private String description;
-    private int section_number;
-    private int lecture_count;
+    private int sectionNumber;
+    private int lectureCount;
     private int duration;
 
     /**
@@ -36,12 +36,12 @@ public final class Section {
         this.name = name;
     }
 
-    public int getCourse_id() {
-        return course_id;
+    public int getCourseId() {
+        return courseId;
     }
 
-    public void setCourse_id(int course_id) {
-        this.course_id = course_id;
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public String getDescription() {
@@ -52,20 +52,21 @@ public final class Section {
         this.description = description;
     }
 
-    public int getSection_number() {
-        return section_number;
+    public int getSectionNumber() {
+        return sectionNumber;
     }
 
-    public void setSection_number(int section_number) {
-        this.section_number = section_number;
+    public void setSectionNumber(int sectionNumber) {
+        this.sectionNumber = sectionNumber;
     }
 
-    public int getLecture_count() {
-        return lecture_count;
+    public int getLectureCount() {
+        return lectureCount;
     }
 
-    public void setLecture_count(int lecture_count) {
-        this.lecture_count = lecture_count;
+
+    public void setLectureCount(int lectureCount) {
+        this.lectureCount = lectureCount;
     }
 
     public int getDuration() {
@@ -89,10 +90,10 @@ public final class Section {
         return "Section{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", course_id=" + course_id +
+                ", courseId=" + courseId +
                 ", description='" + description + '\'' +
-                ", section_number=" + section_number +
-                ", lecture_count=" + lecture_count +
+                ", sectionNumber=" + sectionNumber +
+                ", lectureCount=" + lectureCount +
                 ", duration=" + duration +
                 ", lectures=" + lectures +
                 '}';

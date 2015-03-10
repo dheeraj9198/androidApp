@@ -68,7 +68,7 @@ public class ProfessorActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class ProfessorFragment extends Fragment {
 
         private Professor professor;
 
@@ -76,7 +76,7 @@ public class ProfessorActivity extends ActionBarActivity {
             this.professor =  p;
         }
 
-        public PlaceholderFragment() {
+        public ProfessorFragment() {
         }
 
         @Override
@@ -96,7 +96,7 @@ public class ProfessorActivity extends ActionBarActivity {
             }
 
             TextView yearsExperienceTextView = (TextView) rootView.findViewById(R.id.years_experience);
-            yearsExperienceTextView.setText(professor.getTotal_experience() + "");
+            yearsExperienceTextView.setText(professor.getTotalExperience() + "");
 
             TextView profName = (TextView) rootView.findViewById(R.id.prof_name);
             profName.setText(professor.getUser().getFullName());
@@ -114,7 +114,7 @@ public class ProfessorActivity extends ActionBarActivity {
             for (ProfessorExperience professorExperience : professor.getProfessorExperiences()) {
                 LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.list_item_education_teaching_experience, null);
                 TextView experienceHead = (TextView) linearLayout.findViewById(R.id.head);
-                experienceHead.setText(professorExperience.getCompany_name());
+                experienceHead.setText(professorExperience.getCompanyName());
                 TextView experienceDetail = (TextView) linearLayout.findViewById(R.id.detail);
                 experienceDetail.setText(professorExperience.getDetail());
                 if (x % 2 == 0) {
@@ -130,7 +130,7 @@ public class ProfessorActivity extends ActionBarActivity {
             for (ProfessorEducation professorEducation : professor.getProfessorEducations()) {
                 LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.list_item_education_teaching_experience, null);
                 TextView experienceHead = (TextView) linearLayout.findViewById(R.id.head);
-                experienceHead.setText(professorEducation.getDegree() + " (" + professorEducation.getGraduation_year() + ") ");
+                experienceHead.setText(professorEducation.getDegree() + " (" + professorEducation.getGraduationYear() + ") ");
                 TextView experienceDetail = (TextView) linearLayout.findViewById(R.id.detail);
                 experienceDetail.setText(professorEducation.getCollege());
                 if (x % 2 == 0) {
@@ -187,10 +187,10 @@ public class ProfessorActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(Professor professor) {
-                PlaceholderFragment placeholderFragment = new PlaceholderFragment();
-                placeholderFragment.setProfessor(professor);
+                ProfessorFragment professorFragment = new ProfessorFragment();
+                professorFragment.setProfessor(professor);
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, placeholderFragment)
+                        .replace(R.id.container, professorFragment)
                         .commit();
             }
         }

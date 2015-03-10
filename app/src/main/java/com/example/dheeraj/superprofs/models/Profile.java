@@ -12,18 +12,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"bitMap"})
 public final class Profile {
     private  int id;
-    private int user_id;
-    private String image_url;
-    private String image_caption;
+    private int userId;
+    private String imageUrl;
+    private String imageCaption;
     private int gender;
-    private String date_of_birth;
-    private String facebook_url;
+    private String dateOfBirth;
+    private String facebookUrl;
 
 
-    private String linked_url;
-    private String twitter_url;
-    private String created_at;
-    private String updated_at;
+    private String linkedUrl;
+    private String twitterUrl;
+    private String createdAt;
+    private String updatedAt;
 
     @JsonIgnore
     private Bitmap bitmap;
@@ -37,7 +37,7 @@ public final class Profile {
     }
 
     public void downloadBitmap() {
-        this.bitmap = ImageUtils.getBitmapFromUrl(image_url);
+        this.bitmap = ImageUtils.getBitmapFromUrl(imageUrl);
     }
 
     public int getId() {
@@ -48,30 +48,28 @@ public final class Profile {
         this.id = id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage_url(String image_url) {
-
-        this.image_url = image_url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-
-    public String getImage_caption() {
-        return image_caption;
+    public String getImageCaption() {
+        return imageCaption;
     }
 
-    public void setImage_caption(String image_caption) {
-        this.image_caption = image_caption;
+    public void setImageCaption(String imageCaption) {
+        this.imageCaption = imageCaption;
     }
 
     public int getGender() {
@@ -82,68 +80,68 @@ public final class Profile {
         this.gender = gender;
     }
 
-    public String getDate_of_birth() {
-        return date_of_birth;
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDate_of_birth(String date_of_birth) {
-        this.date_of_birth = date_of_birth;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public String getFacebook_url() {
-        return facebook_url;
+    public String getFacebookUrl() {
+        return facebookUrl;
     }
 
-    public void setFacebook_url(String facebook_url) {
-        this.facebook_url = facebook_url;
+    public void setFacebookUrl(String facebookUrl) {
+        this.facebookUrl = facebookUrl;
     }
 
-    public String getLinked_url() {
-        return linked_url;
+    public String getLinkedUrl() {
+        return linkedUrl;
     }
 
-    public void setLinked_url(String linked_url) {
-        this.linked_url = linked_url;
+    public void setLinkedUrl(String linkedUrl) {
+        this.linkedUrl = linkedUrl;
     }
 
-    public String getTwitter_url() {
-        return twitter_url;
+    public String getTwitterUrl() {
+        return twitterUrl;
     }
 
-    public void setTwitter_url(String twitter_url) {
-        this.twitter_url = twitter_url;
+    public void setTwitterUrl(String twitterUrl) {
+        this.twitterUrl = twitterUrl;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
     public String toString() {
         return "Profile{" +
                 "id=" + id +
-                ", user_id=" + user_id +
-                ", image_url='" + image_url + '\'' +
-                ", image_caption='" + image_caption + '\'' +
+                ", userId=" + userId +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", imageCaption='" + imageCaption + '\'' +
                 ", gender=" + gender +
-                ", date_of_birth='" + date_of_birth + '\'' +
-                ", facebook_url='" + facebook_url + '\'' +
-                ", linked_url='" + linked_url + '\'' +
-                ", twitter_url='" + twitter_url + '\'' +
-                ", created_at='" + created_at + '\'' +
-                ", updated_at='" + updated_at + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", facebookUrl='" + facebookUrl + '\'' +
+                ", linkedUrl='" + linkedUrl + '\'' +
+                ", twitterUrl='" + twitterUrl + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
                 '}';
     }
 }
