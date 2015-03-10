@@ -58,6 +58,12 @@ public class CourseActivity extends ActionBarActivity {
     };
 
     @Override
+    protected void onResume() {
+        backPressedOnce = false;
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         //final NotificationManager mNotificationManager =

@@ -192,8 +192,6 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
 
     @Override
     public void onBackPressed() {
-        Log.e(TAG,"here");
-        super.onBackPressed();
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CoursesFragment.CURRENT_TIME,playerPosition+"");
         setResult(RESULT_OK,returnIntent);
@@ -204,8 +202,8 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     @Override
     public void onDestroy() {
         FileServer.stopServer();
-        super.onDestroy();
         releasePlayer();
+        super.onDestroy();
     }
 
     // OnClickListener methods
