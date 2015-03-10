@@ -144,7 +144,7 @@ public class CourseActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+ /*   @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Check which request we're responding to
@@ -156,6 +156,6 @@ public class CourseActivity extends ActionBarActivity {
                         .commit();
             }
         }
-    }
+    }*/
 
 }

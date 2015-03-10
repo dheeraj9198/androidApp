@@ -191,16 +191,20 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     }
 
     @Override
-    public void onDestroy() {
-        FileServer.stopServer();
-        super.onDestroy();
-        releasePlayer();
-
-
+    public void onBackPressed() {
+        super.onBackPressed();
         Intent returnIntent = new Intent();
         returnIntent.putExtra(CoursesFragment.CURRENT_TIME,playerPosition+"");
         setResult(RESULT_OK,returnIntent);
         finish();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        FileServer.stopServer();
+        super.onDestroy();
+        releasePlayer();
     }
 
     // OnClickListener methods
