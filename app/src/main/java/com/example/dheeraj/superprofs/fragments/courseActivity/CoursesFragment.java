@@ -702,6 +702,7 @@ public class CoursesFragment extends Fragment implements SurfaceHolder.Callback,
         if (mediaController != null && mediaController.isShowing()) {
             mediaController.hide();
         }
+
         mediaController = null;
 
         playerView.removeAllViews();
